@@ -1,12 +1,17 @@
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.pipeline.PipelineLogger;
 import com.microsoft.rest.v2.http.HttpHeader;
 import com.microsoft.rest.v2.http.HttpHeaders;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import org.apache.commons.lang3.StringUtils;
+//import org.apache.log4j.Level;
 import rx.Single;
+import rx.functions.Action1;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -15,6 +20,7 @@ import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.logging.Level;
 
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
@@ -51,6 +57,8 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
 
         final SharedKeyCredentials factory;
 
+        private String stringToSign;
+
         public SharedKeyCredentialsPolicy(RequestPolicy nextPolicy, SharedKeyCredentials factory) {
             this.nextPolicy = nextPolicy;
             this.factory = factory;
@@ -70,14 +78,25 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
             }
 
             try {
-                final String stringToSign = factory.buildStringToSign(request);
-                final String computedBase64Signature = factory.computeHmac256(stringToSign);
-                request.headers().set(Constants.HeaderConstants.AUTHORIZATION, "SharedKey " + accountName + ":"  + computedBase64Signature);
+                stringToSign = this.factory.buildStringToSign(request);
+                final String computedBase64Signature = this.factory.computeHmac256(stringToSign);
+                request.headers().set(Constants.HeaderConstants.AUTHORIZATION, "SharedKey " + this.factory.accountName + ":"  + computedBase64Signature);
             } catch (Exception e) {
                 return Single.error(e);
             }
 
-            return nextPolicy.sendAsync(request);
+            Single<HttpResponse> response = nextPolicy.sendAsync(request);
+            return response.doOnSuccess(new Action1<HttpResponse>() {
+                @Override
+                public void call(HttpResponse response) {
+                    if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
+                        PipelineLogger.initialize(Level.SEVERE);
+                        if (PipelineLogger.shouldLog(Level.SEVERE)) {
+                            //PipelineLogger.error("===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", stringToSign);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -105,8 +124,8 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
         String contentLength = getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_LENGTH);
         contentLength = contentLength.equals("0") ? Constants.EMPTY_STRING : contentLength;
 
-
-        return String.join(
+        // TODO: Change to String.join when Java 7 support is removed
+        return StringUtils.join(
                 "/n",
                 request.httpMethod(),
                 getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_ENCODING),
@@ -202,7 +221,7 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
             Collections.sort(queryParamValues);
 
             // concatenation of the query param name + colon + join of query param values which are commas separated
-            canonicalizedResource.append("\n" + queryParamName.toLowerCase(Locale.US) + ":" + String.join(",", queryParamValues));
+            canonicalizedResource.append("\n" + queryParamName.toLowerCase(Locale.US) + ":" + StringUtils.join(",", queryParamValues));
 
             // if not the last query param append a newline character
 //            if (i != queryParamNames.size() - 1) {

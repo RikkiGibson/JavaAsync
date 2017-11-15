@@ -1,6 +1,8 @@
 package com.microsoft.azure.storage;
 
 import com.microsoft.azure.storage.blob.HttpAccessConditions;
+import com.microsoft.azure.storage.blob.SharedKeyCredentials;
+import com.microsoft.azure.v2.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.v2.serializer.AzureJacksonAdapter;
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.LogLevel;
@@ -16,6 +18,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 import rx.Single;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Locale;
@@ -50,8 +53,8 @@ public class BlobStorageAPITests {
     public void testBasic() throws Exception {
         //final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
         QueryStringDecoder decoder = new QueryStringDecoder("/hello?key=ab+cd&key2=josh");
-        final HttpAccessConditions ac = new HttpAccessConditions() {
-        };
+        //final HttpAccessConditions ac = new HttpAccessConditions() {
+        //};
 
         System.setProperty("http.proxyHost", "localhost");
         System.setProperty("http.proxyPort", "8888");
@@ -60,7 +63,8 @@ public class BlobStorageAPITests {
                 //.withCredentials(ApplicationTokenCredentials.fromFile(credFile))
                 .withBaseUrl("127.0.0.1")//"http://xclientdev.blob.core.windows.net")
                 .withLogLevel(LogLevel.BODY_AND_HEADERS)
-                .addCustomPolicy(new AddDatePolicy.Factory())
+                .addRequestPolicy(new SharedKeyCredentials("dfs", "dfs"))
+                .addRequestPolicy(new AddDatePolicy.Factory())
                 .withSerializerAdapter(new AzureJacksonAdapter())
                 .withProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)))
                 .build();

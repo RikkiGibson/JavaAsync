@@ -2,8 +2,12 @@ package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.StorageClient;
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
+import com.microsoft.azure.storage.models.ContainerGetPropertiesHeaders;
+import com.microsoft.azure.storage.models.ServiceSetPropertiesHeaders;
 import com.microsoft.rest.v2.RestClient;
+import com.microsoft.rest.v2.RestResponse;
 import rx.Single;
+import rx.functions.Func1;
 
 public final class ContainerUrl {
 
@@ -20,8 +24,14 @@ public final class ContainerUrl {
         return this.storageClient.containers().createAsync(this.containerUrl);
     }
 
-    public Single<Void> headContainerAsync() {
-        return this.storageClient.containers().getPropertiesAsync(this.containerUrl);
+    public Single<ContainerGetPropertiesHeaders> headContainerAsync() {
+        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync(this.containerUrl);
+
+        return restResponse.map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, ContainerGetPropertiesHeaders>() {
+            public ContainerGetPropertiesHeaders call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) {
+                return restResponse.headers();
+            }
+        });
     }
 
     public Single<Void> deleteContainerAsync() {

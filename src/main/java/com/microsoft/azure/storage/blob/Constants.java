@@ -637,12 +637,12 @@ public final class Constants {
         /**
          * Specifies the value to use for UserAgent header.
          */
-        public static final String USER_AGENT_PREFIX = "Azure-Storage";
+        public static final String USER_AGENT_PREFIX = "Azure-Storage-Async";
 
         /**
          * Specifies the value to use for UserAgent header.
          */
-        public static final String USER_AGENT_VERSION = "6.0.0";
+        public static final String USER_AGENT_VERSION = "1.0.0";
 
         /**
          * The default type for content-type and accept
