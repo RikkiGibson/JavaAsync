@@ -1,5 +1,8 @@
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.pipeline.IRequestPolicyFactory;
+import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.azure.storage.pipeline.RequestPolicyNode;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
@@ -7,22 +10,23 @@ import rx.Single;
 
 import java.util.UUID;
 
-final class RequestIDFactory implements RequestPolicy.Factory {
+final class RequestIDFactory implements IRequestPolicyFactory {
 
     private final class RequestIDPolicy implements RequestPolicy {
-        final RequestPolicy nextPolicy;
+        final RequestPolicyNode requestPolicyNode;
 
-        public RequestIDPolicy(RequestPolicy nextPolicy) {
-            this.nextPolicy = nextPolicy;
+        public RequestIDPolicy(RequestPolicyNode requestPolicyNode) {
+            this.requestPolicyNode = requestPolicyNode;
         }
 
         public Single<HttpResponse> sendAsync(HttpRequest request) {
             request.headers().set(Constants.HeaderConstants.CLIENT_REQUEST_ID_HEADER, UUID.randomUUID().toString());
-            return nextPolicy.sendAsync(request);
+            return requestPolicyNode.sendAsync(request);
         }
     }
+
     @Override
-    public RequestPolicy create(RequestPolicy nextPolicy) {
-        return new RequestIDPolicy(nextPolicy);
+    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
+        return new RequestIDPolicy(requestPolicyNode);
     }
 }

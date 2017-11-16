@@ -2,6 +2,7 @@ package com.microsoft.azure.storage.pipeline;
 
 import com.microsoft.rest.v2.LogLevel;
 import com.microsoft.rest.v2.RestClient;
+import com.microsoft.rest.v2.http.HttpClient;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 
 import java.util.ArrayList;
@@ -11,31 +12,15 @@ import java.util.logging.Level;
 
 public final class Pipeline {
 
-    private ShouldLogCallable shouldLogFunc;
-    private LogRequestCallable logFunc;
+    private final PipelineOptions pipelineOptions;
+    private final HttpClient.Configuration configuration;
+    //private final IRequestPolicyFactory n
 
-    private List<RequestPolicy.Factory> customRequestPolicyFactories = new ArrayList<>();
+    private List<IRequestPolicyFactory> customRequestPolicyFactories = new ArrayList<>();
 
-    public Pipeline(ShouldLogCallable shouldLogFunc, LogRequestCallable logFunc) {
-        this.shouldLogFunc = shouldLogFunc;
-        this.logFunc = logFunc;
-    }
-    public boolean shouldLog(Level loggingLevel) {
-        try {
-            return this.shouldLogFunc.shouldLog(loggingLevel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return true;
-    }
-
-    public void Log(Level loggingLevel, String message) {
-        try {
-            this.logFunc.call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public Pipeline(HttpClient.Configuration configuration, PipelineOptions pipelineOptions) {
+        this.pipelineOptions = pipelineOptions;
+        this.configuration = configuration;
     }
 
     /**
@@ -44,7 +29,7 @@ public final class Pipeline {
      * @param factory The Factory producing a custom user-defined RequestPolicy.
      * @return the builder itself for chaining
      */
-    public Pipeline addRequestPolicy(RequestPolicy.Factory factory) {
+    public Pipeline addRequestPolicy(RequestPolicyFactoryInterface factory) {
         customRequestPolicyFactories.add(factory);
         return this;
     }
@@ -53,7 +38,13 @@ public final class Pipeline {
         return null;
     }
 
-    public void Invoke() {
+    public RequestPolicy Invoke() {
+        NetworkRequestFactory networkRequestFactory = new NetworkRequestFactory(this.configuration);
+        RequestPolicy nextRequestPolicy = networkRequestFactory.create(null);
+        for (int i = this.customRequestPolicyFactories.size() - 1; i >= 0; i--) {
+            nextRequestPolicy = this.customRequestPolicyFactories.get(i).create(this, nextRequestPolicy);
+        }
 
+        return nextRequestPolicy;
     }
 }

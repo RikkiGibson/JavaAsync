@@ -6,75 +6,43 @@ package com.microsoft.azure.storage.pipeline;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class PipelineLogger {
+import static com.microsoft.azure.storage.pipeline.LogLevel.ERROR;
+import static com.microsoft.azure.storage.pipeline.LogLevel.FATAL;
+import static com.microsoft.azure.storage.pipeline.LogLevel.INFO;
 
-    private static Level logLevel;
+public final class PipelineLogger implements ILogRequest {
 
-    //private static Logger
+    private LogLevel minLogLevel;
 
-    public static void initialize(Level logLevel) {
-        PipelineLogger.logLevel = logLevel;
-        if (System.getProperty("os.name").contains("windows")) {
-            DefaultWindowsEventLogWriter.Initialize();
-        }
-        else {
-            DefaultSysLogWriter.Initialize();
-        }
+    private Logger logger;
+
+    public PipelineLogger(LogLevel minLogLevel) {
+        this.minLogLevel = minLogLevel;
+        this.logger = Logger.getGlobal();
     }
 
-    public static boolean shouldLog(Level logLevel) {
-        //return logLevel.isGreaterOrEqual(PipelineLogger.logLevel);
-        return true;
+    @Override
+    public LogLevel minimumLevelToLog() {
+        return this.minLogLevel;
     }
 
-//    public static void fatal(String format, Object... args) {
-//        Logger logger = Logger.getGlobal();
-//        if (shouldLog(Level.FATAL)) {
-//            Logger logger = Logger.getRootLogger();
-//            logger.fatal(formatLogEntry(format, args));
-//        }
-//    }
-
-//    public static void error(String format, Object... args) {
-//        if (shouldLog(Level.SEVERE)) {
-//            Logger logger = Logger.getGlobal().getRootLogger();
-//            logger.error(formatLogEntry(format, args));
-//        }
-//    }
-//
-//    public static void warn(String format, Object... args) {
-//        if (shouldLog(Level.WARNING)) {
-//            Logger logger = Logger.getRootLogger();
-//            logger.warn(formatLogEntry(format, args));
-//        }
-//    }
-//
-//    public static void info(String format, Object... args) {
-//        if (shouldLog(Level.INFO)) {
-//            Logger logger = Logger.getRootLogger();
-//            if (logger.isInfoEnabled()) {
-//                logger.info(formatLogEntry(format, args));
-//            }
-//        }
-//    }
-//
-//    public static void debug(String format, Object... args) {
-//        if (shouldLog(Level.DEBUG)) {
-//            Logger logger = Logger.getRootLogger();
-//            if (logger.isDebugEnabled()) {
-//                logger.debug(formatLogEntry(format, args));
-//            }
-//        }
-//    }
-//
-//    public static void trace(String format, Object... args) {
-//        if (shouldLog(Level.TRACE)) {
-//            Logger logger = Logger.getRootLogger();
-//            if (logger.isTraceEnabled()) {
-//                logger.trace(formatLogEntry(format, args));
-//            }
-//        }
-//    }
+    @Override
+    public void logRequest(LogLevel logLevel, String message) {
+        switch (logLevel) {
+            case ERROR:
+            case FATAL:
+                this.logger.severe(message);
+                break;
+            case WARNING:
+                this.logger.warning(message);
+                break;
+            case INFO:
+                this.logger.info(message);
+                break;
+            default:
+                break;
+        }
+    }
 
     private static String formatLogEntry(String format, Object... args) {
         return String.format(format, args);//.replace('\n', '.');

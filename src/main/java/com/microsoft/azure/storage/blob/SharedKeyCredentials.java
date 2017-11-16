@@ -1,6 +1,8 @@
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.pipeline.PipelineLogger;
+import com.microsoft.azure.storage.pipeline.LogLevel;
+import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.azure.storage.pipeline.RequestPolicyNode;
 import com.microsoft.rest.v2.http.HttpHeader;
 import com.microsoft.rest.v2.http.HttpHeaders;
 import com.microsoft.rest.v2.http.HttpRequest;
@@ -20,11 +22,11 @@ import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
-public final class SharedKeyCredentials  implements CredentialsInterface {
+public final class SharedKeyCredentials implements CredentialsInterface {
 
     private final String accountName;
 
@@ -53,14 +55,12 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
 
     private final class SharedKeyCredentialsPolicy implements RequestPolicy {
 
-        final RequestPolicy nextPolicy;
+        private final RequestPolicyNode requestPolicyNode;
 
-        final SharedKeyCredentials factory;
+        private final SharedKeyCredentials factory;
 
-        private String stringToSign;
-
-        public SharedKeyCredentialsPolicy(RequestPolicy nextPolicy, SharedKeyCredentials factory) {
-            this.nextPolicy = nextPolicy;
+        SharedKeyCredentialsPolicy(RequestPolicyNode requestPolicyNode, SharedKeyCredentials factory) {
+            this.requestPolicyNode = requestPolicyNode;
             this.factory = factory;
         }
 
@@ -77,22 +77,24 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
                 request.headers().set(Constants.HeaderConstants.DATE, getGMTTime(new Date()));
             }
 
+            final AtomicReference<String> stringToSign = new AtomicReference<>();
             try {
-                stringToSign = this.factory.buildStringToSign(request);
-                final String computedBase64Signature = this.factory.computeHmac256(stringToSign);
+                stringToSign.set(this.factory.buildStringToSign(request));
+                final String computedBase64Signature = this.factory.computeHmac256(stringToSign.get());
                 request.headers().set(Constants.HeaderConstants.AUTHORIZATION, "SharedKey " + this.factory.accountName + ":"  + computedBase64Signature);
             } catch (Exception e) {
                 return Single.error(e);
             }
 
-            Single<HttpResponse> response = nextPolicy.sendAsync(request);
+            Single<HttpResponse> response = requestPolicyNode.sendAsync(request);
             return response.doOnSuccess(new Action1<HttpResponse>() {
                 @Override
                 public void call(HttpResponse response) {
                     if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
-                        PipelineLogger.initialize(Level.SEVERE);
-                        if (PipelineLogger.shouldLog(Level.SEVERE)) {
-                            //PipelineLogger.error("===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", stringToSign);
+                        //PipelineLogger.initialize(Level.SEVERE);
+                        if (requestPolicyNode.shouldLogRequest(LogLevel.ERROR)) {
+                            String temp = stringToSign.get();
+                            requestPolicyNode.log(LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp);
                         }
                     }
                 }
@@ -100,16 +102,9 @@ public final class SharedKeyCredentials  implements CredentialsInterface {
         }
     }
 
-    /**
-     * Creates a new <code>RequestPolicy</code> object to sign requests.
-     * @param nextPolicy
-     *      A <code>RequestPolicy</code> to execute before and after signing the request.
-     * @return
-     *      A <code>RequestPolicy</code> which includes the signing policy.
-     */
     @Override
-    public RequestPolicy create(RequestPolicy nextPolicy) {
-        return new SharedKeyCredentialsPolicy(nextPolicy, this);
+    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
+        return new SharedKeyCredentialsPolicy(requestPolicyNode, this);
     }
 
     /**
