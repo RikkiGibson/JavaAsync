@@ -11,7 +11,6 @@ import com.microsoft.rest.v2.policy.RequestPolicy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import org.apache.commons.lang3.StringUtils;
-//import org.apache.log4j.Level;
 import rx.Single;
 import rx.functions.Action1;
 
@@ -91,7 +90,6 @@ public final class SharedKeyCredentials implements CredentialsInterface {
                 @Override
                 public void call(HttpResponse response) {
                     if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
-                        //PipelineLogger.initialize(Level.SEVERE);
                         if (requestPolicyNode.shouldLogRequest(LogLevel.ERROR)) {
                             String temp = stringToSign.get();
                             requestPolicyNode.log(LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp);
@@ -146,7 +144,6 @@ public final class SharedKeyCredentials implements CredentialsInterface {
     }
 
     private String getAdditionalXmsHeaders(final HttpHeaders headers) {
-
         // Add only headers that begin with 'x-ms-'
         final ArrayList<String> xmsHeaderNameArray = new ArrayList<String>();
         for (HttpHeader header : headers) {
@@ -217,14 +214,9 @@ public final class SharedKeyCredentials implements CredentialsInterface {
 
             // concatenation of the query param name + colon + join of query param values which are commas separated
             canonicalizedResource.append("\n" + queryParamName.toLowerCase(Locale.US) + ":" + StringUtils.join(",", queryParamValues));
-
-            // if not the last query param append a newline character
-//            if (i != queryParamNames.size() - 1) {
-//                canonicalizedResource.append('\n');
-//            }
         }
 
-        // append to main stringbuilder the join of completed params with new line
+        // append to main string builder the join of completed params with new line
         return canonicalizedResource.toString();
     }
 

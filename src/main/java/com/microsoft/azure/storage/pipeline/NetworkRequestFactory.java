@@ -9,15 +9,11 @@ import rx.Single;
 
 final class NetworkRequestFactory implements IRequestPolicyFactory {
 
-    private static HttpClient.Factory httpClientFactory;
+    private static HttpClient.Factory httpClientFactory = new NettyClient.Factory();
 
     private final HttpClient httpClient;
 
     NetworkRequestFactory(HttpClient.Configuration configuration) {
-        if (httpClientFactory == null) {
-            httpClientFactory = new NettyClient.Factory();
-        }
-
         this.httpClient = httpClientFactory.create(configuration);
     }
 

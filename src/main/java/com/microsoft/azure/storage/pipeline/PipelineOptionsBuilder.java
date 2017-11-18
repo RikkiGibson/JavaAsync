@@ -8,7 +8,12 @@ public final class PipelineOptionsBuilder {
 
     private ILogRequest logRequest;
 
-    public PipelineOptionsBuilder(){
+    PipelineOptionsBuilder() {
+    }
+
+    PipelineOptionsBuilder(IRequestPolicyFactory httpSender, ILogRequest logRequest) {
+        this.httpSender = httpSender;
+        this.logRequest = logRequest;
     }
 
     public PipelineOptionsBuilder withNewHttpSender(IRequestPolicyFactory httpSender) {

@@ -85,7 +85,7 @@ public final class RequestLoggingFactory implements IRequestPolicyFactory {
 //                            }
 //                            if (PipelineLogger.shouldLog(Level.INFO)) {
 //                                RequestLoggingFactory loggingFactory = factory.get();
-//                                long requestEndTime = System.currentTimeMillis();
+//                                long requestEndTime = System.nanoTime();
 //                                long requestDuration = requestEndTime - requestStartTime.get();
 //                                long operationDuration = requestEndTime - factory.get().operationStartTime;
 //                                pipeline.log(Level.INFO, "Request try:'%d', request duration:'%d' ms, operation duration:'%d'", loggingFactory.tryCount, requestDuration, operationDuration);

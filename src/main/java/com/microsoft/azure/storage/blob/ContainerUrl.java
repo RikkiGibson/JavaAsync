@@ -4,28 +4,26 @@ import com.microsoft.azure.storage.StorageClient;
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.azure.storage.models.ContainerGetPropertiesHeaders;
 import com.microsoft.azure.storage.models.ServiceSetPropertiesHeaders;
+import com.microsoft.azure.storage.pipeline.Pipeline;
 import com.microsoft.rest.v2.RestClient;
 import com.microsoft.rest.v2.RestResponse;
 import rx.Single;
 import rx.functions.Func1;
 
-public final class ContainerUrl {
+import java.nio.channels.Pipe;
 
-    private final StorageClient storageClient;
+public final class ContainerUrl extends StorageUrl {
 
-    private final String containerUrl;
-
-    public ContainerUrl(String containerUrl, RestClient restClient) {
-        this.storageClient = new StorageClientImpl(restClient);
-        this.containerUrl = containerUrl;
+    public ContainerUrl(String url, Pipeline pipeline) {
+        super(url, pipeline);
     }
 
-    public Single<Void> createContainerAsync() {
-        return this.storageClient.containers().createAsync(this.containerUrl);
+    public Single<Void> createAsync(ContainerAccessConditions containerAccessConditions) {
+        return this.storageClient.containers().createAsync(this.url, containerAccessConditions);
     }
 
-    public Single<ContainerGetPropertiesHeaders> headContainerAsync() {
-        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync(this.containerUrl);
+    public Single<ContainerGetPropertiesHeaders> getPropertiesAndMetadataAsync() {
+        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync(this.url);
 
         return restResponse.map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, ContainerGetPropertiesHeaders>() {
             public ContainerGetPropertiesHeaders call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) {
@@ -34,11 +32,15 @@ public final class ContainerUrl {
         });
     }
 
-    public Single<Void> deleteContainerAsync() {
-        return this.storageClient.containers().deleteAsync(this.containerUrl);
+    public Single<Void> deleteAsync() {
+        return this.storageClient.containers().deleteAsync(this.url);
     }
 
-    public BlockBlobUrl newBlockBlobUrl(String blobName) {
-        return new BlockBlobUrl(this.containerUrl, blobName, this.storageClient.restClient());
+    public BlockBlobUrl createBlockBlobUrl(String blobName) {
+        return new BlockBlobUrl(this.url, blobName, this.storageClient.restClient());
+    }
+
+    public ContainerUrl withPipeline(Pipeline pipeline) {
+        return new ContainerUrl(this.url, pipeline);
     }
 }

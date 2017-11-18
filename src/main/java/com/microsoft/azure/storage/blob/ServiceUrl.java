@@ -1,28 +1,24 @@
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.StorageClient;
-import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.azure.storage.models.ContainerEnumerationResults;
-import com.microsoft.rest.v2.RestClient;
+import com.microsoft.azure.storage.pipeline.Pipeline;
 import rx.Single;
 
-public final class ServiceUrl {
+public final class ServiceUrl extends StorageUrl {
 
-    private final StorageClient storageClient;
-
-    private final String url;
-
-    public ServiceUrl(String url, RestClient restClient) {
-        this.url = url;
-        this.storageClient = new StorageClientImpl(restClient);
+    public ServiceUrl(String url, Pipeline pipeline) {
+        super(url, pipeline);
     }
 
-
     public ContainerUrl createContainerUrl(String containerName) {
-        return new ContainerUrl(url + "/" + containerName, this.storageClient.restClient());
+        return new ContainerUrl(this.url + "/" + containerName, this.storageClient);
     }
 
     public Single<ContainerEnumerationResults> listConatinersAsync() {
-        return this.storageClient.services().listContainersAsync();
+        return this.storageClient.services().listContainersAsync(this.url);
+    }
+
+    public ServiceUrl withPipeline(Pipeline pipeline) {
+        return new ServiceUrl(this.url, pipeline);
     }
 }

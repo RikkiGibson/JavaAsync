@@ -3,6 +3,7 @@ package com.microsoft.azure.storage.blob;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -76,6 +77,7 @@ public class Utility {
                 return s1.compareTo(s2);
             }
         });
+
         if (Utility.isNullOrEmpty(parseString)) {
             return retVals;
         }
@@ -104,19 +106,33 @@ public class Utility {
                 retVals.put(key, keyValues);
             }
             else {
-                // TODO: Need to see if we can remove
-                throw new RuntimeException("Jeff made me do this!!! :((((");
-//                // map contains this key already so append
-//                final String[] newValues = new String[keyValues.length + 1];
-//                for (int j = 0; j < keyValues.length; j++) {
-//                    newValues[j] = keyValues[j];
-//                }
-//
-//                newValues[newValues.length] = value;
+                // map contains this key already so append
+                final String[] newValues = new String[keyValues.length + 1];
+                for (int j = 0; j < keyValues.length; j++) {
+                    newValues[j] = keyValues[j];
+                }
+
+                newValues[newValues.length - 1] = value;
             }
         }
 
         return retVals;
+    }
+
+    /**
+     * Asserts that a value is not <code>null</code>.
+     *
+     * @param param
+     *            A <code>String</code> that represents the name of the parameter, which becomes the exception message
+     *            text if the <code>value</code> parameter is <code>null</code>.
+     * @param value
+     *            An <code>Object</code> object that represents the value of the specified parameter. This is the value
+     *            being asserted as not <code>null</code>.
+     */
+    public static void assertNotNull(final String param, final Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException(String.format(Utility.LOCALE_US, SR.ARGUMENT_NULL_OR_EMPTY, param));
+        }
     }
 
     /**
@@ -187,6 +203,84 @@ public class Utility {
         }
         else {
             return URLDecoder.decode(stringToDecode, Constants.UTF8_CHARSET);
+        }
+    }
+
+    /**
+     * Stores a reference to the UTC time zone.
+     */
+    public static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
+
+    /**
+     * Stores a reference to the date/time pattern with the greatest precision Java.util.Date is capable of expressing.
+     */
+    private static final String MAX_PRECISION_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+
+    /**
+     * Stores a reference to the ISO8601 date/time pattern.
+     */
+    private static final String ISO8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+
+    /**
+     * Stores a reference to the ISO8601 date/time pattern.
+     */
+    private static final String ISO8601_PATTERN_NO_SECONDS = "yyyy-MM-dd'T'HH:mm'Z'";
+
+    /**
+     * Stores a reference to the Java version of ISO8601_LONG date/time pattern.  The full version cannot be used
+     * because Java Dates have millisecond precision.
+     */
+    private static final String JAVA_ISO8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    /**
+     * The length of a datestring that matches the MAX_PRECISION_PATTERN.
+     */
+    private static final int MAX_PRECISION_DATESTRING_LENGTH = MAX_PRECISION_PATTERN.replaceAll("'", "").length();
+
+    /**
+     * Given a String representing a date in a form of the ISO8601 pattern, generates a Date representing it
+     * with up to millisecond precision.
+     *
+     * @param dateString
+     *              the <code>String</code> to be interpreted as a <code>Date</code>
+     *
+     * @return the corresponding <code>Date</code> object
+     */
+    public static Date parseDate(String dateString) {
+        String pattern = MAX_PRECISION_PATTERN;
+        switch(dateString.length()) {
+            case 28: // "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'"-> [2012-01-04T23:21:59.1234567Z] length = 28
+            case 27: // "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"-> [2012-01-04T23:21:59.123456Z] length = 27
+            case 26: // "yyyy-MM-dd'T'HH:mm:ss.SSSSS'Z'"-> [2012-01-04T23:21:59.12345Z] length = 26
+            case 25: // "yyyy-MM-dd'T'HH:mm:ss.SSSS'Z'"-> [2012-01-04T23:21:59.1234Z] length = 25
+            case 24: // "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"-> [2012-01-04T23:21:59.123Z] length = 24
+                dateString = dateString.substring(0, MAX_PRECISION_DATESTRING_LENGTH);
+                break;
+            case 23: // "yyyy-MM-dd'T'HH:mm:ss.SS'Z'"-> [2012-01-04T23:21:59.12Z] length = 23
+                // SS is assumed to be milliseconds, so a trailing 0 is necessary
+                dateString = dateString.replace("Z", "0");
+                break;
+            case 22: // "yyyy-MM-dd'T'HH:mm:ss.S'Z'"-> [2012-01-04T23:21:59.1Z] length = 22
+                // S is assumed to be milliseconds, so trailing 0's are necessary
+                dateString = dateString.replace("Z", "00");
+                break;
+            case 20: // "yyyy-MM-dd'T'HH:mm:ss'Z'"-> [2012-01-04T23:21:59Z] length = 20
+                pattern = Utility.ISO8601_PATTERN;
+                break;
+            case 17: // "yyyy-MM-dd'T'HH:mm'Z'"-> [2012-01-04T23:21Z] length = 17
+                pattern = Utility.ISO8601_PATTERN_NO_SECONDS;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(SR.INVALID_DATE_STRING, dateString));
+        }
+
+        final DateFormat format = new SimpleDateFormat(pattern, Utility.LOCALE_US);
+        format.setTimeZone(UTC_ZONE);
+        try {
+            return format.parse(dateString);
+        }
+        catch (final ParseException e) {
+            throw new IllegalArgumentException(String.format(SR.INVALID_DATE_STRING, dateString), e);
         }
     }
 }
