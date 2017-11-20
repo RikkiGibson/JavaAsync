@@ -119,22 +119,24 @@ public final class SharedKeyCredentials implements CredentialsInterface {
 
         // TODO: Change to String.join when Java 7 support is removed
         return StringUtils.join(
-                "/n",
-                request.httpMethod(),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_ENCODING),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_LANGUAGE),
-                contentLength,
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_MD5),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_TYPE),
-                // x-ms-date header exists, so don't sign date header
-                Constants.EMPTY_STRING,
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_MODIFIED_SINCE),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_MATCH),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_NONE_MATCH),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_UNMODIFIED_SINCE),
-                getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.RANGE),
-                getAdditionalXmsHeaders(httpHeaders),
-                getCanonicalizedResource(request.url())
+                new String[]{
+                        request.httpMethod(),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_ENCODING),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_LANGUAGE),
+                        contentLength,
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_MD5),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.CONTENT_TYPE),
+                        // x-ms-date header exists, so don't sign date header
+                        Constants.EMPTY_STRING,
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_MODIFIED_SINCE),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_MATCH),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_NONE_MATCH),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.IF_UNMODIFIED_SINCE),
+                        getStandardHeaderValue(httpHeaders, Constants.HeaderConstants.RANGE),
+                        getAdditionalXmsHeaders(httpHeaders),
+                        getCanonicalizedResource(request.url())
+                },
+                '\n'
         );
     }
 
@@ -213,7 +215,7 @@ public final class SharedKeyCredentials implements CredentialsInterface {
             Collections.sort(queryParamValues);
 
             // concatenation of the query param name + colon + join of query param values which are commas separated
-            canonicalizedResource.append("\n" + queryParamName.toLowerCase(Locale.US) + ":" + StringUtils.join(",", queryParamValues));
+            canonicalizedResource.append("\n" + queryParamName.toLowerCase(Locale.US) + ":" + StringUtils.join(queryParamValues, ','));
         }
 
         // append to main string builder the join of completed params with new line
@@ -250,7 +252,7 @@ public final class SharedKeyCredentials implements CredentialsInterface {
      * @throws InvalidKeyException
      *      If the key is not a valid Base64-encoded string.
      */
-    private synchronized String computeHmac256(final String stringToSign) throws InvalidKeyException {
+    synchronized String computeHmac256(final String stringToSign) throws InvalidKeyException {
         byte[] utf8Bytes = null;
         try {
             utf8Bytes = stringToSign.getBytes(Constants.UTF8_CHARSET);

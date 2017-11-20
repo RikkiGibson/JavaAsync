@@ -11,7 +11,7 @@ public final class ServiceUrl extends StorageUrl {
     }
 
     public ContainerUrl createContainerUrl(String containerName) {
-        return new ContainerUrl(this.url + "/" + containerName, this.storageClient);
+        return new ContainerUrl(this.url + "/" + containerName, this.storageClient.pipeline());
     }
 
     public Single<ContainerEnumerationResults> listConatinersAsync() {

@@ -1,5 +1,8 @@
 package com.microsoft.azure.storage.blob;
 
+import com.ctc.wstx.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -58,5 +61,54 @@ public final class BlobURLParts {
 
     public Map<String, String[]> getUnparsedParameters() {
         return unparsedParameters;
+    }
+
+    public String toURL() {
+        StringBuilder urlBuilder = new StringBuilder();
+
+        if (this.containerName != null) {
+            urlBuilder.append('/' + this.containerName);
+            if (this.blobName != null) {
+                urlBuilder.append('/' + this.blobName);
+            }
+        }
+
+        boolean isFirst = true;
+
+        for(Map.Entry<String, String[]> entry : this.unparsedParameters.entrySet()) {
+            if (isFirst) {
+                isFirst = false;
+            }
+            else {
+                urlBuilder.append('&');
+            }
+
+            urlBuilder.append(entry.getKey() + '=' + StringUtils.join(entry.getValue(), ','));
+        }
+
+        if (this.snapshot != null) {
+            if (isFirst) {
+                isFirst = false;
+            }
+            else {
+                urlBuilder.append('&');
+            }
+
+            urlBuilder.append("snapshot=" + Utility.getGMTTime(this.snapshot));
+        }
+
+        String sasEncoding = this.sasQueryParameters.encode();
+        if (!Utility.isNullOrEmpty(sasEncoding)) {
+            if (isFirst) {
+                isFirst = false;
+            }
+            else {
+                urlBuilder.append('&');
+            }
+
+            urlBuilder.append(sasEncoding);
+        }
+
+        return urlBuilder.toString();
     }
 }

@@ -283,4 +283,25 @@ public class Utility {
             throw new IllegalArgumentException(String.format(SR.INVALID_DATE_STRING, dateString), e);
         }
     }
+
+    /**
+     * Returns the UTC date/time for the specified value using the ISO8601 pattern.
+     *
+     * @param value
+     *            A <code>Date</code> object that represents the date to convert to UTC date/time in the ISO8601
+     *            pattern. If this value is <code>null</code>, this method returns an empty string.
+     *
+     * @return A <code>String</code> that represents the UTC date/time for the specified value using the ISO8601
+     *         pattern, or an empty string if <code>value</code> is <code>null</code>.
+     */
+    public static String getUTCTimeOrEmpty(final Date value) {
+        if (value == null) {
+            return Constants.EMPTY_STRING;
+        }
+
+        final DateFormat iso8601Format = new SimpleDateFormat(ISO8601_PATTERN, LOCALE_US);
+        iso8601Format.setTimeZone(UTC_ZONE);
+
+        return iso8601Format.format(value);
+    }
 }

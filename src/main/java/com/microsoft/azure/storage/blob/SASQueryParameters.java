@@ -1,9 +1,12 @@
 package com.microsoft.azure.storage.blob;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
-public class SASQueryParameters {
+public final class SASQueryParameters {
 
     private final String version;
 
@@ -27,6 +30,8 @@ public class SASQueryParameters {
 
     private final String signature;
 
+    private String encoding;
+
     public SASQueryParameters(Map<String, String[]> queryParamsMap, boolean removeSASParams) {
         String[] queryValue = queryParamsMap.get("sv");
         if (queryValue != null) {
@@ -34,6 +39,9 @@ public class SASQueryParameters {
                 queryParamsMap.remove("sv");
             }
             this.version = queryValue[0];
+        }
+        else {
+            this.version = null;
         }
 
         queryValue = queryParamsMap.get("ss");
@@ -43,6 +51,9 @@ public class SASQueryParameters {
             }
             this.services = queryValue[0];
         }
+        else {
+            this.services = null;
+        }
 
         queryValue = queryParamsMap.get("srt");
         if (queryValue != null) {
@@ -50,6 +61,9 @@ public class SASQueryParameters {
                 queryParamsMap.remove("srt");
             }
             this.resourceTypes = queryValue[0];
+        }
+        else {
+            this.resourceTypes = null;
         }
 
         queryValue = queryParamsMap.get("spr");
@@ -59,6 +73,9 @@ public class SASQueryParameters {
             }
             this.protocol = queryValue[0];
         }
+        else {
+            this.protocol = null;
+        }
 
         queryValue = queryParamsMap.get("st");
         if (queryValue != null) {
@@ -66,6 +83,9 @@ public class SASQueryParameters {
                 queryParamsMap.remove("st");
             }
             this.startTime = Utility.parseDate(queryValue[0]);
+        }
+        else {
+            this.startTime = null;
         }
 
         queryValue = queryParamsMap.get("se");
@@ -75,6 +95,9 @@ public class SASQueryParameters {
             }
             this.expiryTime = Utility.parseDate(queryValue[0]);
         }
+        else {
+            this.expiryTime = null;
+        }
 
         queryValue = queryParamsMap.get("sip");
         if (queryValue != null) {
@@ -82,6 +105,9 @@ public class SASQueryParameters {
                 queryParamsMap.remove("sip");
             }
             this.ipRange = new IPRange(queryValue[0]);
+        }
+        else {
+            this.ipRange = null;
         }
 
         queryValue = queryParamsMap.get("si");
@@ -91,6 +117,9 @@ public class SASQueryParameters {
             }
             this.identifier = queryValue[0];
         }
+        else {
+            this.identifier = null;
+        }
 
         queryValue = queryParamsMap.get("sr");
         if (queryValue != null) {
@@ -98,6 +127,9 @@ public class SASQueryParameters {
                 queryParamsMap.remove("sr");
             }
             this.resource = queryValue[0];
+        }
+        else {
+            this.resource = null;
         }
 
         queryValue = queryParamsMap.get("sp");
@@ -107,6 +139,9 @@ public class SASQueryParameters {
             }
             this.permissions = queryValue[0];
         }
+        else {
+            this.permissions = null;
+        }
 
         queryValue = queryParamsMap.get("sig");
         if (queryValue != null) {
@@ -114,6 +149,9 @@ public class SASQueryParameters {
                 queryParamsMap.remove("sig");
             }
             this.signature = queryValue[0];
+        }
+        else {
+            this.signature = null;
         }
     }
 
@@ -184,5 +222,24 @@ public class SASQueryParameters {
 
     public String getSignature() {
         return signature;
+    }
+
+    public String encode() {
+        return StringUtils.join(
+                new String[]{
+                        "sv=" + this.version,
+                        "ss=" + this.services,
+                        "srt" + this.resourceTypes,
+                        "spr" + this.protocol,
+                        "st=" + Utility.getGMTTime(this.startTime),
+                        "se=" + Utility.getGMTTime(this.expiryTime),
+                        "sip=" + this.ipRange.toString(),
+                        "si=" + this.identifier,
+                        "sr=" + this.resource,
+                        "sp=" + this.permissions,
+                        "sig=" + this.signature
+                },
+                '&'
+        );
     }
 }
