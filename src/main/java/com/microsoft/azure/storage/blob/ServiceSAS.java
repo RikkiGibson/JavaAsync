@@ -24,10 +24,11 @@ public final class ServiceSAS extends BaseSAS {
 
     private final String contentType;
 
-    public ServiceSAS(String version, String protocol, Date startTime, Date expiryTime, String permissions,
+    public ServiceSAS(String version, SASProtocol protocol, Date startTime, Date expiryTime, EnumSet permissions,
                       IPRange ipRange, String containerName, String blobName, String identifier, String cacheControl,
                       String contentDisposition, String contentEncoding, String contentLanguage, String contentType) {
-        super(version, protocol, startTime, expiryTime, permissions, ipRange);
+        //permissions.getClass();
+        super(version, protocol, startTime, expiryTime, ContainerSASPermission.permissionsToString(permissions), ipRange);
         this.containerName = containerName;
         this.blobName = blobName;
         this.identifier = identifier;
@@ -49,30 +50,15 @@ public final class ServiceSAS extends BaseSAS {
             resource = "b";
         }
 
-        String startTimeString = Constants.EMPTY_STRING;
-        if (super.startTime != null) {
-            startTimeString = Utility.getGMTTime(super.startTime);
-        }
-
-        String expiryTimeString = Constants.EMPTY_STRING;
-        if (super.expiryTime != null) {
-            expiryTimeString = Utility.getGMTTime(super.expiryTime);
-        }
-
-        String ipRangeString = Constants.EMPTY_STRING;
-        if (super.ipRange != null) {
-            ipRangeString = super.ipRange.toString();
-        }
-
         String stringToSign = StringUtils.join(
                 new String[]{
                         super.permissions,
-                        startTimeString,
-                        expiryTimeString,
+                        Utility.getUTCTimeOrEmpty(super.startTime),
+                        Utility.getUTCTimeOrEmpty(super.expiryTime),
                         getCanonicalName(sharedKeyCredentials.getAccountName()),
                         this.identifier,
-                        ipRangeString,
-                        super.protocol,
+                        super.getIPRangeAsString(),
+                        super.protocol.toString(),
                         super.version,
                         this.cacheControl,
                         this.contentDisposition,
@@ -85,80 +71,8 @@ public final class ServiceSAS extends BaseSAS {
 
         String signature = sharedKeyCredentials.computeHmac256(stringToSign);
 
-        return new SASQueryParameters(super.version, null, null, super.protocol, super.startTime,
+        return new SASQueryParameters(super.version, null, null, super.protocol.toString(), super.startTime,
                 super.expiryTime, super.ipRange, this.identifier, resource, super.permissions, signature);
-    }
-
-    public String blobSasPermissionsToString(EnumSet<BlobSASPermissions> blobSASPermissions) {
-        if (blobSASPermissions == null) {
-            return Constants.EMPTY_STRING;
-        }
-
-        // The service supports a fixed order => racwdl
-        final StringBuilder builder = new StringBuilder();
-
-        if (blobSASPermissions.contains(BlobSASPermissions.READ)) {
-            builder.append("r");
-        }
-
-        if (blobSASPermissions.contains(BlobSASPermissions.ADD)) {
-            builder.append("a");
-        }
-
-        if (blobSASPermissions.contains(BlobSASPermissions.CREATE)) {
-            builder.append("c");
-        }
-
-        if (blobSASPermissions.contains(BlobSASPermissions.WRITE)) {
-            builder.append("w");
-        }
-
-        if (blobSASPermissions.contains(BlobSASPermissions.DELETE)) {
-            builder.append("d");
-        }
-
-        return builder.toString();
-    }
-
-    /**
-     * Converts this policy's permissions to a string.
-     *
-     * @return A <code>String</code> that represents the shared access permissions in the "racwdl" format,
-     *         which is described at {@link #setPermissionsFromString(String)}.
-     */
-    public String containerSASPermissionsToString(EnumSet<ContainerSASPermissions> containerSASPermissions) {
-        if (containerSASPermissions == null) {
-            return Constants.EMPTY_STRING;
-        }
-
-        // The service supports a fixed order => racwdl
-        final StringBuilder builder = new StringBuilder();
-
-        if (containerSASPermissions.contains(ContainerSASPermissions.READ)) {
-            builder.append("r");
-        }
-
-        if (containerSASPermissions.contains(ContainerSASPermissions.ADD)) {
-            builder.append("a");
-        }
-
-        if (containerSASPermissions.contains(ContainerSASPermissions.CREATE)) {
-            builder.append("c");
-        }
-
-        if (containerSASPermissions.contains(ContainerSASPermissions.WRITE)) {
-            builder.append("w");
-        }
-
-        if (containerSASPermissions.contains(ContainerSASPermissions.DELETE)) {
-            builder.append("d");
-        }
-
-        if (containerSASPermissions.contains(ContainerSASPermissions.LIST)) {
-            builder.append("d");
-        }
-
-        return builder.toString();
     }
 
     private String getCanonicalName(String accountName) {
