@@ -1,3 +1,17 @@
+/**
+ * Copyright Microsoft Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.microsoft.azure.storage.blob;
 
 import java.util.EnumSet;
@@ -49,12 +63,12 @@ public enum ContainerSASPermission {
     }
 
     /**
-     * Converts the given permissions to a <code>String</code>.
+     * Converts the given permissions to a {@code String}.
      *
      * @param permissions
-     *            The permissions to convert to a <code>String</code>.
+     *            The permissions to convert to a {@code String}.
      *
-     * @return A <code>String</code> which represents the <code>ContainerSASPermission</code>.
+     * @return A {@code String} which represents the <code>ContainerSASPermission</code>.
      */
     static String permissionsToString(EnumSet<ContainerSASPermission> permissions) {
         if (permissions == null) {
@@ -95,8 +109,8 @@ public enum ContainerSASPermission {
      * Creates an {@link EnumSet<ContainerSASPermission>} from the specified permissions string.
      *
      * @param permString
-     *            A <code>String</code> which represents the <code>ContainerSASPermission</code>.
-     * @return A {@link EnumSet<ContainerSASPermission>} generated from the given <code>String</code>.
+     *            A {@code String} which represents the <code>ContainerSASPermission</code>.
+     * @return A {@link EnumSet<ContainerSASPermission>} generated from the given {@code String}.
      */
     static EnumSet<ContainerSASPermission> permissionsFromString(String permString) {
         EnumSet<ContainerSASPermission> permissions = EnumSet.noneOf(ContainerSASPermission.class);

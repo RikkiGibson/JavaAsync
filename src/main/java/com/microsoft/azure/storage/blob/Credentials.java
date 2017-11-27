@@ -14,16 +14,12 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.microsoft.azure.storage.pipeline.IRequestPolicyFactory;
 
 /**
- * Constains metadata key/value pairs
+ * Credentials represent any credential type
+ * it is used to create a credential policy Factory.
  */
-public final class Metadata extends HashMap<String, String> {
+public interface Credentials extends IRequestPolicyFactory {
 
-    // TODO Add other constructors
-    public Metadata() {
-        super();
-    }
 }

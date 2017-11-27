@@ -1,3 +1,17 @@
+/**
+ * Copyright Microsoft Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.microsoft.azure.storage.blob;
 
 import java.util.EnumSet;
@@ -37,19 +51,19 @@ public enum BlobSASPermission {
      * Create a <code>BlobSASPermissions</code>.
      *
      * @param c
-     *            The <code>char</code> which represents this permission.
+     *      The <code>char</code> which represents this permission.
      */
     private BlobSASPermission(char c) {
         this.value = c;
     }
 
     /**
-     * Converts the given permissions to a <code>String</code>.
+     * Converts the given permissions to a {@code String}.
      *
      * @param permissions
-     *            The permissions to convert to a <code>String</code>.
+     *            The permissions to convert to a {@code String}.
      *
-     * @return A <code>String</code> which represents the <code>BlobSASPermission</code>.
+     * @return A {@code String} which represents the <code>BlobSASPermission</code>.
      */
     static String permissionsToString(EnumSet<BlobSASPermission> permissions) {
         if (permissions == null) {
@@ -86,8 +100,8 @@ public enum BlobSASPermission {
      * Creates an {@link EnumSet<BlobSASPermission>} from the specified permissions string.
      *
      * @param permString
-     *            A <code>String</code> which represents the <code>BlobSASPermission</code>.
-     * @return A {@link EnumSet<BlobSASPermission>} generated from the given <code>String</code>.
+     *            A {@code String} which represents the <code>BlobSASPermission</code>.
+     * @return A {@link EnumSet<BlobSASPermission>} generated from the given {@code String}.
      */
     static EnumSet<BlobSASPermission> permissionsFromString(String permString) {
         EnumSet<BlobSASPermission> permissions = EnumSet.noneOf(BlobSASPermission.class);

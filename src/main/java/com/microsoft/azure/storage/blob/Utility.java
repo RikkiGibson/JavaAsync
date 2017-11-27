@@ -1,3 +1,17 @@
+/**
+ * Copyright Microsoft Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.microsoft.azure.storage.blob;
 
 import java.io.UnsupportedEncodingException;
@@ -41,7 +55,7 @@ public class Utility {
     /**
      * Returns the current GMT date/time String using the RFC1123 pattern.
      *
-     * @return A <code>String</code> that represents the current GMT date/time using the RFC1123 pattern.
+     * @return A {@code String} that represents the current GMT date/time using the RFC1123 pattern.
      */
     public static String getGMTTime() {
         return getGMTTime(new Date());
@@ -54,7 +68,7 @@ public class Utility {
      *            A <code>Date</code> object that represents the date to convert to GMT date/time in the RFC1123
      *            pattern.
      *
-     * @return A <code>String</code> that represents the GMT date/time for the specified value using the RFC1123
+     * @return A {@code String} that represents the GMT date/time for the specified value using the RFC1123
      *         pattern.
      */
     public static String getGMTTime(final Date date) {
@@ -123,7 +137,7 @@ public class Utility {
      * Asserts that a value is not <code>null</code>.
      *
      * @param param
-     *            A <code>String</code> that represents the name of the parameter, which becomes the exception message
+     *            A {@code String} that represents the name of the parameter, which becomes the exception message
      *            text if the <code>value</code> parameter is <code>null</code>.
      * @param value
      *            An <code>Object</code> object that represents the value of the specified parameter. This is the value
@@ -139,7 +153,7 @@ public class Utility {
      * Returns a value that indicates whether the specified string is <code>null</code> or empty.
      *
      * @param value
-     *            A <code>String</code> being examined for <code>null</code> or empty.
+     *            A {@code String} being examined for <code>null</code> or empty.
      *
      * @return <code>true</code> if the specified value is <code>null</code> or empty; otherwise, <code>false</code>
      */
@@ -151,7 +165,7 @@ public class Utility {
      * Returns a value that indicates whether the specified string is <code>null</code>, empty, or whitespace.
      *
      * @param value
-     *            A <code>String</code> being examined for <code>null</code>, empty, or whitespace.
+     *            A {@code String} being examined for <code>null</code>, empty, or whitespace.
      *
      * @return <code>true</code> if the specified value is <code>null</code>, empty, or whitespace; otherwise,
      *         <code>false</code>
@@ -165,9 +179,9 @@ public class Utility {
      * than replacing it with a space character.
      *
      * @param stringToDecode
-     *            A <code>String</code> that represents the string to decode.
+     *            A {@code String} that represents the string to decode.
      *
-     * @return A <code>String</code> that represents the decoded string.
+     * @return A {@code String} that represents the decoded string.
      *
      * @throws UnsupportedEncodingException
      *             If a storage service error occurred.
@@ -242,7 +256,7 @@ public class Utility {
      * with up to millisecond precision.
      *
      * @param dateString
-     *              the <code>String</code> to be interpreted as a <code>Date</code>
+     *              the {@code String} to be interpreted as a <code>Date</code>
      *
      * @return the corresponding <code>Date</code> object
      */
@@ -291,7 +305,7 @@ public class Utility {
      *            A <code>Date</code> object that represents the date to convert to UTC date/time in the ISO8601
      *            pattern. If this value is <code>null</code>, this method returns an empty string.
      *
-     * @return A <code>String</code> that represents the UTC date/time for the specified value using the ISO8601
+     * @return A {@code String} that represents the UTC date/time for the specified value using the ISO8601
      *         pattern, or an empty string if <code>value</code> is <code>null</code>.
      */
     public static String getUTCTimeOrEmpty(final Date value) {

@@ -1,3 +1,17 @@
+/**
+ * Copyright Microsoft Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.pipeline.LogLevel;
@@ -25,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
-public final class SharedKeyCredentials implements CredentialsInterface {
+public final class SharedKeyCredentials implements Credentials {
 
     private final String accountName;
 
@@ -64,7 +78,7 @@ public final class SharedKeyCredentials implements CredentialsInterface {
         }
 
         /**
-         * Signed the request
+         * Sign the request
          * @param request
          *      the request to sign
          * @return
@@ -229,9 +243,9 @@ public final class SharedKeyCredentials implements CredentialsInterface {
      * @param httpHeaders
      *      A <code>HttpHeaders</code> object that represents the headers for the request.
      * @param headerName
-     *      A <code>String</code> that represents the name of the header being requested.
+     *      A {@code String} that represents the name of the header being requested.
      *
-     * @return A <code>String</code> that represents the header value, or <code>null</code> if there is no corresponding
+     * @return A {@code String} that represents the header value, or <code>null</code> if there is no corresponding
      *      header value for <code>headerName</code>.
      */
     private String getStandardHeaderValue(final HttpHeaders httpHeaders, final String headerName) {
@@ -247,7 +261,7 @@ public final class SharedKeyCredentials implements CredentialsInterface {
      *      The UTF-8-encoded string to sign.
      *
      * @return
-     *      A <code>String</code> that contains the HMAC-SHA256-encoded signature.
+     *      A {@code String} that contains the HMAC-SHA256-encoded signature.
      *
      * @throws InvalidKeyException
      *      If the key is not a valid Base64-encoded string.

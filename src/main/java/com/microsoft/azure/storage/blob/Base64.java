@@ -1,4 +1,3 @@
-package com.microsoft.azure.storage.blob;
 /**
  * Copyright Microsoft Corporation
  *
@@ -13,6 +12,7 @@ package com.microsoft.azure.storage.blob;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.microsoft.azure.storage.blob;
 
 /**
  * RESERVED FOR INTERNAL USE. Provides Base64 encoding, decoding, and validation functionality.
@@ -52,7 +52,7 @@ public final class Base64 {
      * Decodes a given Base64 string into its corresponding byte array.
      *
      * @param data
-     *            the Base64 string, as a <code>String</code> object, to decode
+     *            the Base64 string, as a {@code String} object, to decode
      *
      * @return the corresponding decoded byte array
      * @throws IllegalArgumentException
@@ -85,7 +85,7 @@ public final class Base64 {
 
             if (char1 < 0 || char2 < 0 || char3 == -1 || char4 == -1) {
                 // invalid character(-1), or bad padding (-2)
-                //throw new IllegalArgumentException(SR.STRING_NOT_VALID);
+                throw new IllegalArgumentException(SR.STRING_NOT_VALID);
             }
 
             int tVal = char1 << 18;
@@ -119,7 +119,7 @@ public final class Base64 {
      * Decodes a given Base64 string into its corresponding byte array.
      *
      * @param data
-     *            the Base64 string, as a <code>String</code> object, to decode
+     *            the Base64 string, as a {@code String} object, to decode
      *
      * @return the corresponding decoded byte array
      * @throws IllegalArgumentException
@@ -148,7 +148,7 @@ public final class Base64 {
 
             if (char1 < 0 || char2 < 0 || char3 == -1 || char4 == -1) {
                 // invalid character(-1), or bad padding (-2)
-                //throw new IllegalArgumentException(SR.STRING_NOT_VALID);
+                throw new IllegalArgumentException(SR.STRING_NOT_VALID);
             }
 
             int tVal = char1 << 18;
@@ -183,7 +183,7 @@ public final class Base64 {
      *
      * @param data
      *            the byte array to encode
-     * @return the Base64-encoded string, as a <code>String</code> object
+     * @return the Base64-encoded string, as a {@code String} object
      */
     public static String encode(final byte[] data) {
         final StringBuilder builder = new StringBuilder();
@@ -234,7 +234,7 @@ public final class Base64 {
      *
      * @param data
      *            the byte array to encode
-     * @return the Base64-encoded string, as a <code>String</code> object
+     * @return the Base64-encoded string, as a {@code String} object
      */
     public static String encode(final Byte[] data) {
         final StringBuilder builder = new StringBuilder();
@@ -284,7 +284,7 @@ public final class Base64 {
      * Determines whether the given string contains only Base64 characters.
      *
      * @param data
-     *            the string, as a <code>String</code> object, to validate
+     *            the string, as a {@code String} object, to validate
      * @return <code>true</code> if <code>data</code> is a valid Base64 string, otherwise <code>false</code>
      */
     public static boolean validateIsBase64String(final String data) {
