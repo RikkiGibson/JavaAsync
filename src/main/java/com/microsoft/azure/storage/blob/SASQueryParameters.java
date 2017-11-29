@@ -319,25 +319,128 @@ public final class SASQueryParameters {
     }
 
     /**
-     * Encodes all 
+     * Encodes all SAS query parameters into a string that can be appended to a URL
      * @return
+     *  A {@code String} representing all SAS query parameters
      */
     public String encode() {
-        return StringUtils.join(
-                new String[]{
-                        "sv=" + this.version,
-                        "ss=" + this.services,
-                        "srt" + this.resourceTypes,
-                        "spr" + this.protocol,
-                        "st=" + Utility.getUTCTimeOrEmpty(this.startTime),
-                        "se=" + Utility.getUTCTimeOrEmpty(this.expiryTime),
-                        "sip=" + this.ipRange.toString(),
-                        "si=" + this.identifier,
-                        "sr=" + this.resource,
-                        "sp=" + this.permissions,
-                        "sig=" + this.signature
-                },
-                '&'
-        );
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        if (this.version != null) {
+            first = false;
+            sb.append("sv=" + this.version);
+        }
+
+        if (this.services != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("ss=" + this.services);
+        }
+
+        if (this.resourceTypes != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("srt=" + this.resourceTypes);
+        }
+
+        if (this.protocol != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("spr=" + this.protocol);
+        }
+
+        if (this.startTime != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("st=" + Utility.getUTCTimeOrEmpty(this.startTime));
+        }
+
+        if (this.expiryTime != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("se=" + Utility.getUTCTimeOrEmpty(this.expiryTime));
+        }
+
+        if (this.ipRange != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("sip=" + this.ipRange.toString());
+        }
+
+        if (this.identifier != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("si=" + this.identifier);
+        }
+
+        if (this.resource != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("sr=" + this.resource);
+        }
+
+        if (this.permissions != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("sp=" + this.permissions);
+        }
+
+        if (this.signature != null) {
+            if (first) {
+                first = false;
+            }
+            else {
+                sb.append('&');
+            }
+
+            sb.append("sig=" + this.signature);
+        }
+
+        return sb.toString();
     }
 }

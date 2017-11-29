@@ -19,10 +19,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 import java.util.Map;
 
-// A BlobURLParts object represents the components that make up an Azure Storage Container/Blob URL. You parse an
-// existing URL into its parts by calling NewBlobURLParts(). You construct a URL from parts by calling URL().
-// NOTE: Changing any SAS-related field requires computing a new SAS signature.
-// TODO consider changing to data types
+/**
+ * A BlobURLParts object represents the components that make up an Azure Storage Container/Blob URL. You parse an
+ * existing URL into its parts by calling NewBlobURLParts(). You construct a URL from parts by calling URL().
+ * NOTE: Changing any SAS-related field requires computing a new SAS signature.
+ */
 public final class BlobURLParts {
     private final String scheme;
 
@@ -38,6 +39,24 @@ public final class BlobURLParts {
 
     private final Map<String, String[]> unparsedParameters;
 
+    /**
+     * Creates a {@link BlobURLParts} object
+     * @param scheme
+     *      A {@code String} representing the scheme. Ex: "https://"
+     * @param host
+     *      A {@code String} representing the host. Ex: "account.blob.core.windows.net"
+     * @param containerName
+     *      A {@code String} representing the container name or {@code null}
+     * @param blobName
+     *      A {@code String} representing the blob name or {@code null}
+     * @param snapshot
+     *      A {@code java.util.Date} representing the snapshot time or {@code null}
+     * @param sasQueryParameters
+     *      A {@link SASQueryParameters} representing the SAS query parameters or {@code null}
+     * @param unparsedParameters
+     *      A {@code Map<String, String[]} representing query parameter vey value pairs aside from SAS parameters and
+     *      snapshot time or {@code null}
+     */
     public BlobURLParts(String scheme, String host, String containerName, String blobName, Date snapshot, SASQueryParameters sasQueryParameters, Map<String, String[]> unparsedParameters) {
         this.scheme = scheme;
         this.host = host;
@@ -48,34 +67,68 @@ public final class BlobURLParts {
         this.unparsedParameters = unparsedParameters;
     }
 
+    /**
+     * @return
+     *      A {@code String} representing the scheme. Ex: "https://"
+     */
     public String getScheme() {
         return scheme;
     }
 
+    /**
+     * @return
+     *      A {@code String} representing the host. Ex: "account.blob.core.windows.net"
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * @return
+     *      A {@code String} representing the container name or {@code null}
+     */
     public String getContainerName() {
         return containerName;
     }
 
+    /**
+     * @return
+     *      A {@code String} representing the blob name or {@code null}
+     */
     public String getBlobName() {
         return blobName;
     }
 
+    /**
+     * @return
+     *      A {@code java.util.Date} representing the snapshot time or {@code null}
+     */
     public Date getSnapshot() {
         return snapshot;
     }
 
+    /**
+     * @return
+     *      A {@link SASQueryParameters} representing the SAS query parameters or {@code null}
+     */
     public SASQueryParameters getSasQueryParameters() {
         return sasQueryParameters;
     }
 
+    /**
+     * @return
+     *      A {@code Map<String, String[]} representing query parameter vey value pairs aside from SAS parameters and
+     *      snapshot time or {@code null}
+     */
     public Map<String, String[]> getUnparsedParameters() {
         return unparsedParameters;
     }
 
+    /**
+     * Converts the blob URL parts to {@code String} representing a URL
+     * @return
+     *      A {@code String} representing a URL
+     */
     public String toURL() {
         StringBuilder urlBuilder = new StringBuilder();
 

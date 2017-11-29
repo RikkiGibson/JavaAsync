@@ -23,9 +23,9 @@ import rx.functions.Func1;
 /**
  * Represents a URL to the Azure Storage container allowing you to manipulate its blobs.
  */
-public final class ContainerUrl extends StorageUrl {
+public final class ContainerURL extends StorageUrl {
 
-    public ContainerUrl(String url, Pipeline pipeline) {
+    public ContainerURL(String url, Pipeline pipeline) {
         super(url, pipeline);
     }
 
@@ -66,7 +66,7 @@ public final class ContainerUrl extends StorageUrl {
 
     /**
      * Creates a new {@link BlockBlobUrl} object by concatenating the blobName to the end of
-     * ContainerUrl's URL. The new BlockBlobUrl uses the same request policy pipeline as the ContainerUrl.
+     * ContainerURL's URL. The new BlockBlobUrl uses the same request policy pipeline as the ContainerURL.
      * To change the pipeline, create the BlockBlobUrl and then call its WithPipeline method passing in the
      * desired pipeline object. Or, call this package's NewBlockBlobUrl instead of calling this object's
      * NewBlockBlobUrl method.
@@ -78,13 +78,13 @@ public final class ContainerUrl extends StorageUrl {
     }
 
     /**
-     * Creates a new {@link ContainerUrl} with the given pipeline.
+     * Creates a new {@link ContainerURL} with the given pipeline.
      * @param pipeline
      *      A {@link Pipeline} object to set.
      * @return
-     *      A {@link ContainerUrl} object with the given pipeline.
+     *      A {@link ContainerURL} object with the given pipeline.
      */
-    public ContainerUrl withPipeline(Pipeline pipeline) {
-        return new ContainerUrl(this.url, pipeline);
+    public ContainerURL withPipeline(Pipeline pipeline) {
+        return new ContainerURL(this.url, pipeline);
     }
 }
