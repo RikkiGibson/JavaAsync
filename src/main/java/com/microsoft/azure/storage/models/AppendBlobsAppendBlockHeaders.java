@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Defines headers for AppendBlock operation.
  */
-public class BlobsAppendBlockHeaders {
+public class AppendBlobsAppendBlockHeaders {
     /**
      * The ETag contains a value that you can use to perform operations
      * conditionally. If the request version is 2011-08-18 or newer, the ETag
@@ -32,7 +32,7 @@ public class BlobsAppendBlockHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * If the blob has an MD5 hash and this operation is to read the full blob,
@@ -91,9 +91,9 @@ public class BlobsAppendBlockHeaders {
      * Set the eTag value.
      *
      * @param eTag the eTag value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withETag(String eTag) {
+    public AppendBlobsAppendBlockHeaders withETag(String eTag) {
         this.eTag = eTag;
         return this;
     }
@@ -103,18 +103,25 @@ public class BlobsAppendBlockHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
      * Set the lastModified value.
      *
      * @param lastModified the lastModified value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public AppendBlobsAppendBlockHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 
@@ -131,9 +138,9 @@ public class BlobsAppendBlockHeaders {
      * Set the contentMD5 value.
      *
      * @param contentMD5 the contentMD5 value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withContentMD5(String contentMD5) {
+    public AppendBlobsAppendBlockHeaders withContentMD5(String contentMD5) {
         this.contentMD5 = contentMD5;
         return this;
     }
@@ -151,9 +158,9 @@ public class BlobsAppendBlockHeaders {
      * Set the requestId value.
      *
      * @param requestId the requestId value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withRequestId(String requestId) {
+    public AppendBlobsAppendBlockHeaders withRequestId(String requestId) {
         this.requestId = requestId;
         return this;
     }
@@ -171,9 +178,9 @@ public class BlobsAppendBlockHeaders {
      * Set the version value.
      *
      * @param version the version value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withVersion(String version) {
+    public AppendBlobsAppendBlockHeaders withVersion(String version) {
         this.version = version;
         return this;
     }
@@ -194,9 +201,9 @@ public class BlobsAppendBlockHeaders {
      * Set the dateProperty value.
      *
      * @param dateProperty the dateProperty value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withDateProperty(DateTime dateProperty) {
+    public AppendBlobsAppendBlockHeaders withDateProperty(DateTime dateProperty) {
         if (dateProperty == null) {
             this.dateProperty = null;
         } else {
@@ -218,9 +225,9 @@ public class BlobsAppendBlockHeaders {
      * Set the blobAppendOffset value.
      *
      * @param blobAppendOffset the blobAppendOffset value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withBlobAppendOffset(String blobAppendOffset) {
+    public AppendBlobsAppendBlockHeaders withBlobAppendOffset(String blobAppendOffset) {
         this.blobAppendOffset = blobAppendOffset;
         return this;
     }
@@ -238,9 +245,9 @@ public class BlobsAppendBlockHeaders {
      * Set the blobCommittedBlockCount value.
      *
      * @param blobCommittedBlockCount the blobCommittedBlockCount value to set
-     * @return the BlobsAppendBlockHeaders object itself.
+     * @return the AppendBlobsAppendBlockHeaders object itself.
      */
-    public BlobsAppendBlockHeaders withBlobCommittedBlockCount(String blobCommittedBlockCount) {
+    public AppendBlobsAppendBlockHeaders withBlobCommittedBlockCount(String blobCommittedBlockCount) {
         this.blobCommittedBlockCount = blobCommittedBlockCount;
         return this;
     }

@@ -20,19 +20,19 @@ public class AccessPolicy {
     /**
      * the date-time the policy is active.
      */
-    @JsonProperty(value = "Start")
+    @JsonProperty(value = "Start", required = true)
     private DateTime start;
 
     /**
      * the date-time the policy expires.
      */
-    @JsonProperty(value = "Expiry")
+    @JsonProperty(value = "Expiry", required = true)
     private DateTime expiry;
 
     /**
      * the permissions for the acl policy.
      */
-    @JsonProperty(value = "Permission")
+    @JsonProperty(value = "Permission", required = true)
     private String permission;
 
     /**

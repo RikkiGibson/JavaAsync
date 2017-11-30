@@ -14,35 +14,35 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Defines values for SequenceNumberAction.
+ * Defines values for GeoReplicationStatusType.
  */
-public enum SequenceNumberAction {
-    /** Enum value max. */
-    MAX("max"),
+public enum GeoReplicationStatusType {
+    /** Enum value live. */
+    LIVE("live"),
 
-    /** Enum value update. */
-    UPDATE("update"),
+    /** Enum value bootstrap. */
+    BOOTSTRAP("bootstrap"),
 
-    /** Enum value increment. */
-    INCREMENT("increment");
+    /** Enum value unavailable. */
+    UNAVAILABLE("unavailable");
 
-    /** The actual serialized value for a SequenceNumberAction instance. */
+    /** The actual serialized value for a GeoReplicationStatusType instance. */
     private String value;
 
-    SequenceNumberAction(String value) {
+    GeoReplicationStatusType(String value) {
         this.value = value;
     }
 
     /**
-     * Parses a serialized value to a SequenceNumberAction instance.
+     * Parses a serialized value to a GeoReplicationStatusType instance.
      *
      * @param value the serialized value to parse.
-     * @return the parsed SequenceNumberAction object, or null if unable to parse.
+     * @return the parsed GeoReplicationStatusType object, or null if unable to parse.
      */
     @JsonCreator
-    public static SequenceNumberAction fromString(String value) {
-        SequenceNumberAction[] items = SequenceNumberAction.values();
-        for (SequenceNumberAction item : items) {
+    public static GeoReplicationStatusType fromString(String value) {
+        GeoReplicationStatusType[] items = GeoReplicationStatusType.values();
+        for (GeoReplicationStatusType item : items) {
             if (item.toString().equalsIgnoreCase(value)) {
                 return item;
             }

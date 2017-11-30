@@ -10,146 +10,143 @@
 
 package com.microsoft.azure.storage.implementation;
 
-import com.microsoft.rest.v2.RestResponse;
+import retrofit2.Retrofit;
 import com.microsoft.azure.storage.PageBlobs;
+import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;
-import com.microsoft.azure.storage.models.ErrorException;
 import com.microsoft.azure.storage.models.PageBlobsGetPageRangesHeaders;
 import com.microsoft.azure.storage.models.PageBlobsIncrementalCopyHeaders;
 import com.microsoft.azure.storage.models.PageBlobsPutPageHeaders;
-import com.microsoft.azure.storage.models.PageWrite;
-import com.microsoft.rest.v2.annotations.BodyParam;
-import com.microsoft.rest.v2.annotations.ExpectedResponses;
-import com.microsoft.rest.v2.annotations.GET;
-import com.microsoft.rest.v2.annotations.HeaderParam;
-import com.microsoft.rest.v2.annotations.Headers;
-import com.microsoft.rest.v2.annotations.Host;
-import com.microsoft.rest.v2.annotations.HostParam;
-import com.microsoft.rest.v2.annotations.PathParam;
-import com.microsoft.rest.v2.annotations.PUT;
-import com.microsoft.rest.v2.annotations.QueryParam;
-import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
-import com.microsoft.rest.v2.DateTimeRfc1123;
-import com.microsoft.rest.v2.http.HttpClient;
-import com.microsoft.rest.v2.ServiceCallback;
-import com.microsoft.rest.v2.ServiceFuture;
+import com.microsoft.azure.storage.models.PageList;
+import com.microsoft.azure.storage.models.PageWriteType;
+import com.microsoft.rest.DateTimeRfc1123;
+import com.microsoft.rest.RestException;
+import com.microsoft.rest.ServiceCallback;
+import com.microsoft.rest.ServiceFuture;
+import com.microsoft.rest.ServiceResponseWithHeaders;
+import java.io.InputStream;
 import java.io.IOException;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import org.joda.time.DateTime;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.PUT;
+import retrofit2.http.Query;
+import retrofit2.Response;
 import rx.functions.Func1;
 import rx.Observable;
-import rx.Single;
-import com.microsoft.azure.v2.AzureProxy;
 
 /**
  * An instance of this class provides access to all the operations defined
  * in PageBlobs.
  */
 public class PageBlobsImpl implements PageBlobs {
-    /** The RestProxy service to perform REST calls. */
+    /** The Retrofit service to perform REST calls. */
     private PageBlobsService service;
     /** The service client containing this operation class. */
-    private StorageClientImpl client;
+    private AzureBlobStorageImpl client;
 
     /**
-     * Initializes an instance of PageBlobsImpl.
+     * Initializes an instance of PageBlobs.
      *
+     * @param retrofit the Retrofit instance built from a Retrofit Builder.
      * @param client the instance of the service client containing this operation class.
      */
-    public PageBlobsImpl(StorageClientImpl client) {
-        this.service = AzureProxy.create(PageBlobsService.class, client.restClient().baseURL(), client.httpClient(), client.serializerAdapter());
+    public PageBlobsImpl(Retrofit retrofit, AzureBlobStorageImpl client) {
+        this.service = retrofit.create(PageBlobsService.class);
         this.client = client;
     }
 
     /**
      * The interface defining all the services for PageBlobs to be
-     * used by RestProxy to perform REST calls.
+     * used by Retrofit to perform actually REST calls.
      */
-    @Host("https://{accountName}.blob.core.windows.net")
     interface PageBlobsService {
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs putPage" })
-        @PUT("{container}/{blob}")
-        @ExpectedResponses({201})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<PageBlobsPutPageHeaders, Void>> putPage(@HostParam("accountName") String accountName, @PathParam("container") String container, @PathParam("blob") String blob, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-range") String range, @HeaderParam("x-ms-page-write") PageWrite pageWrite, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-if-sequence-number-le") Integer ifSequenceNumberLessThanOrEqualTo, @HeaderParam("x-ms-if-sequence-number-lt") Integer ifSequenceNumberLessThan, @HeaderParam("x-ms-if-sequence-number-eq") Integer ifSequenceNumberEqualTo, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @BodyParam("application/xml; charset=utf-8") byte[] body, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs putPage" })
+        @PUT("{containerName}/{blob}")
+        Observable<Response<ResponseBody>> putPage(@Body RequestBody optionalbody, @Query("timeout") Integer timeout, @Header("x-ms-range") String range, @Header("x-ms-page-write") PageWriteType pageWrite, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-if-sequence-number-le") Integer ifSequenceNumberLessThanOrEqualTo, @Header("x-ms-if-sequence-number-lt") Integer ifSequenceNumberLessThan, @Header("x-ms-if-sequence-number-eq") Integer ifSequenceNumberEqualTo, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs getPageRanges" })
-        @GET("{container}/{blob}")
-        @ExpectedResponses({200})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<PageBlobsGetPageRangesHeaders, Object>> getPageRanges(@HostParam("accountName") String accountName, @PathParam("container") String container, @PathParam("blob") String blob, @QueryParam("snapshot") DateTimeRfc1123 snapshot, @QueryParam("timeout") Integer timeout, @QueryParam("prevsnapshot") DateTimeRfc1123 prevsnapshot, @HeaderParam("x-ms-range") String range, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs getPageRanges" })
+        @GET("{containerName}/{blob}")
+        Observable<Response<ResponseBody>> getPageRanges(@Query("snapshot") DateTime snapshot, @Query("timeout") Integer timeout, @Query("prevsnapshot") DateTime prevsnapshot, @Header("x-ms-range") String range, @Header("x-ms-lease-id") String leaseId, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs incrementalCopy" })
-        @PUT("{container}/{blob}")
-        @ExpectedResponses({202})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<PageBlobsIncrementalCopyHeaders, Void>> incrementalCopy(@HostParam("accountName") String accountName, @PathParam("container") String container, @PathParam("blob") String blob, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-meta") String xMsMeta, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-copy-source") String copySource, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs incrementalCopy" })
+        @PUT("{containerName}/{blob}")
+        Observable<Response<ResponseBody>> incrementalCopy(@Query("timeout") Integer timeout, @Header("x-ms-meta") String metadata, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Header("x-ms-copy-source") String copySource, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
     }
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the void object if successful.
      */
-    public void putPage(String container, String blob, PageWrite pageWrite, byte[] body) {
-        putPageAsync(container, blob, pageWrite, body).toBlocking().value();
+    public void putPage(PageWriteType pageWrite) {
+        putPageWithServiceResponseAsync(pageWrite).toBlocking().single().body();
     }
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putPageAsync(String container, String blob, PageWrite pageWrite, byte[] body, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(putPageAsync(container, blob, pageWrite, body), serviceCallback);
+    public ServiceFuture<Void> putPageAsync(PageWriteType pageWrite, final ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(putPageWithServiceResponseAsync(pageWrite), serviceCallback);
     }
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsPutPageHeaders, Void> object
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
      */
-    public Single<RestResponse<PageBlobsPutPageHeaders, Void>> putPageWithRestResponseAsync(String container, String blob, PageWrite pageWrite, byte[] body) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
-        }
-        if (container == null) {
-            throw new IllegalArgumentException("Parameter container is required and cannot be null.");
-        }
-        if (blob == null) {
-            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+    public Observable<Void> putPageAsync(PageWriteType pageWrite) {
+        return putPageWithServiceResponseAsync(pageWrite).map(new Func1<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>, Void>() {
+            @Override
+            public Void call(ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The Put Page operation writes a range of pages to a page blob.
+     *
+     * @param pageWrite Required. You may specify one of the following options:
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     */
+    public Observable<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>> putPageWithServiceResponseAsync(PageWriteType pageWrite) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (pageWrite == null) {
             throw new IllegalArgumentException("Parameter pageWrite is required and cannot be null.");
         }
-        if (body == null) {
-            throw new IllegalArgumentException("Parameter body is required and cannot be null.");
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "page";
+        final byte[] optionalbody = new byte[0];
         final Integer timeout = null;
         final String range = null;
         final String leaseId = null;
@@ -160,71 +157,41 @@ public class PageBlobsImpl implements PageBlobs {
         final DateTime ifUnmodifiedSince = null;
         final String ifMatches = null;
         final String ifNoneMatch = null;
-    DateTimeRfc1123 ifModifiedSinceConverted = null;
-    if (ifModifiedSince != null) {
-        ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
-    }
-    DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
-    if (ifUnmodifiedSince != null) {
-        ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
-    }
-        return service.putPage(this.client.accountName(), container, blob, timeout, range, pageWrite, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, body, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
-    }
-
-    /**
-     * The Put Page operation writes a range of pages to a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsPutPageHeaders, Void> object
-     */
-    public Single<Void> putPageAsync(String container, String blob, PageWrite pageWrite, byte[] body) {
-        return putPageWithRestResponseAsync(container, blob, pageWrite, body)
-            .map(new Func1<RestResponse<PageBlobsPutPageHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsPutPageHeaders, Void> restResponse) { return restResponse.body(); } });
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        RequestBody optionalbodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), new byte[0]);
+        if (optionalbody != null) {
+            optionalbodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), optionalbody);
         }
-
-    /**
-     * The Put Page operation writes a range of pages to a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param range Return only the bytes of the blob in the specified range.
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param ifSequenceNumberLessThanOrEqualTo Specify this header value to operate only on a blob if it has a sequence number less than or equal to the specified.
-     * @param ifSequenceNumberLessThan Specify this header value to operate only on a blob if it has a sequence number less than the specified.
-     * @param ifSequenceNumberEqualTo Specify this header value to operate only on a blob if it has the specified sequence number.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
-     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the void object if successful.
-     */
-    public void putPage(String container, String blob, PageWrite pageWrite, byte[] body, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        putPageAsync(container, blob, pageWrite, body, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch).toBlocking().value();
+        DateTimeRfc1123 ifModifiedSinceConverted = null;
+        if (ifModifiedSince != null) {
+            ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
+        }
+        DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
+        if (ifUnmodifiedSince != null) {
+            ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
+        }
+        return service.putPage(optionalbodyConverted, timeout, range, pageWrite, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders> clientResponse = putPageDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
+     * @param optionalbody Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param range Return only the bytes of the blob in the specified range.
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -235,23 +202,48 @@ public class PageBlobsImpl implements PageBlobs {
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @throws RestException thrown if the request is rejected by server
+     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     */
+    public void putPage(PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        putPageWithServiceResponseAsync(pageWrite, optionalbody, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+    }
+
+    /**
+     * The Put Page operation writes a range of pages to a page blob.
+     *
+     * @param pageWrite Required. You may specify one of the following options:
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
+     * @param optionalbody Initial data
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param range Return only the bytes of the blob in the specified range.
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param ifSequenceNumberLessThanOrEqualTo Specify this header value to operate only on a blob if it has a sequence number less than or equal to the specified.
+     * @param ifSequenceNumberLessThan Specify this header value to operate only on a blob if it has a sequence number less than the specified.
+     * @param ifSequenceNumberEqualTo Specify this header value to operate only on a blob if it has the specified sequence number.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putPageAsync(String container, String blob, PageWrite pageWrite, byte[] body, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(putPageAsync(container, blob, pageWrite, body, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch), serviceCallback);
+    public ServiceFuture<Void> putPageAsync(PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(putPageWithServiceResponseAsync(pageWrite, optionalbody, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
+     * @param optionalbody Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param range Return only the bytes of the blob in the specified range.
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -262,109 +254,134 @@ public class PageBlobsImpl implements PageBlobs {
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsPutPageHeaders, Void> object
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
      */
-    public Single<RestResponse<PageBlobsPutPageHeaders, Void>> putPageWithRestResponseAsync(String container, String blob, PageWrite pageWrite, byte[] body, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
-        }
-        if (container == null) {
-            throw new IllegalArgumentException("Parameter container is required and cannot be null.");
-        }
-        if (blob == null) {
-            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+    public Observable<Void> putPageAsync(PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return putPageWithServiceResponseAsync(pageWrite, optionalbody, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>, Void>() {
+            @Override
+            public Void call(ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The Put Page operation writes a range of pages to a page blob.
+     *
+     * @param pageWrite Required. You may specify one of the following options:
+       - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
+       - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
+     * @param optionalbody Initial data
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param range Return only the bytes of the blob in the specified range.
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param ifSequenceNumberLessThanOrEqualTo Specify this header value to operate only on a blob if it has a sequence number less than or equal to the specified.
+     * @param ifSequenceNumberLessThan Specify this header value to operate only on a blob if it has a sequence number less than the specified.
+     * @param ifSequenceNumberEqualTo Specify this header value to operate only on a blob if it has the specified sequence number.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     */
+    public Observable<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>> putPageWithServiceResponseAsync(PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (pageWrite == null) {
             throw new IllegalArgumentException("Parameter pageWrite is required and cannot be null.");
         }
-        if (body == null) {
-            throw new IllegalArgumentException("Parameter body is required and cannot be null.");
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "page";
-    DateTimeRfc1123 ifModifiedSinceConverted = null;
-    if (ifModifiedSince != null) {
-        ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
-    }
-    DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
-    if (ifUnmodifiedSince != null) {
-        ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
-    }
-        return service.putPage(this.client.accountName(), container, blob, timeout, range, pageWrite, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, body, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
-    }
-
-    /**
-     * The Put Page operation writes a range of pages to a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param pageWrite Required. You may specify one of the following options:
-      - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
-      - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
-     * @param body Initial data
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param range Return only the bytes of the blob in the specified range.
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param ifSequenceNumberLessThanOrEqualTo Specify this header value to operate only on a blob if it has a sequence number less than or equal to the specified.
-     * @param ifSequenceNumberLessThan Specify this header value to operate only on a blob if it has a sequence number less than the specified.
-     * @param ifSequenceNumberEqualTo Specify this header value to operate only on a blob if it has the specified sequence number.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsPutPageHeaders, Void> object
-     */
-    public Single<Void> putPageAsync(String container, String blob, PageWrite pageWrite, byte[] body, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        return putPageWithRestResponseAsync(container, blob, pageWrite, body, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch)
-            .map(new Func1<RestResponse<PageBlobsPutPageHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsPutPageHeaders, Void> restResponse) { return restResponse.body(); } });
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        RequestBody optionalbodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), new byte[0]);
+        if (optionalbody != null) {
+            optionalbodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), optionalbody);
         }
+        DateTimeRfc1123 ifModifiedSinceConverted = null;
+        if (ifModifiedSince != null) {
+            ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
+        }
+        DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
+        if (ifUnmodifiedSince != null) {
+            ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
+        }
+        return service.putPage(optionalbodyConverted, timeout, range, pageWrite, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders> clientResponse = putPageDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
+    }
 
-
-    /**
-     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
-     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the Object object if successful.
-     */
-    public Object getPageRanges(String container, String blob) {
-        return getPageRangesAsync(container, blob).toBlocking().value();
+    private ServiceResponseWithHeaders<Void, PageBlobsPutPageHeaders> putPageDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
+                .register(201, new TypeToken<Void>() { }.getType())
+                .buildWithHeaders(response, PageBlobsPutPageHeaders.class);
     }
 
     /**
      * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @throws RestException thrown if the request is rejected by server
+     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the PageList object if successful.
+     */
+    public PageList getPageRanges() {
+        return getPageRangesWithServiceResponseAsync().toBlocking().single().body();
+    }
+
+    /**
+     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
+     *
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Object> getPageRangesAsync(String container, String blob, ServiceCallback<Object> serviceCallback) {
-        return ServiceFuture.fromBody(getPageRangesAsync(container, blob), serviceCallback);
+    public ServiceFuture<PageList> getPageRangesAsync(final ServiceCallback<PageList> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(getPageRangesWithServiceResponseAsync(), serviceCallback);
     }
 
     /**
      * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsGetPageRangesHeaders, Object> object
+     * @return the observable to the PageList object
      */
-    public Single<RestResponse<PageBlobsGetPageRangesHeaders, Object>> getPageRangesWithRestResponseAsync(String container, String blob) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<PageList> getPageRangesAsync() {
+        return getPageRangesWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>, PageList>() {
+            @Override
+            public PageList call(ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the PageList object
+     */
+    public Observable<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>> getPageRangesWithServiceResponseAsync() {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
-        if (container == null) {
-            throw new IllegalArgumentException("Parameter container is required and cannot be null.");
-        }
-        if (blob == null) {
-            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "pagelist";
         final DateTime snapshot = null;
@@ -376,66 +393,33 @@ public class PageBlobsImpl implements PageBlobs {
         final DateTime ifUnmodifiedSince = null;
         final String ifMatches = null;
         final String ifNoneMatch = null;
-    DateTimeRfc1123 snapshotConverted = null;
-    if (snapshot != null) {
-        snapshotConverted = new DateTimeRfc1123(snapshot);
-    }
-    DateTimeRfc1123 prevsnapshotConverted = null;
-    if (prevsnapshot != null) {
-        prevsnapshotConverted = new DateTimeRfc1123(prevsnapshot);
-    }
-    DateTimeRfc1123 ifModifiedSinceConverted = null;
-    if (ifModifiedSince != null) {
-        ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
-    }
-    DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
-    if (ifUnmodifiedSince != null) {
-        ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
-    }
-        return service.getPageRanges(this.client.accountName(), container, blob, snapshotConverted, timeout, prevsnapshotConverted, range, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
-    }
-
-    /**
-     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsGetPageRangesHeaders, Object> object
-     */
-    public Single<Object> getPageRangesAsync(String container, String blob) {
-        return getPageRangesWithRestResponseAsync(container, blob)
-            .map(new Func1<RestResponse<PageBlobsGetPageRangesHeaders, Object>, Object>() { public Object call(RestResponse<PageBlobsGetPageRangesHeaders, Object> restResponse) { return restResponse.body(); } });
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        DateTimeRfc1123 ifModifiedSinceConverted = null;
+        if (ifModifiedSince != null) {
+            ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
         }
-
-    /**
-     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param prevsnapshot Optional in version 2015-07-08 and newer. The prevsnapshot parameter is a DateTime value that specifies that the response will contain only pages that were changed between target blob and previous snapshot. Changed pages include both updated and cleared pages. The target blob may be a snapshot, as long as the snapshot specified by prevsnapshot is the older of the two. Note that incremental snapshots are currently supported only for blobs created on or after January 1, 2016.
-     * @param range Return only the bytes of the blob in the specified range.
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
-     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the Object object if successful.
-     */
-    public Object getPageRanges(String container, String blob, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        return getPageRangesAsync(container, blob, snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch).toBlocking().value();
+        DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
+        if (ifUnmodifiedSince != null) {
+            ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
+        }
+        return service.getPageRanges(snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders> clientResponse = getPageRangesDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
     /**
      * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param prevsnapshot Optional in version 2015-07-08 and newer. The prevsnapshot parameter is a DateTime value that specifies that the response will contain only pages that were changed between target blob and previous snapshot. Changed pages include both updated and cleared pages. The target blob may be a snapshot, as long as the snapshot specified by prevsnapshot is the older of the two. Note that incremental snapshots are currently supported only for blobs created on or after January 1, 2016.
@@ -445,19 +429,40 @@ public class PageBlobsImpl implements PageBlobs {
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @throws RestException thrown if the request is rejected by server
+     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the PageList object if successful.
+     */
+    public PageList getPageRanges(DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return getPageRangesWithServiceResponseAsync(snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+    }
+
+    /**
+     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
+     *
+     * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param prevsnapshot Optional in version 2015-07-08 and newer. The prevsnapshot parameter is a DateTime value that specifies that the response will contain only pages that were changed between target blob and previous snapshot. Changed pages include both updated and cleared pages. The target blob may be a snapshot, as long as the snapshot specified by prevsnapshot is the older of the two. Note that incremental snapshots are currently supported only for blobs created on or after January 1, 2016.
+     * @param range Return only the bytes of the blob in the specified range.
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Object> getPageRangesAsync(String container, String blob, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, ServiceCallback<Object> serviceCallback) {
-        return ServiceFuture.fromBody(getPageRangesAsync(container, blob, snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch), serviceCallback);
+    public ServiceFuture<PageList> getPageRangesAsync(DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<PageList> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(getPageRangesWithServiceResponseAsync(snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
      * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param prevsnapshot Optional in version 2015-07-08 and newer. The prevsnapshot parameter is a DateTime value that specifies that the response will contain only pages that were changed between target blob and previous snapshot. Changed pages include both updated and cleared pages. The target blob may be a snapshot, as long as the snapshot specified by prevsnapshot is the older of the two. Note that incremental snapshots are currently supported only for blobs created on or after January 1, 2016.
@@ -467,245 +472,273 @@ public class PageBlobsImpl implements PageBlobs {
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsGetPageRangesHeaders, Object> object
+     * @return the observable to the PageList object
      */
-    public Single<RestResponse<PageBlobsGetPageRangesHeaders, Object>> getPageRangesWithRestResponseAsync(String container, String blob, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<PageList> getPageRangesAsync(DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return getPageRangesWithServiceResponseAsync(snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>, PageList>() {
+            @Override
+            public PageList call(ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
+     *
+     * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param prevsnapshot Optional in version 2015-07-08 and newer. The prevsnapshot parameter is a DateTime value that specifies that the response will contain only pages that were changed between target blob and previous snapshot. Changed pages include both updated and cleared pages. The target blob may be a snapshot, as long as the snapshot specified by prevsnapshot is the older of the two. Note that incremental snapshots are currently supported only for blobs created on or after January 1, 2016.
+     * @param range Return only the bytes of the blob in the specified range.
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the PageList object
+     */
+    public Observable<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>> getPageRangesWithServiceResponseAsync(DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
-        if (container == null) {
-            throw new IllegalArgumentException("Parameter container is required and cannot be null.");
-        }
-        if (blob == null) {
-            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "pagelist";
-    DateTimeRfc1123 snapshotConverted = null;
-    if (snapshot != null) {
-        snapshotConverted = new DateTimeRfc1123(snapshot);
-    }
-    DateTimeRfc1123 prevsnapshotConverted = null;
-    if (prevsnapshot != null) {
-        prevsnapshotConverted = new DateTimeRfc1123(prevsnapshot);
-    }
-    DateTimeRfc1123 ifModifiedSinceConverted = null;
-    if (ifModifiedSince != null) {
-        ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
-    }
-    DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
-    if (ifUnmodifiedSince != null) {
-        ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
-    }
-        return service.getPageRanges(this.client.accountName(), container, blob, snapshotConverted, timeout, prevsnapshotConverted, range, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
-    }
-
-    /**
-     * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param prevsnapshot Optional in version 2015-07-08 and newer. The prevsnapshot parameter is a DateTime value that specifies that the response will contain only pages that were changed between target blob and previous snapshot. Changed pages include both updated and cleared pages. The target blob may be a snapshot, as long as the snapshot specified by prevsnapshot is the older of the two. Note that incremental snapshots are currently supported only for blobs created on or after January 1, 2016.
-     * @param range Return only the bytes of the blob in the specified range.
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsGetPageRangesHeaders, Object> object
-     */
-    public Single<Object> getPageRangesAsync(String container, String blob, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        return getPageRangesWithRestResponseAsync(container, blob, snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch)
-            .map(new Func1<RestResponse<PageBlobsGetPageRangesHeaders, Object>, Object>() { public Object call(RestResponse<PageBlobsGetPageRangesHeaders, Object> restResponse) { return restResponse.body(); } });
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        DateTimeRfc1123 ifModifiedSinceConverted = null;
+        if (ifModifiedSince != null) {
+            ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
         }
+        DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
+        if (ifUnmodifiedSince != null) {
+            ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
+        }
+        return service.getPageRanges(snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders> clientResponse = getPageRangesDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
+    }
 
+    private ServiceResponseWithHeaders<PageList, PageBlobsGetPageRangesHeaders> getPageRangesDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<PageList, RestException>newInstance(this.client.serializerAdapter())
+                .register(200, new TypeToken<PageList>() { }.getType())
+                .buildWithHeaders(response, PageBlobsGetPageRangesHeaders.class);
+    }
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the void object if successful.
      */
-    public void incrementalCopy(String container, String blob, String copySource) {
-        incrementalCopyAsync(container, blob, copySource).toBlocking().value();
+    public void incrementalCopy(String copySource) {
+        incrementalCopyWithServiceResponseAsync(copySource).toBlocking().single().body();
     }
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> incrementalCopyAsync(String container, String blob, String copySource, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(incrementalCopyAsync(container, blob, copySource), serviceCallback);
+    public ServiceFuture<Void> incrementalCopyAsync(String copySource, final ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(incrementalCopyWithServiceResponseAsync(copySource), serviceCallback);
     }
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsIncrementalCopyHeaders, Void> object
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
      */
-    public Single<RestResponse<PageBlobsIncrementalCopyHeaders, Void>> incrementalCopyWithRestResponseAsync(String container, String blob, String copySource) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
-        }
-        if (container == null) {
-            throw new IllegalArgumentException("Parameter container is required and cannot be null.");
-        }
-        if (blob == null) {
-            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+    public Observable<Void> incrementalCopyAsync(String copySource) {
+        return incrementalCopyWithServiceResponseAsync(copySource).map(new Func1<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>, Void>() {
+            @Override
+            public Void call(ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
+     *
+     * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     */
+    public Observable<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>> incrementalCopyWithServiceResponseAsync(String copySource) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (copySource == null) {
             throw new IllegalArgumentException("Parameter copySource is required and cannot be null.");
         }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
+        }
         final String comp = "incrementalcopy";
         final Integer timeout = null;
-        final String xMsMeta = null;
+        final String metadata = null;
         final DateTime ifModifiedSince = null;
         final DateTime ifUnmodifiedSince = null;
         final String ifMatches = null;
         final String ifNoneMatch = null;
-    DateTimeRfc1123 ifModifiedSinceConverted = null;
-    if (ifModifiedSince != null) {
-        ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
-    }
-    DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
-    if (ifUnmodifiedSince != null) {
-        ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
-    }
-        return service.incrementalCopy(this.client.accountName(), container, blob, timeout, xMsMeta, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, copySource, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
-    }
-
-    /**
-     * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsIncrementalCopyHeaders, Void> object
-     */
-    public Single<Void> incrementalCopyAsync(String container, String blob, String copySource) {
-        return incrementalCopyWithRestResponseAsync(container, blob, copySource)
-            .map(new Func1<RestResponse<PageBlobsIncrementalCopyHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsIncrementalCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        DateTimeRfc1123 ifModifiedSinceConverted = null;
+        if (ifModifiedSince != null) {
+            ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
         }
-
-    /**
-     * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param xMsMeta Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
-     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the void object if successful.
-     */
-    public void incrementalCopy(String container, String blob, String copySource, Integer timeout, String xMsMeta, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        incrementalCopyAsync(container, blob, copySource, timeout, xMsMeta, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch).toBlocking().value();
+        DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
+        if (ifUnmodifiedSince != null) {
+            ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
+        }
+        return service.incrementalCopy(timeout, metadata, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, copySource, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders> clientResponse = incrementalCopyDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param xMsMeta Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @throws RestException thrown if the request is rejected by server
+     * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     */
+    public void incrementalCopy(String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        incrementalCopyWithServiceResponseAsync(copySource, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+    }
+
+    /**
+     * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
+     *
+     * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> incrementalCopyAsync(String container, String blob, String copySource, Integer timeout, String xMsMeta, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(incrementalCopyAsync(container, blob, copySource, timeout, xMsMeta, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch), serviceCallback);
+    public ServiceFuture<Void> incrementalCopyAsync(String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(incrementalCopyWithServiceResponseAsync(copySource, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
      *
-     * @param container The container name.
-     * @param blob The blob name.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param xMsMeta Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsIncrementalCopyHeaders, Void> object
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
      */
-    public Single<RestResponse<PageBlobsIncrementalCopyHeaders, Void>> incrementalCopyWithRestResponseAsync(String container, String blob, String copySource, Integer timeout, String xMsMeta, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
-        }
-        if (container == null) {
-            throw new IllegalArgumentException("Parameter container is required and cannot be null.");
-        }
-        if (blob == null) {
-            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+    public Observable<Void> incrementalCopyAsync(String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return incrementalCopyWithServiceResponseAsync(copySource, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>, Void>() {
+            @Override
+            public Void call(ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
+     *
+     * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     */
+    public Observable<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>> incrementalCopyWithServiceResponseAsync(String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (copySource == null) {
             throw new IllegalArgumentException("Parameter copySource is required and cannot be null.");
         }
-        final String comp = "incrementalcopy";
-    DateTimeRfc1123 ifModifiedSinceConverted = null;
-    if (ifModifiedSince != null) {
-        ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
-    }
-    DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
-    if (ifUnmodifiedSince != null) {
-        ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
-    }
-        return service.incrementalCopy(this.client.accountName(), container, blob, timeout, xMsMeta, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, copySource, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
-    }
-
-    /**
-     * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
-     *
-     * @param container The container name.
-     * @param blob The blob name.
-     * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param xMsMeta Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<PageBlobsIncrementalCopyHeaders, Void> object
-     */
-    public Single<Void> incrementalCopyAsync(String container, String blob, String copySource, Integer timeout, String xMsMeta, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch) {
-        return incrementalCopyWithRestResponseAsync(container, blob, copySource, timeout, xMsMeta, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch)
-            .map(new Func1<RestResponse<PageBlobsIncrementalCopyHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsIncrementalCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
+        final String comp = "incrementalcopy";
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        DateTimeRfc1123 ifModifiedSinceConverted = null;
+        if (ifModifiedSince != null) {
+            ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
+        }
+        DateTimeRfc1123 ifUnmodifiedSinceConverted = null;
+        if (ifUnmodifiedSince != null) {
+            ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
+        }
+        return service.incrementalCopy(timeout, metadata, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, copySource, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders> clientResponse = incrementalCopyDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
+    }
 
+    private ServiceResponseWithHeaders<Void, PageBlobsIncrementalCopyHeaders> incrementalCopyDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
+                .register(202, new TypeToken<Void>() { }.getType())
+                .buildWithHeaders(response, PageBlobsIncrementalCopyHeaders.class);
+    }
 
 }

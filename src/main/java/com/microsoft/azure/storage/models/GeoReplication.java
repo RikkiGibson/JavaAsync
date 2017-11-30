@@ -22,8 +22,8 @@ public class GeoReplication {
      * The status of the secondary location. Possible values include: 'live',
      * 'bootstrap', 'unavailable'.
      */
-    @JsonProperty(value = "Status")
-    private GeoReplicationStatus status;
+    @JsonProperty(value = "Status", required = true)
+    private GeoReplicationStatusType status;
 
     /**
      * A GMT date/time value, to the second. All primary writes preceding this
@@ -31,7 +31,7 @@ public class GeoReplication {
      * secondary. Primary writes after this point in time may or may not be
      * available for reads.
      */
-    @JsonProperty(value = "LastSyncTime")
+    @JsonProperty(value = "LastSyncTime", required = true)
     private DateTimeRfc1123 lastSyncTime;
 
     /**
@@ -39,7 +39,7 @@ public class GeoReplication {
      *
      * @return the status value
      */
-    public GeoReplicationStatus status() {
+    public GeoReplicationStatusType status() {
         return this.status;
     }
 
@@ -49,7 +49,7 @@ public class GeoReplication {
      * @param status the status value to set
      * @return the GeoReplication object itself.
      */
-    public GeoReplication withStatus(GeoReplicationStatus status) {
+    public GeoReplication withStatus(GeoReplicationStatusType status) {
         this.status = status;
         return this;
     }

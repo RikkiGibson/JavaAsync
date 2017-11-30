@@ -14,21 +14,51 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.pipeline.IRequestPolicyFactory;
 import com.microsoft.azure.storage.pipeline.Pipeline;
-import com.microsoft.azure.storage.pipeline.RequestPolicyFactoryInterface;
+import com.microsoft.azure.storage.pipeline.RequestPolicyNode;
+import com.microsoft.rest.v2.http.HttpRequest;
+import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import rx.Single;
+
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Facotry for retrying requests
+ * Factory for retrying requests
  */
-public final class RequestRetryFactory implements RequestPolicyFactoryInterface{
-    @Override
-    public RequestPolicy create(Pipeline pipeline, RequestPolicy nextPolicy) {
-        return null;
+public final class RequestRetryFactory implements IRequestPolicyFactory {
+
+    private final RequestRetryOptions requestRetryOptions;
+
+    private int tryCount;
+
+    private long operationStartTime;
+
+    public RequestRetryFactory(RequestRetryOptions requestRetryOptions) {
+        this.requestRetryOptions = requestRetryOptions;
+    }
+
+    private final class RequestRetryPolicy implements RequestPolicy {
+
+        private final AtomicReference<RequestPolicyNode> requestPolicyNode;
+
+        final private AtomicReference<RequestRetryFactory> factory;
+
+        RequestRetryPolicy(RequestPolicyNode requestPolicyNode, RequestRetryFactory factory) {
+            this.requestPolicyNode = new AtomicReference<>(requestPolicyNode);
+            this.factory = new AtomicReference<>(factory);
+        }
+
+        @Override
+        public Single<HttpResponse> sendAsync(HttpRequest httpRequest) {
+            return null;
+        }
     }
 
     @Override
-    public RequestPolicy create(RequestPolicy nextPolicy) {
-        return null;
+    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
+        return new RequestRetryPolicy(requestPolicyNode, this);
     }
 }

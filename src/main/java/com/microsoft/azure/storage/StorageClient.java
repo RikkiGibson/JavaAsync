@@ -11,6 +11,7 @@
 package com.microsoft.azure.storage;
 
 import com.microsoft.rest.v2.RestClient;
+import com.microsoft.rest.v2.ServiceClient;
 
 /**
  * The interface for StorageClient class.
@@ -21,7 +22,7 @@ public interface StorageClient {
      *
      * @return the {@link RestClient} object.
     */
-    RestClient restClient();
+    ServiceClient restClient();
 
     /**
      * Gets the User-Agent header for the client.

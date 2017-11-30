@@ -7,7 +7,6 @@
 // regenerated.
 
 /**
- * This package contains the classes for StorageClient.
- * Storage Client.
+ * This package contains the classes for AzureBlobStorage.
  */
 package com.microsoft.azure.storage;

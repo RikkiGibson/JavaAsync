@@ -39,7 +39,7 @@ public class ContainerGetMetadataHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * This header uniquely identifies the request that was made and can be
@@ -108,8 +108,11 @@ public class ContainerGetMetadataHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -118,8 +121,12 @@ public class ContainerGetMetadataHeaders {
      * @param lastModified the lastModified value to set
      * @return the ContainerGetMetadataHeaders object itself.
      */
-    public ContainerGetMetadataHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public ContainerGetMetadataHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

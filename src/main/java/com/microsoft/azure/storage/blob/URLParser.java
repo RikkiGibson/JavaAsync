@@ -22,11 +22,11 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 
-public final class UrlParser {
+public final class URLParser {
 
-    // UrlParser parses a URL initializing BlobURLParts' fields including any SAS-related & snapshot query parameters. Any other
+    // URLParser parses a URL initializing BlobURLParts' fields including any SAS-related & snapshot query parameters. Any other
     // query parameters remain in the UnparsedParams field. This method overwrites all fields in the BlobURLParts object.
-    public BlobURLParts ParseURL(String urlString) throws URISyntaxException, MalformedURLException, ParseException, UnsupportedEncodingException {
+    public static BlobURLParts ParseURL(String urlString) throws MalformedURLException, UnsupportedEncodingException {
 
         URL url = new URL(urlString);
 

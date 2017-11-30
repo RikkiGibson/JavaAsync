@@ -1,7 +1,7 @@
 package com.microsoft.azure.storage.pipeline;
 
 import com.microsoft.rest.v2.LogLevel;
-import com.microsoft.rest.v2.RestClient;
+//import com.microsoft.rest.v2.RestClient;
 import com.microsoft.rest.v2.http.HttpClient;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 
@@ -29,7 +29,7 @@ public final class Pipeline {
      * @param factory The Factory producing a custom user-defined RequestPolicy.
      * @return the builder itself for chaining
      */
-    public Pipeline addRequestPolicy(RequestPolicyFactoryInterface factory) {
+    public Pipeline addRequestPolicy(IRequestPolicyFactory factory) {
         customRequestPolicyFactories.add(factory);
         return this;
     }

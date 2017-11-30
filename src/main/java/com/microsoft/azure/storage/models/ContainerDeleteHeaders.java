@@ -15,25 +15,9 @@ import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Defines headers for SetAcl operation.
+ * Defines headers for Delete operation.
  */
-public class ContainerSetAclHeaders {
-    /**
-     * The ETag contains a value that you can use to perform operations
-     * conditionally. If the request version is 2011-08-18 or newer, the ETag
-     * value will be in quotes.
-     */
-    @JsonProperty(value = "ETag")
-    private String eTag;
-
-    /**
-     * Returns the date and time the container was last modified. Any operation
-     * that modifies the blob, including an update of the blob's metadata or
-     * properties, changes the last-modified time of the blob.
-     */
-    @JsonProperty(value = "Last-Modified")
-    private DateTimeRfc1123 lastModified;
-
+public class ContainerDeleteHeaders {
     /**
      * This header uniquely identifies the request that was made and can be
      * used for troubleshooting the request.
@@ -57,53 +41,6 @@ public class ContainerSetAclHeaders {
     private DateTimeRfc1123 dateProperty;
 
     /**
-     * Get the eTag value.
-     *
-     * @return the eTag value
-     */
-    public String eTag() {
-        return this.eTag;
-    }
-
-    /**
-     * Set the eTag value.
-     *
-     * @param eTag the eTag value to set
-     * @return the ContainerSetAclHeaders object itself.
-     */
-    public ContainerSetAclHeaders withETag(String eTag) {
-        this.eTag = eTag;
-        return this;
-    }
-
-    /**
-     * Get the lastModified value.
-     *
-     * @return the lastModified value
-     */
-    public DateTime lastModified() {
-        if (this.lastModified == null) {
-            return null;
-        }
-        return this.lastModified.dateTime();
-    }
-
-    /**
-     * Set the lastModified value.
-     *
-     * @param lastModified the lastModified value to set
-     * @return the ContainerSetAclHeaders object itself.
-     */
-    public ContainerSetAclHeaders withLastModified(DateTime lastModified) {
-        if (lastModified == null) {
-            this.lastModified = null;
-        } else {
-            this.lastModified = new DateTimeRfc1123(lastModified);
-        }
-        return this;
-    }
-
-    /**
      * Get the requestId value.
      *
      * @return the requestId value
@@ -116,9 +53,9 @@ public class ContainerSetAclHeaders {
      * Set the requestId value.
      *
      * @param requestId the requestId value to set
-     * @return the ContainerSetAclHeaders object itself.
+     * @return the ContainerDeleteHeaders object itself.
      */
-    public ContainerSetAclHeaders withRequestId(String requestId) {
+    public ContainerDeleteHeaders withRequestId(String requestId) {
         this.requestId = requestId;
         return this;
     }
@@ -136,9 +73,9 @@ public class ContainerSetAclHeaders {
      * Set the version value.
      *
      * @param version the version value to set
-     * @return the ContainerSetAclHeaders object itself.
+     * @return the ContainerDeleteHeaders object itself.
      */
-    public ContainerSetAclHeaders withVersion(String version) {
+    public ContainerDeleteHeaders withVersion(String version) {
         this.version = version;
         return this;
     }
@@ -159,9 +96,9 @@ public class ContainerSetAclHeaders {
      * Set the dateProperty value.
      *
      * @param dateProperty the dateProperty value to set
-     * @return the ContainerSetAclHeaders object itself.
+     * @return the ContainerDeleteHeaders object itself.
      */
-    public ContainerSetAclHeaders withDateProperty(DateTime dateProperty) {
+    public ContainerDeleteHeaders withDateProperty(DateTime dateProperty) {
         if (dateProperty == null) {
             this.dateProperty = null;
         } else {

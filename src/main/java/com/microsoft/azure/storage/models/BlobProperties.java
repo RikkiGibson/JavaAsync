@@ -21,20 +21,20 @@ public class BlobProperties {
     /**
      * The lastModified property.
      */
-    @JsonProperty(value = "Last-Modified")
+    @JsonProperty(value = "Last-Modified", required = true)
     private DateTimeRfc1123 lastModified;
 
     /**
      * The etag property.
      */
-    @JsonProperty(value = "Etag")
+    @JsonProperty(value = "Etag", required = true)
     private String etag;
 
     /**
      * Size in bytes.
      */
     @JsonProperty(value = "Content-Length")
-    private Integer contentLength;
+    private Long contentLength;
 
     /**
      * The contentType property.
@@ -73,16 +73,16 @@ public class BlobProperties {
     private String cacheControl;
 
     /**
-     * The xMsBlobSequenceNumber property.
+     * The blobSequenceNumber property.
      */
     @JsonProperty(value = "x-ms-blob-sequence-number")
-    private String xMsBlobSequenceNumber;
+    private Integer blobSequenceNumber;
 
     /**
-     * The blobType property.
+     * Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'.
      */
     @JsonProperty(value = "BlobType")
-    private String blobType;
+    private BlobType blobType;
 
     /**
      * Possible values include: 'locked', 'unlocked'.
@@ -203,7 +203,7 @@ public class BlobProperties {
      *
      * @return the contentLength value
      */
-    public Integer contentLength() {
+    public Long contentLength() {
         return this.contentLength;
     }
 
@@ -213,7 +213,7 @@ public class BlobProperties {
      * @param contentLength the contentLength value to set
      * @return the BlobProperties object itself.
      */
-    public BlobProperties withContentLength(Integer contentLength) {
+    public BlobProperties withContentLength(Long contentLength) {
         this.contentLength = contentLength;
         return this;
     }
@@ -339,22 +339,22 @@ public class BlobProperties {
     }
 
     /**
-     * Get the xMsBlobSequenceNumber value.
+     * Get the blobSequenceNumber value.
      *
-     * @return the xMsBlobSequenceNumber value
+     * @return the blobSequenceNumber value
      */
-    public String xMsBlobSequenceNumber() {
-        return this.xMsBlobSequenceNumber;
+    public Integer blobSequenceNumber() {
+        return this.blobSequenceNumber;
     }
 
     /**
-     * Set the xMsBlobSequenceNumber value.
+     * Set the blobSequenceNumber value.
      *
-     * @param xMsBlobSequenceNumber the xMsBlobSequenceNumber value to set
+     * @param blobSequenceNumber the blobSequenceNumber value to set
      * @return the BlobProperties object itself.
      */
-    public BlobProperties withXMsBlobSequenceNumber(String xMsBlobSequenceNumber) {
-        this.xMsBlobSequenceNumber = xMsBlobSequenceNumber;
+    public BlobProperties withBlobSequenceNumber(Integer blobSequenceNumber) {
+        this.blobSequenceNumber = blobSequenceNumber;
         return this;
     }
 
@@ -363,7 +363,7 @@ public class BlobProperties {
      *
      * @return the blobType value
      */
-    public String blobType() {
+    public BlobType blobType() {
         return this.blobType;
     }
 
@@ -373,7 +373,7 @@ public class BlobProperties {
      * @param blobType the blobType value to set
      * @return the BlobProperties object itself.
      */
-    public BlobProperties withBlobType(String blobType) {
+    public BlobProperties withBlobType(BlobType blobType) {
         this.blobType = blobType;
         return this;
     }

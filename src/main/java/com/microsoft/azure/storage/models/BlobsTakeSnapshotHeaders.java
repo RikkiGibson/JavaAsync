@@ -10,8 +10,8 @@
 
 package com.microsoft.azure.storage.models;
 
-import com.microsoft.rest.v2.DateTimeRfc1123;
 import org.joda.time.DateTime;
+import com.microsoft.rest.v2.DateTimeRfc1123;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -23,7 +23,7 @@ public class BlobsTakeSnapshotHeaders {
      * may be used in subsequent requests to access the snapshot.
      */
     @JsonProperty(value = "x-ms-snapshot")
-    private String snapshot;
+    private DateTime snapshot;
 
     /**
      * The ETag contains a value that you can use to perform operations
@@ -39,7 +39,7 @@ public class BlobsTakeSnapshotHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * This header uniquely identifies the request that was made and can be
@@ -68,7 +68,7 @@ public class BlobsTakeSnapshotHeaders {
      *
      * @return the snapshot value
      */
-    public String snapshot() {
+    public DateTime snapshot() {
         return this.snapshot;
     }
 
@@ -78,7 +78,7 @@ public class BlobsTakeSnapshotHeaders {
      * @param snapshot the snapshot value to set
      * @return the BlobsTakeSnapshotHeaders object itself.
      */
-    public BlobsTakeSnapshotHeaders withSnapshot(String snapshot) {
+    public BlobsTakeSnapshotHeaders withSnapshot(DateTime snapshot) {
         this.snapshot = snapshot;
         return this;
     }
@@ -108,8 +108,11 @@ public class BlobsTakeSnapshotHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -118,8 +121,12 @@ public class BlobsTakeSnapshotHeaders {
      * @param lastModified the lastModified value to set
      * @return the BlobsTakeSnapshotHeaders object itself.
      */
-    public BlobsTakeSnapshotHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public BlobsTakeSnapshotHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

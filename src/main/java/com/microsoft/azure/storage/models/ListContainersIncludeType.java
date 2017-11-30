@@ -14,32 +14,29 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Defines values for PageWrite.
+ * Defines values for ListContainersIncludeType.
  */
-public enum PageWrite {
-    /** Enum value update. */
-    UPDATE("update"),
+public enum ListContainersIncludeType {
+    /** Enum value metadata. */
+    METADATA("metadata");
 
-    /** Enum value clear. */
-    CLEAR("clear");
-
-    /** The actual serialized value for a PageWrite instance. */
+    /** The actual serialized value for a ListContainersIncludeType instance. */
     private String value;
 
-    PageWrite(String value) {
+    ListContainersIncludeType(String value) {
         this.value = value;
     }
 
     /**
-     * Parses a serialized value to a PageWrite instance.
+     * Parses a serialized value to a ListContainersIncludeType instance.
      *
      * @param value the serialized value to parse.
-     * @return the parsed PageWrite object, or null if unable to parse.
+     * @return the parsed ListContainersIncludeType object, or null if unable to parse.
      */
     @JsonCreator
-    public static PageWrite fromString(String value) {
-        PageWrite[] items = PageWrite.values();
-        for (PageWrite item : items) {
+    public static ListContainersIncludeType fromString(String value) {
+        ListContainersIncludeType[] items = ListContainersIncludeType.values();
+        for (ListContainersIncludeType item : items) {
             if (item.toString().equalsIgnoreCase(value)) {
                 return item;
             }

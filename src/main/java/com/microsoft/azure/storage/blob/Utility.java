@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class Utility {
+final class Utility {
 
     /**
      * Thread local for storing GMT date format.

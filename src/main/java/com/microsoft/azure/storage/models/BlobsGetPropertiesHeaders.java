@@ -10,9 +10,9 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.Map;
 import com.microsoft.rest.v2.DateTimeRfc1123;
 import org.joda.time.DateTime;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -25,7 +25,7 @@ public class BlobsGetPropertiesHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * The metadata property.
@@ -131,7 +131,7 @@ public class BlobsGetPropertiesHeaders {
      * The number of bytes present in the response body.
      */
     @JsonProperty(value = "Content-Length")
-    private Integer contentLength;
+    private Long contentLength;
 
     /**
      * The content type specified for the blob. The default content type is
@@ -174,6 +174,13 @@ public class BlobsGetPropertiesHeaders {
      */
     @JsonProperty(value = "Content-Disposition")
     private String contentDisposition;
+
+    /**
+     * This header returns the value that was specified for the
+     * Content-Language request header.
+     */
+    @JsonProperty(value = "Content-Language")
+    private String contentLanguage;
 
     /**
      * This header is returned if it was previously specified for the blob.
@@ -237,8 +244,11 @@ public class BlobsGetPropertiesHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -247,8 +257,12 @@ public class BlobsGetPropertiesHeaders {
      * @param lastModified the lastModified value to set
      * @return the BlobsGetPropertiesHeaders object itself.
      */
-    public BlobsGetPropertiesHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public BlobsGetPropertiesHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 
@@ -504,7 +518,7 @@ public class BlobsGetPropertiesHeaders {
      *
      * @return the contentLength value
      */
-    public Integer contentLength() {
+    public Long contentLength() {
         return this.contentLength;
     }
 
@@ -514,7 +528,7 @@ public class BlobsGetPropertiesHeaders {
      * @param contentLength the contentLength value to set
      * @return the BlobsGetPropertiesHeaders object itself.
      */
-    public BlobsGetPropertiesHeaders withContentLength(Integer contentLength) {
+    public BlobsGetPropertiesHeaders withContentLength(Long contentLength) {
         this.contentLength = contentLength;
         return this;
     }
@@ -616,6 +630,26 @@ public class BlobsGetPropertiesHeaders {
      */
     public BlobsGetPropertiesHeaders withContentDisposition(String contentDisposition) {
         this.contentDisposition = contentDisposition;
+        return this;
+    }
+
+    /**
+     * Get the contentLanguage value.
+     *
+     * @return the contentLanguage value
+     */
+    public String contentLanguage() {
+        return this.contentLanguage;
+    }
+
+    /**
+     * Set the contentLanguage value.
+     *
+     * @param contentLanguage the contentLanguage value to set
+     * @return the BlobsGetPropertiesHeaders object itself.
+     */
+    public BlobsGetPropertiesHeaders withContentLanguage(String contentLanguage) {
+        this.contentLanguage = contentLanguage;
         return this;
     }
 

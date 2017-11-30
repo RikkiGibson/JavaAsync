@@ -10,60 +10,58 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * An enumeration of blobs.
  */
-public class BlobEnumerationResults {
+public class ListBlobsResponse {
     /**
      * The serviceEndpoint property.
      */
-    @JacksonXmlProperty(localName = "ServiceEndpoint", isAttribute = true)
+    @JsonProperty(value = "ServiceEndpoint", required = true)
     private String serviceEndpoint;
 
     /**
      * The containerName property.
      */
-    @JacksonXmlProperty(localName = "ContainerName", isAttribute = true)
+    @JsonProperty(value = "ContainerName", required = true)
     private String containerName;
 
     /**
      * The prefix property.
      */
-    @JsonProperty(value = "Prefix")
+    @JsonProperty(value = "Prefix", required = true)
     private String prefix;
 
     /**
      * The marker property.
      */
-    @JsonProperty(value = "Marker")
+    @JsonProperty(value = "Marker", required = true)
     private String marker;
 
     /**
      * The maxResults property.
      */
-    @JsonProperty(value = "MaxResults")
-    private Integer maxResults;
+    @JsonProperty(value = "MaxResults", required = true)
+    private int maxResults;
 
     /**
      * The delimiter property.
      */
-    @JsonProperty(value = "Delimiter")
+    @JsonProperty(value = "Delimiter", required = true)
     private String delimiter;
 
     /**
      * The blobs property.
      */
-    @JsonProperty(value = "Blobs")
-    private List<Blob> blobs;
+    @JsonProperty(value = "Blobs", required = true)
+    private Blobs blobs;
 
     /**
      * The nextMarker property.
      */
-    @JsonProperty(value = "NextMarker")
+    @JsonProperty(value = "NextMarker", required = true)
     private String nextMarker;
 
     /**
@@ -79,9 +77,9 @@ public class BlobEnumerationResults {
      * Set the serviceEndpoint value.
      *
      * @param serviceEndpoint the serviceEndpoint value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withServiceEndpoint(String serviceEndpoint) {
+    public ListBlobsResponse withServiceEndpoint(String serviceEndpoint) {
         this.serviceEndpoint = serviceEndpoint;
         return this;
     }
@@ -99,9 +97,9 @@ public class BlobEnumerationResults {
      * Set the containerName value.
      *
      * @param containerName the containerName value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withContainerName(String containerName) {
+    public ListBlobsResponse withContainerName(String containerName) {
         this.containerName = containerName;
         return this;
     }
@@ -119,9 +117,9 @@ public class BlobEnumerationResults {
      * Set the prefix value.
      *
      * @param prefix the prefix value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withPrefix(String prefix) {
+    public ListBlobsResponse withPrefix(String prefix) {
         this.prefix = prefix;
         return this;
     }
@@ -139,9 +137,9 @@ public class BlobEnumerationResults {
      * Set the marker value.
      *
      * @param marker the marker value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withMarker(String marker) {
+    public ListBlobsResponse withMarker(String marker) {
         this.marker = marker;
         return this;
     }
@@ -151,7 +149,7 @@ public class BlobEnumerationResults {
      *
      * @return the maxResults value
      */
-    public Integer maxResults() {
+    public int maxResults() {
         return this.maxResults;
     }
 
@@ -159,9 +157,9 @@ public class BlobEnumerationResults {
      * Set the maxResults value.
      *
      * @param maxResults the maxResults value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withMaxResults(Integer maxResults) {
+    public ListBlobsResponse withMaxResults(int maxResults) {
         this.maxResults = maxResults;
         return this;
     }
@@ -179,9 +177,9 @@ public class BlobEnumerationResults {
      * Set the delimiter value.
      *
      * @param delimiter the delimiter value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withDelimiter(String delimiter) {
+    public ListBlobsResponse withDelimiter(String delimiter) {
         this.delimiter = delimiter;
         return this;
     }
@@ -191,7 +189,7 @@ public class BlobEnumerationResults {
      *
      * @return the blobs value
      */
-    public List<Blob> blobs() {
+    public Blobs blobs() {
         return this.blobs;
     }
 
@@ -199,9 +197,9 @@ public class BlobEnumerationResults {
      * Set the blobs value.
      *
      * @param blobs the blobs value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withBlobs(List<Blob> blobs) {
+    public ListBlobsResponse withBlobs(Blobs blobs) {
         this.blobs = blobs;
         return this;
     }
@@ -219,9 +217,9 @@ public class BlobEnumerationResults {
      * Set the nextMarker value.
      *
      * @param nextMarker the nextMarker value to set
-     * @return the BlobEnumerationResults object itself.
+     * @return the ListBlobsResponse object itself.
      */
-    public BlobEnumerationResults withNextMarker(String nextMarker) {
+    public ListBlobsResponse withNextMarker(String nextMarker) {
         this.nextMarker = nextMarker;
         return this;
     }

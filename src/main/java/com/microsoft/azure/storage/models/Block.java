@@ -13,20 +13,21 @@ package com.microsoft.azure.storage.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The Block model.
+ * Represents a single block in a block blob.  It describes the block's ID and
+ * size.
  */
 public class Block {
     /**
      * The base64 encoded block ID.
      */
-    @JsonProperty(value = "name")
+    @JsonProperty(value = "name", required = true)
     private String name;
 
     /**
      * The block size in bytes.
      */
-    @JsonProperty(value = "size")
-    private Integer size;
+    @JsonProperty(value = "size", required = true)
+    private int size;
 
     /**
      * Get the name value.
@@ -53,7 +54,7 @@ public class Block {
      *
      * @return the size value
      */
-    public Integer size() {
+    public int size() {
         return this.size;
     }
 
@@ -63,7 +64,7 @@ public class Block {
      * @param size the size value to set
      * @return the Block object itself.
      */
-    public Block withSize(Integer size) {
+    public Block withSize(int size) {
         this.size = size;
         return this;
     }

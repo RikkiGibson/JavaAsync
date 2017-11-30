@@ -21,13 +21,13 @@ public class ContainerProperties {
     /**
      * The lastModified property.
      */
-    @JsonProperty(value = "Last-Modified")
+    @JsonProperty(value = "Last-Modified", required = true)
     private DateTimeRfc1123 lastModified;
 
     /**
      * The etag property.
      */
-    @JsonProperty(value = "Etag")
+    @JsonProperty(value = "Etag", required = true)
     private String etag;
 
     /**

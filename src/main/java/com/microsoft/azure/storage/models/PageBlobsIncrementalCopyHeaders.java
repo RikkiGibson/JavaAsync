@@ -32,7 +32,7 @@ public class PageBlobsIncrementalCopyHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * This header uniquely identifies the request that was made and can be
@@ -96,8 +96,11 @@ public class PageBlobsIncrementalCopyHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -106,8 +109,12 @@ public class PageBlobsIncrementalCopyHeaders {
      * @param lastModified the lastModified value to set
      * @return the PageBlobsIncrementalCopyHeaders object itself.
      */
-    public PageBlobsIncrementalCopyHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public PageBlobsIncrementalCopyHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

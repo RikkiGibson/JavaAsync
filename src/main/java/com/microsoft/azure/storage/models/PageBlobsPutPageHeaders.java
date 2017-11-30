@@ -32,7 +32,7 @@ public class PageBlobsPutPageHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * If the blob has an MD5 hash and this operation is to read the full blob,
@@ -43,10 +43,10 @@ public class PageBlobsPutPageHeaders {
     private String contentMD5;
 
     /**
-     * The size of the blob in bytes.
+     * The current sequence number for the page blob.
      */
-    @JsonProperty(value = "x-ms-blob-content-length")
-    private Integer blobContentLength;
+    @JsonProperty(value = "x-ms-blob-sequence-number")
+    private Integer blobSequenceNumber;
 
     /**
      * This header uniquely identifies the request that was made and can be
@@ -103,8 +103,11 @@ public class PageBlobsPutPageHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -113,8 +116,12 @@ public class PageBlobsPutPageHeaders {
      * @param lastModified the lastModified value to set
      * @return the PageBlobsPutPageHeaders object itself.
      */
-    public PageBlobsPutPageHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public PageBlobsPutPageHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 
@@ -139,22 +146,22 @@ public class PageBlobsPutPageHeaders {
     }
 
     /**
-     * Get the blobContentLength value.
+     * Get the blobSequenceNumber value.
      *
-     * @return the blobContentLength value
+     * @return the blobSequenceNumber value
      */
-    public Integer blobContentLength() {
-        return this.blobContentLength;
+    public Integer blobSequenceNumber() {
+        return this.blobSequenceNumber;
     }
 
     /**
-     * Set the blobContentLength value.
+     * Set the blobSequenceNumber value.
      *
-     * @param blobContentLength the blobContentLength value to set
+     * @param blobSequenceNumber the blobSequenceNumber value to set
      * @return the PageBlobsPutPageHeaders object itself.
      */
-    public PageBlobsPutPageHeaders withBlobContentLength(Integer blobContentLength) {
-        this.blobContentLength = blobContentLength;
+    public PageBlobsPutPageHeaders withBlobSequenceNumber(Integer blobSequenceNumber) {
+        this.blobSequenceNumber = blobSequenceNumber;
         return this;
     }
 

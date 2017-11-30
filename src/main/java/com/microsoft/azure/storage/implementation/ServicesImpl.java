@@ -10,87 +10,76 @@
 
 package com.microsoft.azure.storage.implementation;
 
-import com.microsoft.rest.v2.RestResponse;
+import retrofit2.Retrofit;
 import com.microsoft.azure.storage.Services;
+import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;
-import com.microsoft.azure.storage.models.ContainerEnumerationResults;
-import com.microsoft.azure.storage.models.ErrorException;
+import com.microsoft.azure.storage.models.ListContainersIncludeType;
+import com.microsoft.azure.storage.models.ListContainersResponse;
 import com.microsoft.azure.storage.models.ServiceGetPropertiesHeaders;
 import com.microsoft.azure.storage.models.ServiceGetStatsHeaders;
 import com.microsoft.azure.storage.models.ServiceListContainersHeaders;
 import com.microsoft.azure.storage.models.ServiceSetPropertiesHeaders;
 import com.microsoft.azure.storage.models.StorageServiceProperties;
 import com.microsoft.azure.storage.models.StorageServiceStats;
-import com.microsoft.rest.v2.annotations.BodyParam;
-import com.microsoft.rest.v2.annotations.ExpectedResponses;
-import com.microsoft.rest.v2.annotations.GET;
-import com.microsoft.rest.v2.annotations.HeaderParam;
-import com.microsoft.rest.v2.annotations.Headers;
-import com.microsoft.rest.v2.annotations.Host;
-import com.microsoft.rest.v2.annotations.HostParam;
-import com.microsoft.rest.v2.annotations.PathParam;
-import com.microsoft.rest.v2.annotations.PUT;
-import com.microsoft.rest.v2.annotations.QueryParam;
-import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
-import com.microsoft.rest.v2.http.HttpClient;
-import com.microsoft.rest.v2.ServiceCallback;
-import com.microsoft.rest.v2.ServiceFuture;
-import com.microsoft.rest.v2.Validator;
+import com.microsoft.rest.RestException;
+import com.microsoft.rest.ServiceCallback;
+import com.microsoft.rest.ServiceFuture;
+import com.microsoft.rest.ServiceResponseWithHeaders;
+import com.microsoft.rest.Validator;
 import java.io.IOException;
+import okhttp3.ResponseBody;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.PUT;
+import retrofit2.http.Query;
+import retrofit2.Response;
 import rx.functions.Func1;
 import rx.Observable;
-import rx.Single;
-import com.microsoft.azure.v2.AzureProxy;
 
 /**
  * An instance of this class provides access to all the operations defined
  * in Services.
  */
 public class ServicesImpl implements Services {
-    /** The RestProxy service to perform REST calls. */
+    /** The Retrofit service to perform REST calls. */
     private ServicesService service;
     /** The service client containing this operation class. */
-    private StorageClientImpl client;
+    private AzureBlobStorageImpl client;
 
     /**
-     * Initializes an instance of ServicesImpl.
+     * Initializes an instance of Services.
      *
+     * @param retrofit the Retrofit instance built from a Retrofit Builder.
      * @param client the instance of the service client containing this operation class.
      */
-    public ServicesImpl(StorageClientImpl client) {
-        this.service = AzureProxy.create(ServicesService.class, client.restClient().baseURL(), client.httpClient(), client.serializerAdapter());
+    public ServicesImpl(Retrofit retrofit, AzureBlobStorageImpl client) {
+        this.service = retrofit.create(ServicesService.class);
         this.client = client;
     }
 
     /**
      * The interface defining all the services for Services to be
-     * used by RestProxy to perform REST calls.
+     * used by Retrofit to perform actually REST calls.
      */
-    @Host("https://{accountName}.blob.core.windows.net")
     interface ServicesService {
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Services setProperties" })
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Services setProperties" })
         @PUT("")
-        @ExpectedResponses({202})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<ServiceSetPropertiesHeaders, Void>> setProperties(@HostParam("accountName") String accountName, @BodyParam("application/xml; charset=utf-8") StorageServiceProperties storageServiceProperties, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        Observable<Response<ResponseBody>> setProperties(@Body StorageServiceProperties storageServiceProperties, @Query("timeout") Integer timeout, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Services getProperties" })
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Services getProperties" })
         @GET("")
-        @ExpectedResponses({200})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>> getProperties(@HostParam("accountName") String accountName, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        Observable<Response<ResponseBody>> getProperties(@Query("timeout") Integer timeout, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Services getStats" })
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Services getStats" })
         @GET("")
-        @ExpectedResponses({200})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>> getStats(@HostParam("accountName") String accountName, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        Observable<Response<ResponseBody>> getStats(@Query("timeout") Integer timeout, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
-        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Services listContainers" })
+        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Services listContainers" })
         @GET("")
-        @ExpectedResponses({200})
-        @UnexpectedResponseExceptionType(ErrorException.class)
-        Single<RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults>> listContainers(@HostParam("accountName") String accountName, @QueryParam("prefix") String prefix, @QueryParam("marker") String marker, @QueryParam("maxresults") Integer maxresults, @QueryParam("include") String include, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp, @HeaderParam("accept-language") String acceptLanguage, @HeaderParam("User-Agent") String userAgent);
+        Observable<Response<ResponseBody>> listContainers(@Query("prefix") String prefix, @Query("marker") String marker, @Query("maxresults") Integer maxresults, @Query("include") ListContainersIncludeType include, @Query("timeout") Integer timeout, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
 
     }
 
@@ -99,12 +88,11 @@ public class ServicesImpl implements Services {
      *
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the void object if successful.
      */
     public void setProperties(StorageServiceProperties storageServiceProperties) {
-        setPropertiesAsync(storageServiceProperties).toBlocking().value();
+        setPropertiesWithServiceResponseAsync(storageServiceProperties).toBlocking().single().body();
     }
 
     /**
@@ -115,8 +103,8 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(setPropertiesAsync(storageServiceProperties), serviceCallback);
+    public ServiceFuture<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, final ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(setPropertiesWithServiceResponseAsync(storageServiceProperties), serviceCallback);
     }
 
     /**
@@ -124,46 +112,66 @@ public class ServicesImpl implements Services {
      *
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
      */
-    public Single<RestResponse<ServiceSetPropertiesHeaders, Void>> setPropertiesWithRestResponseAsync(StorageServiceProperties storageServiceProperties) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties) {
+        return setPropertiesWithServiceResponseAsync(storageServiceProperties).map(new Func1<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>, Void>() {
+            @Override
+            public Void call(ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
+     *
+     * @param storageServiceProperties The StorageService properties.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     */
+    public Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>> setPropertiesWithServiceResponseAsync(StorageServiceProperties storageServiceProperties) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (storageServiceProperties == null) {
             throw new IllegalArgumentException("Parameter storageServiceProperties is required and cannot be null.");
         }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
+        }
+        Validator.validate(storageServiceProperties);
         final String restype = "service";
         final String comp = "properties";
         final Integer timeout = null;
-        Validator.validate(storageServiceProperties);
-        return service.setProperties(this.client.accountName(), storageServiceProperties, timeout, this.client.version(), this.client.requestId(), restype, comp, this.client.acceptLanguage(), this.client.userAgent());
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.setProperties(storageServiceProperties, timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders> clientResponse = setPropertiesDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @param storageServiceProperties The StorageService properties.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
-     */
-    public Single<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties) {
-        return setPropertiesWithRestResponseAsync(storageServiceProperties)
-            .map(new Func1<RestResponse<ServiceSetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ServiceSetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
-        }
-
-    /**
-     * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
-     *
-     * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the void object if successful.
      */
-    public void setProperties(StorageServiceProperties storageServiceProperties, Integer timeout) {
-        setPropertiesAsync(storageServiceProperties, timeout).toBlocking().value();
+    public void setProperties(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
+        setPropertiesWithServiceResponseAsync(storageServiceProperties, timeout, requestId).toBlocking().single().body();
     }
 
     /**
@@ -171,12 +179,13 @@ public class ServicesImpl implements Services {
      *
      * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(setPropertiesAsync(storageServiceProperties, timeout), serviceCallback);
+    public ServiceFuture<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId, final ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(setPropertiesWithServiceResponseAsync(storageServiceProperties, timeout, requestId), serviceCallback);
     }
 
     /**
@@ -184,46 +193,72 @@ public class ServicesImpl implements Services {
      *
      * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
      */
-    public Single<RestResponse<ServiceSetPropertiesHeaders, Void>> setPropertiesWithRestResponseAsync(StorageServiceProperties storageServiceProperties, Integer timeout) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
+        return setPropertiesWithServiceResponseAsync(storageServiceProperties, timeout, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>, Void>() {
+            @Override
+            public Void call(ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
+     *
+     * @param storageServiceProperties The StorageService properties.
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     */
+    public Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>> setPropertiesWithServiceResponseAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (storageServiceProperties == null) {
             throw new IllegalArgumentException("Parameter storageServiceProperties is required and cannot be null.");
         }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
+        }
+        Validator.validate(storageServiceProperties);
         final String restype = "service";
         final String comp = "properties";
-        Validator.validate(storageServiceProperties);
-        return service.setProperties(this.client.accountName(), storageServiceProperties, timeout, this.client.version(), this.client.requestId(), restype, comp, this.client.acceptLanguage(), this.client.userAgent());
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.setProperties(storageServiceProperties, timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders> clientResponse = setPropertiesDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
-    /**
-     * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
-     *
-     * @param storageServiceProperties The StorageService properties.
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
-     */
-    public Single<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout) {
-        return setPropertiesWithRestResponseAsync(storageServiceProperties, timeout)
-            .map(new Func1<RestResponse<ServiceSetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ServiceSetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
-        }
-
+    private ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders> setPropertiesDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
+                .register(202, new TypeToken<Void>() { }.getType())
+                .buildWithHeaders(response, ServiceSetPropertiesHeaders.class);
+    }
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the StorageServiceProperties object if successful.
      */
     public StorageServiceProperties getProperties() {
-        return getPropertiesAsync().toBlocking().value();
+        return getPropertiesWithServiceResponseAsync().toBlocking().single().body();
     }
 
     /**
@@ -233,101 +268,149 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<StorageServiceProperties> getPropertiesAsync(ServiceCallback<StorageServiceProperties> serviceCallback) {
-        return ServiceFuture.fromBody(getPropertiesAsync(), serviceCallback);
+    public ServiceFuture<StorageServiceProperties> getPropertiesAsync(final ServiceCallback<StorageServiceProperties> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(getPropertiesWithServiceResponseAsync(), serviceCallback);
     }
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
+     * @return the observable to the StorageServiceProperties object
      */
-    public Single<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>> getPropertiesWithRestResponseAsync() {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<StorageServiceProperties> getPropertiesAsync() {
+        return getPropertiesWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>, StorageServiceProperties>() {
+            @Override
+            public StorageServiceProperties call(ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the StorageServiceProperties object
+     */
+    public Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>> getPropertiesWithServiceResponseAsync() {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "service";
         final String comp = "properties";
         final Integer timeout = null;
-        return service.getProperties(this.client.accountName(), timeout, this.client.version(), this.client.requestId(), restype, comp, this.client.acceptLanguage(), this.client.userAgent());
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.getProperties(timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders> clientResponse = getPropertiesDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
-     */
-    public Single<StorageServiceProperties> getPropertiesAsync() {
-        return getPropertiesWithRestResponseAsync()
-            .map(new Func1<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>, StorageServiceProperties>() { public StorageServiceProperties call(RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> restResponse) { return restResponse.body(); } });
-        }
-
-    /**
-     * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
-     *
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the StorageServiceProperties object if successful.
      */
-    public StorageServiceProperties getProperties(Integer timeout) {
-        return getPropertiesAsync(timeout).toBlocking().value();
+    public StorageServiceProperties getProperties(Integer timeout, String requestId) {
+        return getPropertiesWithServiceResponseAsync(timeout, requestId).toBlocking().single().body();
     }
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<StorageServiceProperties> getPropertiesAsync(Integer timeout, ServiceCallback<StorageServiceProperties> serviceCallback) {
-        return ServiceFuture.fromBody(getPropertiesAsync(timeout), serviceCallback);
+    public ServiceFuture<StorageServiceProperties> getPropertiesAsync(Integer timeout, String requestId, final ServiceCallback<StorageServiceProperties> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(getPropertiesWithServiceResponseAsync(timeout, requestId), serviceCallback);
     }
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
+     * @return the observable to the StorageServiceProperties object
      */
-    public Single<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>> getPropertiesWithRestResponseAsync(Integer timeout) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<StorageServiceProperties> getPropertiesAsync(Integer timeout, String requestId) {
+        return getPropertiesWithServiceResponseAsync(timeout, requestId).map(new Func1<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>, StorageServiceProperties>() {
+            @Override
+            public StorageServiceProperties call(ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the StorageServiceProperties object
+     */
+    public Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>> getPropertiesWithServiceResponseAsync(Integer timeout, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "service";
         final String comp = "properties";
-        return service.getProperties(this.client.accountName(), timeout, this.client.version(), this.client.requestId(), restype, comp, this.client.acceptLanguage(), this.client.userAgent());
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.getProperties(timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders> clientResponse = getPropertiesDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
-    /**
-     * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
-     */
-    public Single<StorageServiceProperties> getPropertiesAsync(Integer timeout) {
-        return getPropertiesWithRestResponseAsync(timeout)
-            .map(new Func1<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>, StorageServiceProperties>() { public StorageServiceProperties call(RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> restResponse) { return restResponse.body(); } });
-        }
-
+    private ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders> getPropertiesDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<StorageServiceProperties, RestException>newInstance(this.client.serializerAdapter())
+                .register(200, new TypeToken<StorageServiceProperties>() { }.getType())
+                .buildWithHeaders(response, ServiceGetPropertiesHeaders.class);
+    }
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the StorageServiceStats object if successful.
      */
     public StorageServiceStats getStats() {
-        return getStatsAsync().toBlocking().value();
+        return getStatsWithServiceResponseAsync().toBlocking().single().body();
     }
 
     /**
@@ -337,101 +420,149 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<StorageServiceStats> getStatsAsync(ServiceCallback<StorageServiceStats> serviceCallback) {
-        return ServiceFuture.fromBody(getStatsAsync(), serviceCallback);
+    public ServiceFuture<StorageServiceStats> getStatsAsync(final ServiceCallback<StorageServiceStats> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(getStatsWithServiceResponseAsync(), serviceCallback);
     }
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
+     * @return the observable to the StorageServiceStats object
      */
-    public Single<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>> getStatsWithRestResponseAsync() {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<StorageServiceStats> getStatsAsync() {
+        return getStatsWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>, StorageServiceStats>() {
+            @Override
+            public StorageServiceStats call(ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the StorageServiceStats object
+     */
+    public Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>> getStatsWithServiceResponseAsync() {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "service";
         final String comp = "stats";
         final Integer timeout = null;
-        return service.getStats(this.client.accountName(), timeout, this.client.version(), this.client.requestId(), restype, comp, this.client.acceptLanguage(), this.client.userAgent());
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.getStats(timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders> clientResponse = getStatsDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
-     */
-    public Single<StorageServiceStats> getStatsAsync() {
-        return getStatsWithRestResponseAsync()
-            .map(new Func1<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>, StorageServiceStats>() { public StorageServiceStats call(RestResponse<ServiceGetStatsHeaders, StorageServiceStats> restResponse) { return restResponse.body(); } });
-        }
-
-    /**
-     * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
-     *
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the StorageServiceStats object if successful.
      */
-    public StorageServiceStats getStats(Integer timeout) {
-        return getStatsAsync(timeout).toBlocking().value();
+    public StorageServiceStats getStats(Integer timeout, String requestId) {
+        return getStatsWithServiceResponseAsync(timeout, requestId).toBlocking().single().body();
     }
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<StorageServiceStats> getStatsAsync(Integer timeout, ServiceCallback<StorageServiceStats> serviceCallback) {
-        return ServiceFuture.fromBody(getStatsAsync(timeout), serviceCallback);
+    public ServiceFuture<StorageServiceStats> getStatsAsync(Integer timeout, String requestId, final ServiceCallback<StorageServiceStats> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(getStatsWithServiceResponseAsync(timeout, requestId), serviceCallback);
     }
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
+     * @return the observable to the StorageServiceStats object
      */
-    public Single<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>> getStatsWithRestResponseAsync(Integer timeout) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<StorageServiceStats> getStatsAsync(Integer timeout, String requestId) {
+        return getStatsWithServiceResponseAsync(timeout, requestId).map(new Func1<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>, StorageServiceStats>() {
+            @Override
+            public StorageServiceStats call(ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the StorageServiceStats object
+     */
+    public Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>> getStatsWithServiceResponseAsync(Integer timeout, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "service";
         final String comp = "stats";
-        return service.getStats(this.client.accountName(), timeout, this.client.version(), this.client.requestId(), restype, comp, this.client.acceptLanguage(), this.client.userAgent());
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.getStats(timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders> clientResponse = getStatsDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
-    /**
-     * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
-     */
-    public Single<StorageServiceStats> getStatsAsync(Integer timeout) {
-        return getStatsWithRestResponseAsync(timeout)
-            .map(new Func1<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>, StorageServiceStats>() { public StorageServiceStats call(RestResponse<ServiceGetStatsHeaders, StorageServiceStats> restResponse) { return restResponse.body(); } });
-        }
-
+    private ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders> getStatsDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<StorageServiceStats, RestException>newInstance(this.client.serializerAdapter())
+                .register(200, new TypeToken<StorageServiceStats>() { }.getType())
+                .buildWithHeaders(response, ServiceGetStatsHeaders.class);
+    }
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the ContainerEnumerationResults object if successful.
+     * @return the ListContainersResponse object if successful.
      */
-    public ContainerEnumerationResults listContainers() {
-        return listContainersAsync().toBlocking().value();
+    public ListContainersResponse listContainers() {
+        return listContainersWithServiceResponseAsync().toBlocking().single().body();
     }
 
     /**
@@ -441,39 +572,59 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<ContainerEnumerationResults> listContainersAsync(ServiceCallback<ContainerEnumerationResults> serviceCallback) {
-        return ServiceFuture.fromBody(listContainersAsync(), serviceCallback);
+    public ServiceFuture<ListContainersResponse> listContainersAsync(final ServiceCallback<ListContainersResponse> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(listContainersWithServiceResponseAsync(), serviceCallback);
     }
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults> object
+     * @return the observable to the ListContainersResponse object
      */
-    public Single<RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults>> listContainersWithRestResponseAsync() {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<ListContainersResponse> listContainersAsync() {
+        return listContainersWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>, ListContainersResponse>() {
+            @Override
+            public ListContainersResponse call(ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The List Containers operation returns a list of the containers under the specified account.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the ListContainersResponse object
+     */
+    public Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>> listContainersWithServiceResponseAsync() {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "list";
         final String prefix = null;
         final String marker = null;
         final Integer maxresults = null;
-        final String include = null;
+        final ListContainersIncludeType include = null;
         final Integer timeout = null;
-        return service.listContainers(this.client.accountName(), prefix, marker, maxresults, include, timeout, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
+        final String requestId = null;
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.listContainers(prefix, marker, maxresults, include, timeout, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders> clientResponse = listContainersDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
-
-    /**
-     * The List Containers operation returns a list of the containers under the specified account.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults> object
-     */
-    public Single<ContainerEnumerationResults> listContainersAsync() {
-        return listContainersWithRestResponseAsync()
-            .map(new Func1<RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults>, ContainerEnumerationResults>() { public ContainerEnumerationResults call(RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults> restResponse) { return restResponse.body(); } });
-        }
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
@@ -483,13 +634,14 @@ public class ServicesImpl implements Services {
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
      * @param include Include this parameter to specify that the container's metadata be returned as part of the response body. Possible values include: 'metadata'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @throws ErrorException thrown if the request is rejected by server
+     * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
-     * @return the ContainerEnumerationResults object if successful.
+     * @return the ListContainersResponse object if successful.
      */
-    public ContainerEnumerationResults listContainers(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
-        return listContainersAsync(prefix, marker, maxresults, include, timeout).toBlocking().value();
+    public ListContainersResponse listContainers(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId) {
+        return listContainersWithServiceResponseAsync(prefix, marker, maxresults, include, timeout, requestId).toBlocking().single().body();
     }
 
     /**
@@ -500,12 +652,13 @@ public class ServicesImpl implements Services {
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
      * @param include Include this parameter to specify that the container's metadata be returned as part of the response body. Possible values include: 'metadata'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<ContainerEnumerationResults> listContainersAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout, ServiceCallback<ContainerEnumerationResults> serviceCallback) {
-        return ServiceFuture.fromBody(listContainersAsync(prefix, marker, maxresults, include, timeout), serviceCallback);
+    public ServiceFuture<ListContainersResponse> listContainersAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId, final ServiceCallback<ListContainersResponse> serviceCallback) {
+        return ServiceFuture.fromHeaderResponse(listContainersWithServiceResponseAsync(prefix, marker, maxresults, include, timeout, requestId), serviceCallback);
     }
 
     /**
@@ -516,32 +669,58 @@ public class ServicesImpl implements Services {
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
      * @param include Include this parameter to specify that the container's metadata be returned as part of the response body. Possible values include: 'metadata'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults> object
+     * @return the observable to the ListContainersResponse object
      */
-    public Single<RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults>> listContainersWithRestResponseAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
-        if (this.client.accountName() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountName() is required and cannot be null.");
+    public Observable<ListContainersResponse> listContainersAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId) {
+        return listContainersWithServiceResponseAsync(prefix, marker, maxresults, include, timeout, requestId).map(new Func1<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>, ListContainersResponse>() {
+            @Override
+            public ListContainersResponse call(ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders> response) {
+                return response.body();
+            }
+        });
+    }
+
+    /**
+     * The List Containers operation returns a list of the containers under the specified account.
+     *
+     * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
+     * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
+     * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
+     * @param include Include this parameter to specify that the container's metadata be returned as part of the response body. Possible values include: 'metadata'
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return the observable to the ListContainersResponse object
+     */
+    public Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>> listContainersWithServiceResponseAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId) {
+        if (this.client.accountUrl() == null) {
+            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (this.client.version() == null) {
+            throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "list";
-        return service.listContainers(this.client.accountName(), prefix, marker, maxresults, include, timeout, this.client.version(), this.client.requestId(), comp, this.client.acceptLanguage(), this.client.userAgent());
+        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        return service.listContainers(prefix, marker, maxresults, include, timeout, this.client.version(), requestId, comp, parameterizedHost)
+            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>>>() {
+                @Override
+                public Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>> call(Response<ResponseBody> response) {
+                    try {
+                        ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders> clientResponse = listContainersDelegate(response);
+                        return Observable.just(clientResponse);
+                    } catch (Throwable t) {
+                        return Observable.error(t);
+                    }
+                }
+            });
     }
 
-    /**
-     * The List Containers operation returns a list of the containers under the specified account.
-     *
-     * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
-     * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
-     * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
-     * @param include Include this parameter to specify that the container's metadata be returned as part of the response body. Possible values include: 'metadata'
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults> object
-     */
-    public Single<ContainerEnumerationResults> listContainersAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
-        return listContainersWithRestResponseAsync(prefix, marker, maxresults, include, timeout)
-            .map(new Func1<RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults>, ContainerEnumerationResults>() { public ContainerEnumerationResults call(RestResponse<ServiceListContainersHeaders, ContainerEnumerationResults> restResponse) { return restResponse.body(); } });
-        }
-
+    private ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders> listContainersDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
+        return this.client.restClient().responseBuilderFactory().<ListContainersResponse, RestException>newInstance(this.client.serializerAdapter())
+                .register(200, new TypeToken<ListContainersResponse>() { }.getType())
+                .buildWithHeaders(response, ServiceListContainersHeaders.class);
+    }
 
 }

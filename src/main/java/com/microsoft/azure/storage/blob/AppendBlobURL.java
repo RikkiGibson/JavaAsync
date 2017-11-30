@@ -16,6 +16,10 @@ package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.pipeline.Pipeline;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.util.Date;
+
 /**
  * Represents a URL to a page blob.
  */
@@ -41,5 +45,18 @@ public final class AppendBlobURL extends BlobURL {
      */
     public AppendBlobURL withPipeline(Pipeline pipeline) {
         return new AppendBlobURL(this.url, pipeline);
+    }
+
+    /**
+     * Creates a new {@link AppendBlobURL} with the given snapshot.
+     * @param snapshot
+     *      A <code>java.util.Date</code> to set.
+     * @return
+     *      A {@link BlobURL} object with the given pipeline.
+     */
+    public AppendBlobURL withSnapshot(Date snapshot) throws MalformedURLException, UnsupportedEncodingException {
+        BlobURLParts blobURLParts = URLParser.ParseURL(super.url);
+        blobURLParts.setSnapshot(snapshot);
+        return new AppendBlobURL(blobURLParts.toURL(), super.storageClient.pipeline());
     }
 }

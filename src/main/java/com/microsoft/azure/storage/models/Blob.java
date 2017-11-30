@@ -21,19 +21,19 @@ public class Blob {
     /**
      * The name property.
      */
-    @JsonProperty(value = "Name")
+    @JsonProperty(value = "Name", required = true)
     private String name;
 
     /**
      * The snapshot property.
      */
-    @JsonProperty(value = "Snapshot")
+    @JsonProperty(value = "Snapshot", required = true)
     private DateTime snapshot;
 
     /**
      * The properties property.
      */
-    @JsonProperty(value = "Properties")
+    @JsonProperty(value = "Properties", required = true)
     private BlobProperties properties;
 
     /**

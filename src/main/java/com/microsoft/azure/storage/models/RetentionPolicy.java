@@ -13,7 +13,7 @@ package com.microsoft.azure.storage.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * the reqtention policy.
+ * the retention policy.
  */
 public class RetentionPolicy {
     /**
@@ -26,8 +26,8 @@ public class RetentionPolicy {
      * Indicates the number of days that metrics or logging data should be
      * retained. All data older than this value will be deleted.
      */
-    @JsonProperty(value = "Days")
-    private Integer days;
+    @JsonProperty(value = "Days", required = true)
+    private int days;
 
     /**
      * Get the enabled value.
@@ -54,7 +54,7 @@ public class RetentionPolicy {
      *
      * @return the days value
      */
-    public Integer days() {
+    public int days() {
         return this.days;
     }
 
@@ -64,7 +64,7 @@ public class RetentionPolicy {
      * @param days the days value to set
      * @return the RetentionPolicy object itself.
      */
-    public RetentionPolicy withDays(Integer days) {
+    public RetentionPolicy withDays(int days) {
         this.days = days;
         return this;
     }

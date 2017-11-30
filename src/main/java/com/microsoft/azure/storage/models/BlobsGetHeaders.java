@@ -10,9 +10,9 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.Map;
 import com.microsoft.rest.v2.DateTimeRfc1123;
 import org.joda.time.DateTime;
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -25,7 +25,7 @@ public class BlobsGetHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * The metadata property.
@@ -37,7 +37,7 @@ public class BlobsGetHeaders {
      * The number of bytes present in the response body.
      */
     @JsonProperty(value = "Content-Length")
-    private Integer contentLength;
+    private Long contentLength;
 
     /**
      * The content type specified for the blob. The default content type is
@@ -218,13 +218,6 @@ public class BlobsGetHeaders {
     private DateTimeRfc1123 dateProperty;
 
     /**
-     * Returned with the value of the Origin header when CORS rules are
-     * specified.
-     */
-    @JsonProperty(value = "Vary")
-    private String vary;
-
-    /**
      * The number of committed blocks present in the blob. This header is
      * returned only for append blobs.
      */
@@ -255,8 +248,11 @@ public class BlobsGetHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -265,8 +261,12 @@ public class BlobsGetHeaders {
      * @param lastModified the lastModified value to set
      * @return the BlobsGetHeaders object itself.
      */
-    public BlobsGetHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public BlobsGetHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 
@@ -295,7 +295,7 @@ public class BlobsGetHeaders {
      *
      * @return the contentLength value
      */
-    public Integer contentLength() {
+    public Long contentLength() {
         return this.contentLength;
     }
 
@@ -305,7 +305,7 @@ public class BlobsGetHeaders {
      * @param contentLength the contentLength value to set
      * @return the BlobsGetHeaders object itself.
      */
-    public BlobsGetHeaders withContentLength(Integer contentLength) {
+    public BlobsGetHeaders withContentLength(Long contentLength) {
         this.contentLength = contentLength;
         return this;
     }
@@ -761,26 +761,6 @@ public class BlobsGetHeaders {
         } else {
             this.dateProperty = new DateTimeRfc1123(dateProperty);
         }
-        return this;
-    }
-
-    /**
-     * Get the vary value.
-     *
-     * @return the vary value
-     */
-    public String vary() {
-        return this.vary;
-    }
-
-    /**
-     * Set the vary value.
-     *
-     * @param vary the vary value to set
-     * @return the BlobsGetHeaders object itself.
-     */
-    public BlobsGetHeaders withVary(String vary) {
-        this.vary = vary;
         return this;
     }
 

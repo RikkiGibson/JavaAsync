@@ -14,7 +14,7 @@
  */
 package com.microsoft.azure.storage.blob;
 
-public class PageBlobAccessConditions {
+public final class PageBlobAccessConditions {
     // IfSequenceNumberLessThan ensures that the page blob operation succeeds
     // only if the blob's sequence number is less than a value.
     // IfSequenceNumberLessThan=0 means no 'IfSequenceNumberLessThan' header specified.

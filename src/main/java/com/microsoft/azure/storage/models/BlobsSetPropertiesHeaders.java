@@ -32,7 +32,7 @@ public class BlobsSetPropertiesHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * The current sequence number for a page blob. This header is not returned
@@ -88,8 +88,11 @@ public class BlobsSetPropertiesHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -98,8 +101,12 @@ public class BlobsSetPropertiesHeaders {
      * @param lastModified the lastModified value to set
      * @return the BlobsSetPropertiesHeaders object itself.
      */
-    public BlobsSetPropertiesHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public BlobsSetPropertiesHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

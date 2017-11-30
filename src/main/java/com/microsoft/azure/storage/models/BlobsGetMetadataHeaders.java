@@ -31,7 +31,7 @@ public class BlobsGetMetadataHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * The ETag contains a value that you can use to perform operations
@@ -88,8 +88,11 @@ public class BlobsGetMetadataHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -98,8 +101,12 @@ public class BlobsGetMetadataHeaders {
      * @param lastModified the lastModified value to set
      * @return the BlobsGetMetadataHeaders object itself.
      */
-    public BlobsGetMetadataHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public BlobsGetMetadataHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

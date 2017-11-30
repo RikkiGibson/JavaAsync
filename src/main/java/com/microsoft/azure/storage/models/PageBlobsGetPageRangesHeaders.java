@@ -24,7 +24,7 @@ public class PageBlobsGetPageRangesHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * The ETag contains a value that you can use to perform operations
@@ -38,7 +38,7 @@ public class PageBlobsGetPageRangesHeaders {
      * The size of the blob in bytes.
      */
     @JsonProperty(value = "x-ms-blob-content-length")
-    private Integer blobContentLength;
+    private Long blobContentLength;
 
     /**
      * This header uniquely identifies the request that was made and can be
@@ -67,8 +67,11 @@ public class PageBlobsGetPageRangesHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -77,8 +80,12 @@ public class PageBlobsGetPageRangesHeaders {
      * @param lastModified the lastModified value to set
      * @return the PageBlobsGetPageRangesHeaders object itself.
      */
-    public PageBlobsGetPageRangesHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public PageBlobsGetPageRangesHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 
@@ -107,7 +114,7 @@ public class PageBlobsGetPageRangesHeaders {
      *
      * @return the blobContentLength value
      */
-    public Integer blobContentLength() {
+    public Long blobContentLength() {
         return this.blobContentLength;
     }
 
@@ -117,7 +124,7 @@ public class PageBlobsGetPageRangesHeaders {
      * @param blobContentLength the blobContentLength value to set
      * @return the PageBlobsGetPageRangesHeaders object itself.
      */
-    public PageBlobsGetPageRangesHeaders withBlobContentLength(Integer blobContentLength) {
+    public PageBlobsGetPageRangesHeaders withBlobContentLength(Long blobContentLength) {
         this.blobContentLength = blobContentLength;
         return this;
     }

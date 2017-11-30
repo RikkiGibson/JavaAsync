@@ -20,13 +20,13 @@ public class Container {
     /**
      * The name property.
      */
-    @JsonProperty(value = "Name")
+    @JsonProperty(value = "Name", required = true)
     private String name;
 
     /**
      * The properties property.
      */
-    @JsonProperty(value = "Properties")
+    @JsonProperty(value = "Properties", required = true)
     private ContainerProperties properties;
 
     /**

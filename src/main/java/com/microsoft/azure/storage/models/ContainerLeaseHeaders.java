@@ -32,7 +32,7 @@ public class ContainerLeaseHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * Uniquely identifies a container's lease.
@@ -93,8 +93,11 @@ public class ContainerLeaseHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -103,8 +106,12 @@ public class ContainerLeaseHeaders {
      * @param lastModified the lastModified value to set
      * @return the ContainerLeaseHeaders object itself.
      */
-    public ContainerLeaseHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public ContainerLeaseHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

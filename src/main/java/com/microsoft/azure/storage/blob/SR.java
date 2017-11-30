@@ -17,7 +17,7 @@ package com.microsoft.azure.storage.blob;
 /**
  * RESERVED FOR INTERNAL USE. Provides a standard set of errors that could be thrown from the client library.
  */
-public class SR {
+final class SR {
     public static final String ACCOUNT_NAME_NULL_OR_EMPTY = "The account name is null or empty.";
     public static final String ACCOUNT_NAME_MISMATCH = "The account name does not match the existing account name on the credentials.";
     public static final String APPEND_BLOB_MD5_NOT_POSSIBLE = "MD5 cannot be calculated for an existing append blob because it would require reading the existing data. Please disable StoreFileContentMD5.";

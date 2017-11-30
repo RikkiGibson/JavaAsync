@@ -20,6 +20,8 @@ import com.microsoft.azure.storage.models.BlockListType;
 import com.microsoft.azure.storage.pipeline.Pipeline;
 import rx.Single;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.util.Date;
 
 /**
@@ -56,9 +58,10 @@ public final class BlockBlobURL extends BlobURL {
      * @return
      *      A {@link BlockBlobURL} object with the given pipeline.
      */
-    public BlockBlobURL withSnapshot(Date snapshot) {
-        //return new BlobUrl(, this.pipeline)
-        return null;
+    public BlockBlobURL withSnapshot(Date snapshot) throws MalformedURLException, UnsupportedEncodingException {
+        BlobURLParts blobURLParts = URLParser.ParseURL(super.url);
+        blobURLParts.setSnapshot(snapshot);
+        return new BlockBlobURL(blobURLParts.toURL(), super.storageClient.pipeline());
     }
 
     /**

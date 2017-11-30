@@ -30,7 +30,7 @@ public final class RequestPolicyNode {
         return nextRequestPolicy.sendAsync(request);
     }
 
-    public boolean shouldLogRequest(LogLevel logLevel) {
+    public boolean shouldLog(LogLevel logLevel) {
         if (logLevel == LogLevel.OFF) {
             return false;
         }
@@ -39,8 +39,14 @@ public final class RequestPolicyNode {
         return logLevel.getValue() <= minLevelToLog.getValue();
     }
 
+    public void log(LogLevel logLevel, String message) {
+        if (shouldLog(logLevel)) {
+            this.logRequest.logRequest(logLevel, message);
+        }
+    }
+
     public void log(LogLevel logLevel, String format, Object... args) {
-        if (shouldLogRequest(logLevel)) {
+        if (shouldLog(logLevel)) {
             this.logRequest.logRequest(logLevel, formatLogEntry(format, args));
         }
     }

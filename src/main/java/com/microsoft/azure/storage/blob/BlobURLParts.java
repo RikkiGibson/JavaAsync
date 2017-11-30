@@ -25,19 +25,19 @@ import java.util.Map;
  * NOTE: Changing any SAS-related field requires computing a new SAS signature.
  */
 public final class BlobURLParts {
-    private final String scheme;
+    private String scheme;
 
-    private final String host;
+    private String host;
 
-    private final String containerName;
+    private String containerName;
 
-    private final String blobName;
+    private String blobName;
 
-    private final Date snapshot;
+    private Date snapshot;
 
-    private final SASQueryParameters sasQueryParameters;
+    private SASQueryParameters sasQueryParameters;
 
-    private final Map<String, String[]> unparsedParameters;
+    private Map<String, String[]> unparsedParameters;
 
     /**
      * Creates a {@link BlobURLParts} object
@@ -176,5 +176,34 @@ public final class BlobURLParts {
         }
 
         return urlBuilder.toString();
+    }
+
+    // TODO: Check that it is ok to remove final and make public setters
+    public void setScheme(String scheme) {
+        this.scheme = scheme;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setContainerName(String containerName) {
+        this.containerName = containerName;
+    }
+
+    public void setBlobName(String blobName) {
+        this.blobName = blobName;
+    }
+
+    public void setSnapshot(Date snapshot) {
+        this.snapshot = snapshot;
+    }
+
+    public void setSasQueryParameters(SASQueryParameters sasQueryParameters) {
+        this.sasQueryParameters = sasQueryParameters;
+    }
+
+    public void setUnparsedParameters(Map<String, String[]> unparsedParameters) {
+        this.unparsedParameters = unparsedParameters;
     }
 }

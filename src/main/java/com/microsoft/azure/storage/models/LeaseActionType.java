@@ -14,32 +14,41 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Defines values for DeleteSnapshotsOption.
+ * Defines values for LeaseActionType.
  */
-public enum DeleteSnapshotsOption {
-    /** Enum value include. */
-    INCLUDE("include"),
+public enum LeaseActionType {
+    /** Enum value acquire. */
+    ACQUIRE("acquire"),
 
-    /** Enum value only. */
-    ONLY("only");
+    /** Enum value renew. */
+    RENEW("renew"),
 
-    /** The actual serialized value for a DeleteSnapshotsOption instance. */
+    /** Enum value change. */
+    CHANGE("change"),
+
+    /** Enum value release. */
+    RELEASE("release"),
+
+    /** Enum value break. */
+    BREAK("break");
+
+    /** The actual serialized value for a LeaseActionType instance. */
     private String value;
 
-    DeleteSnapshotsOption(String value) {
+    LeaseActionType(String value) {
         this.value = value;
     }
 
     /**
-     * Parses a serialized value to a DeleteSnapshotsOption instance.
+     * Parses a serialized value to a LeaseActionType instance.
      *
      * @param value the serialized value to parse.
-     * @return the parsed DeleteSnapshotsOption object, or null if unable to parse.
+     * @return the parsed LeaseActionType object, or null if unable to parse.
      */
     @JsonCreator
-    public static DeleteSnapshotsOption fromString(String value) {
-        DeleteSnapshotsOption[] items = DeleteSnapshotsOption.values();
-        for (DeleteSnapshotsOption item : items) {
+    public static LeaseActionType fromString(String value) {
+        LeaseActionType[] items = LeaseActionType.values();
+        for (LeaseActionType item : items) {
             if (item.toString().equalsIgnoreCase(value)) {
                 return item;
             }

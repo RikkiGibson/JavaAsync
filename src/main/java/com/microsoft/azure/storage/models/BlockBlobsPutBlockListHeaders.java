@@ -32,7 +32,7 @@ public class BlockBlobsPutBlockListHeaders {
      * properties, changes the last-modified time of the blob.
      */
     @JsonProperty(value = "Last-Modified")
-    private String lastModified;
+    private DateTimeRfc1123 lastModified;
 
     /**
      * If the blob has an MD5 hash and this operation is to read the full blob,
@@ -97,8 +97,11 @@ public class BlockBlobsPutBlockListHeaders {
      *
      * @return the lastModified value
      */
-    public String lastModified() {
-        return this.lastModified;
+    public DateTime lastModified() {
+        if (this.lastModified == null) {
+            return null;
+        }
+        return this.lastModified.dateTime();
     }
 
     /**
@@ -107,8 +110,12 @@ public class BlockBlobsPutBlockListHeaders {
      * @param lastModified the lastModified value to set
      * @return the BlockBlobsPutBlockListHeaders object itself.
      */
-    public BlockBlobsPutBlockListHeaders withLastModified(String lastModified) {
-        this.lastModified = lastModified;
+    public BlockBlobsPutBlockListHeaders withLastModified(DateTime lastModified) {
+        if (lastModified == null) {
+            this.lastModified = null;
+        } else {
+            this.lastModified = new DateTimeRfc1123(lastModified);
+        }
         return this;
     }
 

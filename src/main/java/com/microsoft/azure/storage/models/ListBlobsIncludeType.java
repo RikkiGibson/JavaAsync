@@ -14,35 +14,38 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Defines values for GeoReplicationStatus.
+ * Defines values for ListBlobsIncludeType.
  */
-public enum GeoReplicationStatus {
-    /** Enum value live. */
-    LIVE("live"),
+public enum ListBlobsIncludeType {
+    /** Enum value snapshots. */
+    SNAPSHOTS("snapshots"),
 
-    /** Enum value bootstrap. */
-    BOOTSTRAP("bootstrap"),
+    /** Enum value metadata. */
+    METADATA("metadata"),
 
-    /** Enum value unavailable. */
-    UNAVAILABLE("unavailable");
+    /** Enum value uncommittedblobs. */
+    UNCOMMITTEDBLOBS("uncommittedblobs"),
 
-    /** The actual serialized value for a GeoReplicationStatus instance. */
+    /** Enum value copy. */
+    COPY("copy");
+
+    /** The actual serialized value for a ListBlobsIncludeType instance. */
     private String value;
 
-    GeoReplicationStatus(String value) {
+    ListBlobsIncludeType(String value) {
         this.value = value;
     }
 
     /**
-     * Parses a serialized value to a GeoReplicationStatus instance.
+     * Parses a serialized value to a ListBlobsIncludeType instance.
      *
      * @param value the serialized value to parse.
-     * @return the parsed GeoReplicationStatus object, or null if unable to parse.
+     * @return the parsed ListBlobsIncludeType object, or null if unable to parse.
      */
     @JsonCreator
-    public static GeoReplicationStatus fromString(String value) {
-        GeoReplicationStatus[] items = GeoReplicationStatus.values();
-        for (GeoReplicationStatus item : items) {
+    public static ListBlobsIncludeType fromString(String value) {
+        ListBlobsIncludeType[] items = ListBlobsIncludeType.values();
+        for (ListBlobsIncludeType item : items) {
             if (item.toString().equalsIgnoreCase(value)) {
                 return item;
             }

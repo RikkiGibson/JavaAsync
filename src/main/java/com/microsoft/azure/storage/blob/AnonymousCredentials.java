@@ -25,7 +25,7 @@ import rx.Single;
  * that read blobs from public containers or requests that use a
  * Shared Access Signature (SAS).
  */
-public final class AnonymousCredentials implements Credentials {
+public final class AnonymousCredentials implements ICredentials {
 
     /**
      * Anonymous credentials are to be used with with HTTP(S) requests

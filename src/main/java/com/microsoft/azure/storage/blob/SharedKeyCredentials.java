@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
-public final class SharedKeyCredentials implements Credentials {
+public final class SharedKeyCredentials implements ICredentials {
 
     private final String accountName;
 

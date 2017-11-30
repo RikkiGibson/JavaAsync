@@ -12,22 +12,21 @@ package com.microsoft.azure.storage.models;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
- * An enumaration of containers.
+ * An enumeration of containers.
  */
-public class ContainerEnumerationResults {
+public class ListContainersResponse {
     /**
      * The serviceEndpoint property.
      */
-    @JacksonXmlProperty(localName = "ServiceEndpoint", isAttribute = true)
+    @JsonProperty(value = "ServiceEndpoint", required = true)
     private String serviceEndpoint;
 
     /**
      * The prefix property.
      */
-    @JsonProperty(value = "Prefix")
+    @JsonProperty(value = "Prefix", required = true)
     private String prefix;
 
     /**
@@ -39,8 +38,8 @@ public class ContainerEnumerationResults {
     /**
      * The maxResults property.
      */
-    @JsonProperty(value = "MaxResults")
-    private Integer maxResults;
+    @JsonProperty(value = "MaxResults", required = true)
+    private int maxResults;
 
     /**
      * The containers property.
@@ -51,7 +50,7 @@ public class ContainerEnumerationResults {
     /**
      * The nextMarker property.
      */
-    @JsonProperty(value = "NextMarker")
+    @JsonProperty(value = "NextMarker", required = true)
     private String nextMarker;
 
     /**
@@ -67,9 +66,9 @@ public class ContainerEnumerationResults {
      * Set the serviceEndpoint value.
      *
      * @param serviceEndpoint the serviceEndpoint value to set
-     * @return the ContainerEnumerationResults object itself.
+     * @return the ListContainersResponse object itself.
      */
-    public ContainerEnumerationResults withServiceEndpoint(String serviceEndpoint) {
+    public ListContainersResponse withServiceEndpoint(String serviceEndpoint) {
         this.serviceEndpoint = serviceEndpoint;
         return this;
     }
@@ -87,9 +86,9 @@ public class ContainerEnumerationResults {
      * Set the prefix value.
      *
      * @param prefix the prefix value to set
-     * @return the ContainerEnumerationResults object itself.
+     * @return the ListContainersResponse object itself.
      */
-    public ContainerEnumerationResults withPrefix(String prefix) {
+    public ListContainersResponse withPrefix(String prefix) {
         this.prefix = prefix;
         return this;
     }
@@ -107,9 +106,9 @@ public class ContainerEnumerationResults {
      * Set the marker value.
      *
      * @param marker the marker value to set
-     * @return the ContainerEnumerationResults object itself.
+     * @return the ListContainersResponse object itself.
      */
-    public ContainerEnumerationResults withMarker(String marker) {
+    public ListContainersResponse withMarker(String marker) {
         this.marker = marker;
         return this;
     }
@@ -119,7 +118,7 @@ public class ContainerEnumerationResults {
      *
      * @return the maxResults value
      */
-    public Integer maxResults() {
+    public int maxResults() {
         return this.maxResults;
     }
 
@@ -127,9 +126,9 @@ public class ContainerEnumerationResults {
      * Set the maxResults value.
      *
      * @param maxResults the maxResults value to set
-     * @return the ContainerEnumerationResults object itself.
+     * @return the ListContainersResponse object itself.
      */
-    public ContainerEnumerationResults withMaxResults(Integer maxResults) {
+    public ListContainersResponse withMaxResults(int maxResults) {
         this.maxResults = maxResults;
         return this;
     }
@@ -147,9 +146,9 @@ public class ContainerEnumerationResults {
      * Set the containers value.
      *
      * @param containers the containers value to set
-     * @return the ContainerEnumerationResults object itself.
+     * @return the ListContainersResponse object itself.
      */
-    public ContainerEnumerationResults withContainers(List<Container> containers) {
+    public ListContainersResponse withContainers(List<Container> containers) {
         this.containers = containers;
         return this;
     }
@@ -167,9 +166,9 @@ public class ContainerEnumerationResults {
      * Set the nextMarker value.
      *
      * @param nextMarker the nextMarker value to set
-     * @return the ContainerEnumerationResults object itself.
+     * @return the ListContainersResponse object itself.
      */
-    public ContainerEnumerationResults withNextMarker(String nextMarker) {
+    public ListContainersResponse withNextMarker(String nextMarker) {
         this.nextMarker = nextMarker;
         return this;
     }

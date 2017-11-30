@@ -19,26 +19,26 @@ public class Metrics {
     /**
      * The version of Storage Analytics to configure.
      */
-    @JsonProperty(value = "Version")
+    @JsonProperty(value = "Version", required = true)
     private String version;
 
     /**
      * Indicates whether metrics are enabled for the Blob service.
      */
-    @JsonProperty(value = "Enabled")
-    private Boolean enabled;
+    @JsonProperty(value = "Enabled", required = true)
+    private boolean enabled;
 
     /**
      * Indicates whether metrics should generate summary statistics for called
      * API operations.
      */
-    @JsonProperty(value = "IncludeAPIs")
-    private Boolean includeAPIs;
+    @JsonProperty(value = "IncludeAPIs", required = true)
+    private boolean includeAPIs;
 
     /**
      * The retentionPolicy property.
      */
-    @JsonProperty(value = "RetentionPolicy")
+    @JsonProperty(value = "RetentionPolicy", required = true)
     private RetentionPolicy retentionPolicy;
 
     /**
@@ -66,7 +66,7 @@ public class Metrics {
      *
      * @return the enabled value
      */
-    public Boolean enabled() {
+    public boolean enabled() {
         return this.enabled;
     }
 
@@ -76,7 +76,7 @@ public class Metrics {
      * @param enabled the enabled value to set
      * @return the Metrics object itself.
      */
-    public Metrics withEnabled(Boolean enabled) {
+    public Metrics withEnabled(boolean enabled) {
         this.enabled = enabled;
         return this;
     }
@@ -86,7 +86,7 @@ public class Metrics {
      *
      * @return the includeAPIs value
      */
-    public Boolean includeAPIs() {
+    public boolean includeAPIs() {
         return this.includeAPIs;
     }
 
@@ -96,7 +96,7 @@ public class Metrics {
      * @param includeAPIs the includeAPIs value to set
      * @return the Metrics object itself.
      */
-    public Metrics withIncludeAPIs(Boolean includeAPIs) {
+    public Metrics withIncludeAPIs(boolean includeAPIs) {
         this.includeAPIs = includeAPIs;
         return this;
     }
