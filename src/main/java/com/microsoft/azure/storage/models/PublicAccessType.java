@@ -10,9 +10,9 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.Collection;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.microsoft.rest.v2.ExpandableStringEnum;
+import java.util.Collection;
 
 /**
  * Defines values for PublicAccessType.

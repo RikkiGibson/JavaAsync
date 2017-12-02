@@ -10,33 +10,24 @@
 
 package com.microsoft.azure.storage;
 
-import com.microsoft.rest.RestClient;
-
 /**
  * The interface for AzureBlobStorage class.
  */
 public interface AzureBlobStorage {
-    /**
-     * Gets the REST client.
-     *
-     * @return the {@link RestClient} object.
-    */
-    RestClient restClient();
-
     /**
      * The default base URL.
      */
     String DEFAULT_BASE_URL = "https://{accountUrl}";
 
     /**
-     * Gets The Azure storage account to use..
+     * Gets The Azure storage account to use.
      *
      * @return the accountUrl value.
      */
     String accountUrl();
 
     /**
-     * Sets The Azure storage account to use..
+     * Sets The Azure storage account to use.
      *
      * @param accountUrl the accountUrl value.
      * @return the service client itself
@@ -44,14 +35,14 @@ public interface AzureBlobStorage {
     AzureBlobStorage withAccountUrl(String accountUrl);
 
     /**
-     * Gets Specifies the version of the operation to use for this request..
+     * Gets Specifies the version of the operation to use for this request.
      *
      * @return the version value.
      */
     String version();
 
     /**
-     * Sets Specifies the version of the operation to use for this request..
+     * Sets Specifies the version of the operation to use for this request.
      *
      * @param version the version value.
      * @return the service client itself

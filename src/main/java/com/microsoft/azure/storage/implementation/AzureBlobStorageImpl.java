@@ -10,24 +10,25 @@
 
 package com.microsoft.azure.storage.implementation;
 
+import com.microsoft.azure.storage.AppendBlobs;
 import com.microsoft.azure.storage.AzureBlobStorage;
-import com.microsoft.azure.storage.Services;
-import com.microsoft.azure.storage.Containers;
 import com.microsoft.azure.storage.Blobs;
 import com.microsoft.azure.storage.BlockBlobs;
+import com.microsoft.azure.storage.Containers;
 import com.microsoft.azure.storage.PageBlobs;
-import com.microsoft.azure.storage.AppendBlobs;
-import com.microsoft.rest.ServiceClient;
-import com.microsoft.rest.RestClient;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
+import com.microsoft.azure.storage.Services;
+import com.microsoft.rest.v2.RestProxy;
+import com.microsoft.rest.v2.ServiceClient;
+import com.microsoft.rest.v2.http.HttpPipeline;
 
 /**
  * Initializes a new instance of the AzureBlobStorage class.
  */
 public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStorage {
 
-    /** The Azure storage account to use. */
+    /**
+     * The Azure storage account to use.
+     */
     private String accountUrl;
 
     /**
@@ -50,7 +51,9 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
         return this;
     }
 
-    /** Specifies the version of the operation to use for this request. */
+    /**
+     * Specifies the version of the operation to use for this request.
+     */
     private String version;
 
     /**
@@ -80,6 +83,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
 
     /**
      * Gets the Services object to access its operations.
+     *
      * @return the Services object.
      */
     public Services services() {
@@ -93,6 +97,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
 
     /**
      * Gets the Containers object to access its operations.
+     *
      * @return the Containers object.
      */
     public Containers containers() {
@@ -106,6 +111,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
 
     /**
      * Gets the Blobs object to access its operations.
+     *
      * @return the Blobs object.
      */
     public Blobs blobs() {
@@ -119,6 +125,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
 
     /**
      * Gets the BlockBlobs object to access its operations.
+     *
      * @return the BlockBlobs object.
      */
     public BlockBlobs blockBlobs() {
@@ -132,6 +139,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
 
     /**
      * Gets the PageBlobs object to access its operations.
+     *
      * @return the PageBlobs object.
      */
     public PageBlobs pageBlobs() {
@@ -145,6 +153,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
 
     /**
      * Gets the AppendBlobs object to access its operations.
+     *
      * @return the AppendBlobs object.
      */
     public AppendBlobs appendBlobs() {
@@ -155,58 +164,22 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
      * Initializes an instance of AzureBlobStorage client.
      */
     public AzureBlobStorageImpl() {
-        this("https://{accountUrl}");
+        this(RestProxy.createDefaultPipeline());
     }
 
     /**
      * Initializes an instance of AzureBlobStorage client.
      *
-     * @param baseUrl the base URL of the host
+     * @param httpPipeline The HTTP pipeline to send requests through.
      */
-    private AzureBlobStorageImpl(String baseUrl) {
-        super(baseUrl);
-        initialize();
-    }
+    public AzureBlobStorageImpl(HttpPipeline httpPipeline) {
+        super(httpPipeline);
 
-    /**
-     * Initializes an instance of AzureBlobStorage client.
-     *
-     * @param clientBuilder the builder for building an OkHttp client, bundled with user configurations
-     * @param restBuilder the builder for building an Retrofit client, bundled with user configurations
-     */
-    public AzureBlobStorageImpl(OkHttpClient.Builder clientBuilder, Retrofit.Builder restBuilder) {
-        this("https://{accountUrl}", clientBuilder, restBuilder);
-        initialize();
-    }
-
-    /**
-     * Initializes an instance of AzureBlobStorage client.
-     *
-     * @param baseUrl the base URL of the host
-     * @param clientBuilder the builder for building an OkHttp client, bundled with user configurations
-     * @param restBuilder the builder for building an Retrofit client, bundled with user configurations
-     */
-    private AzureBlobStorageImpl(String baseUrl, OkHttpClient.Builder clientBuilder, Retrofit.Builder restBuilder) {
-        super(baseUrl, clientBuilder, restBuilder);
-        initialize();
-    }
-
-    /**
-     * Initializes an instance of AzureBlobStorage client.
-     *
-     * @param restClient the REST client containing pre-configured settings
-     */
-    public AzureBlobStorageImpl(RestClient restClient) {
-        super(restClient);
-        initialize();
-    }
-
-    private void initialize() {
-        this.services = new ServicesImpl(retrofit(), this);
-        this.containers = new ContainersImpl(retrofit(), this);
-        this.blobs = new BlobsImpl(retrofit(), this);
-        this.blockBlobs = new BlockBlobsImpl(retrofit(), this);
-        this.pageBlobs = new PageBlobsImpl(retrofit(), this);
-        this.appendBlobs = new AppendBlobsImpl(retrofit(), this);
+        this.services = new ServicesImpl(this);
+        this.containers = new ContainersImpl(this);
+        this.blobs = new BlobsImpl(this);
+        this.blockBlobs = new BlockBlobsImpl(this);
+        this.pageBlobs = new PageBlobsImpl(this);
+        this.appendBlobs = new AppendBlobsImpl(this);
     }
 }

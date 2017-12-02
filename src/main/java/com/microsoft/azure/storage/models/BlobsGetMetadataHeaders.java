@@ -10,10 +10,10 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.Map;
-import com.microsoft.rest.v2.DateTimeRfc1123;
-import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microsoft.rest.v2.DateTimeRfc1123;
+import java.util.Map;
+import org.joda.time.DateTime;
 
 /**
  * Defines headers for GetMetadata operation.

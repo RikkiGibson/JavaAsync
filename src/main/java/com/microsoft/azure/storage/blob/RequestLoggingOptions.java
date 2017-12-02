@@ -29,7 +29,7 @@ public final class RequestLoggingOptions {
      * Creates a new {@link RequestLoggingOptions} object
      */
     public RequestLoggingOptions() {
-        this(Level.SEVERE, 3000L);
+        this(Level.SEVERE);
     }
 
     /**

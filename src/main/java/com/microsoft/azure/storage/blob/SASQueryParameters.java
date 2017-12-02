@@ -57,7 +57,7 @@ public final class SASQueryParameters {
      *      When {@code true}, the SAS query parameters will be removed from queryParamsMap
      */
     public SASQueryParameters(Map<String, String[]> queryParamsMap, boolean removeSASParams) {
-        String[] queryValue = queryParamsMap.get("sv");
+            String[] queryValue = queryParamsMap.get("sv");
         if (queryValue != null) {
             if (removeSASParams) {
                 queryParamsMap.remove("sv");
@@ -204,18 +204,7 @@ public final class SASQueryParameters {
      * @param signature
      *      A {@code String} representing the signature for the SAS token
      */
-    public SASQueryParameters(
-            String version,
-            String services,
-            String resourceTypes,
-            String protocol,
-            Date startTime,
-            Date expiryTime,
-            IPRange ipRange,
-            String identifier,
-            String resource,
-            String permissions,
-            String signature) {
+    public SASQueryParameters() {
 
         this.version = version;
         this.services = services;
@@ -230,93 +219,7 @@ public final class SASQueryParameters {
         this.signature = signature;
     }
 
-    /**
-     * @return
-     *      A {@code String} representing the storage version
-     */
-    public String getVersion() {
-        return version;
-    }
 
-    /**
-     * @return
-     *      A {@code String} representing the storage services being accessed (only for Account SAS)
-     */
-    public String getServices() {
-        return services;
-    }
-
-    /**
-     * @return
-     *      A {@code String} representing the storage resource types being accessed (only for Account SAS)
-     */
-    public String getResourceTypes() {
-        return resourceTypes;
-    }
-
-    /**
-     * @return
-     *      A {@code String} representing the allowed HTTP protocol(s) or {@code null}
-     */
-    public String getProtocol() {
-        return protocol;
-    }
-
-    /**
-     * @return
-     *      A {@code java.util.Date} representing the start time for this SAS token or {@code null}
-     */
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    /**
-     * @return
-     *      A {@code java.util.Date} representing the expiry time for this SAS token
-     */
-    public Date getExpiryTime() {
-        return expiryTime;
-    }
-
-    /**
-     * @return
-     *      A {@link IPRange} representing the range of valid IP addresses for this SAS token or {@code null}
-     */
-    public IPRange getIpRange() {
-        return ipRange;
-    }
-
-    /**
-     * @return
-     *      A {@code String} representing the signed identifier (only for Service SAS) or {@code null}
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    /**
-     * @return
-     *      A {@code String} representing the storage container or blob (only for Service SAS)
-     */
-    public String getResource() {
-        return resource;
-    }
-
-    /**
-     * @return
-     *      A {@code String} representing the storage permissions or {@code null}
-     */
-    public String getPermissions() {
-        return permissions;
-    }
-
-    /**
-     * @return
-     *      A {@code String} representing the signature for the SAS token
-     */
-    public String getSignature() {
-        return signature;
-    }
 
     /**
      * Encodes all SAS query parameters into a string that can be appended to a URL

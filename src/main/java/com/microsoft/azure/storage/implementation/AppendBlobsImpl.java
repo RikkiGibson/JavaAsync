@@ -10,60 +10,67 @@
 
 package com.microsoft.azure.storage.implementation;
 
-import retrofit2.Retrofit;
-import com.microsoft.azure.storage.AppendBlobs;
-import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;
+import com.microsoft.azure.storage.AppendBlobs;
 import com.microsoft.azure.storage.models.AppendBlobsAppendBlockHeaders;
-import com.microsoft.rest.DateTimeRfc1123;
-import com.microsoft.rest.RestException;
-import com.microsoft.rest.ServiceCallback;
-import com.microsoft.rest.ServiceFuture;
-import com.microsoft.rest.ServiceResponseWithHeaders;
-import java.io.InputStream;
+import com.microsoft.rest.v2.DateTimeRfc1123;
+import com.microsoft.rest.v2.RestException;
+import com.microsoft.rest.v2.RestProxy;
+import com.microsoft.rest.v2.RestResponse;
+import com.microsoft.rest.v2.ServiceCallback;
+import com.microsoft.rest.v2.ServiceFuture;
+import com.microsoft.rest.v2.annotations.BodyParam;
+import com.microsoft.rest.v2.annotations.ExpectedResponses;
+import com.microsoft.rest.v2.annotations.HeaderParam;
+import com.microsoft.rest.v2.annotations.Headers;
+import com.microsoft.rest.v2.annotations.Host;
+import com.microsoft.rest.v2.annotations.HostParam;
+import com.microsoft.rest.v2.annotations.PathParam;
+import com.microsoft.rest.v2.annotations.PUT;
+import com.microsoft.rest.v2.annotations.QueryParam;
+import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
+import com.microsoft.rest.v2.http.HttpClient;
 import java.io.IOException;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import org.joda.time.DateTime;
-import retrofit2.http.Body;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
-import retrofit2.http.PUT;
-import retrofit2.http.Query;
-import retrofit2.Response;
-import rx.functions.Func1;
 import rx.Observable;
+import rx.Single;
+import rx.functions.Func1;
 
 /**
- * An instance of this class provides access to all the operations defined
- * in AppendBlobs.
+ * An instance of this class provides access to all the operations defined in
+ * AppendBlobs.
  */
 public class AppendBlobsImpl implements AppendBlobs {
-    /** The Retrofit service to perform REST calls. */
+    /**
+     * The RestProxy service to perform REST calls.
+     */
     private AppendBlobsService service;
-    /** The service client containing this operation class. */
+
+    /**
+     * The service client containing this operation class.
+     */
     private AzureBlobStorageImpl client;
 
     /**
      * Initializes an instance of AppendBlobs.
      *
-     * @param retrofit the Retrofit instance built from a Retrofit Builder.
      * @param client the instance of the service client containing this operation class.
      */
-    public AppendBlobsImpl(Retrofit retrofit, AzureBlobStorageImpl client) {
-        this.service = retrofit.create(AppendBlobsService.class);
+    public AppendBlobsImpl(AzureBlobStorageImpl client) {
+        this.service = RestProxy.create(AppendBlobsService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }
 
     /**
-     * The interface defining all the services for AppendBlobs to be
-     * used by Retrofit to perform actually REST calls.
+     * The interface defining all the services for AppendBlobs to be used by
+     * RestProxy to perform REST calls.
      */
+    @Host("https://{accountUrl}")
     interface AppendBlobsService {
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.AppendBlobs appendBlock" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.AppendBlobs appendBlock" })
         @PUT("{containerName}/{blob}")
-        Observable<Response<ResponseBody>> appendBlock(@Body RequestBody body, @Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-blob-condition-maxsize") Integer maxSize, @Header("x-ms-blob-condition-appendpos") Integer appendPosition, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({201})
+        Single<RestResponse<AppendBlobsAppendBlockHeaders, Void>> appendBlock(@HostParam("accountUrl") String accountUrl, @BodyParam("application/xml; charset=utf-8") byte[] body, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-condition-maxsize") Integer maxSize, @HeaderParam("x-ms-blob-condition-appendpos") Integer appendPosition, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
     }
 
@@ -74,9 +81,10 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void appendBlock(byte[] body) {
-        appendBlockWithServiceResponseAsync(body).toBlocking().single().body();
+        appendBlockAsync(body).toBlocking().value();
     }
 
     /**
@@ -87,8 +95,8 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> appendBlockAsync(byte[] body, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(appendBlockWithServiceResponseAsync(body), serviceCallback);
+    public ServiceFuture<Void> appendBlockAsync(byte[] body, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(appendBlockAsync(body), serviceCallback);
     }
 
     /**
@@ -96,25 +104,9 @@ public class AppendBlobsImpl implements AppendBlobs {
      *
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
      */
-    public Observable<Void> appendBlockAsync(byte[] body) {
-        return appendBlockWithServiceResponseAsync(body).map(new Func1<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
-     *
-     * @param body Initial data
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>> appendBlockWithServiceResponseAsync(byte[] body) {
+    public Single<RestResponse<AppendBlobsAppendBlockHeaders, Void>> appendBlockWithRestResponseAsync(byte[] body) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -134,8 +126,6 @@ public class AppendBlobsImpl implements AppendBlobs {
         final String ifMatches = null;
         final String ifNoneMatch = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        RequestBody bodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), body);
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -144,19 +134,20 @@ public class AppendBlobsImpl implements AppendBlobs {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.appendBlock(bodyConverted, timeout, leaseId, maxSize, appendPosition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders> clientResponse = appendBlockDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.appendBlock(this.client.accountUrl(), body, timeout, leaseId, maxSize, appendPosition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp);
     }
+
+    /**
+     * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
+     *
+     * @param body Initial data
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
+     */
+    public Single<Void> appendBlockAsync(byte[] body) {
+        return appendBlockWithRestResponseAsync(body)
+            .map(new Func1<RestResponse<AppendBlobsAppendBlockHeaders, Void>, Void>() { public Void call(RestResponse<AppendBlobsAppendBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
@@ -174,9 +165,10 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void appendBlock(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        appendBlockWithServiceResponseAsync(body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+        appendBlockAsync(body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
     }
 
     /**
@@ -196,8 +188,8 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> appendBlockAsync(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(appendBlockWithServiceResponseAsync(body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
+    public ServiceFuture<Void> appendBlockAsync(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(appendBlockAsync(body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
@@ -214,34 +206,9 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
      */
-    public Observable<Void> appendBlockAsync(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return appendBlockWithServiceResponseAsync(body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
-     *
-     * @param body Initial data
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param maxSize Optional conditional header. The max length in bytes permitted for the append blob. If the Append Block operation would cause the blob to exceed that limit or if the blob size is already greater than the value specified in this header, the request will fail with MaxBlobSizeConditionNotMet error (HTTP status code 412 - Precondition Failed).
-     * @param appendPosition Optional conditional header, used only for the Append Block operation. A number indicating the byte offset to compare. Append Block will succeed only if the append position is equal to this number. If it is not, the request will fail with the AppendPositionConditionNotMet error (HTTP status code 412 - Precondition Failed).
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>> appendBlockWithServiceResponseAsync(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Single<RestResponse<AppendBlobsAppendBlockHeaders, Void>> appendBlockWithRestResponseAsync(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -252,8 +219,6 @@ public class AppendBlobsImpl implements AppendBlobs {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "appendblock";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        RequestBody bodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), body);
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -262,24 +227,29 @@ public class AppendBlobsImpl implements AppendBlobs {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.appendBlock(bodyConverted, timeout, leaseId, maxSize, appendPosition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders> clientResponse = appendBlockDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.appendBlock(this.client.accountUrl(), body, timeout, leaseId, maxSize, appendPosition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, comp);
     }
 
-    private ServiceResponseWithHeaders<Void, AppendBlobsAppendBlockHeaders> appendBlockDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(201, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, AppendBlobsAppendBlockHeaders.class);
-    }
+    /**
+     * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
+     *
+     * @param body Initial data
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param maxSize Optional conditional header. The max length in bytes permitted for the append blob. If the Append Block operation would cause the blob to exceed that limit or if the blob size is already greater than the value specified in this header, the request will fail with MaxBlobSizeConditionNotMet error (HTTP status code 412 - Precondition Failed).
+     * @param appendPosition Optional conditional header, used only for the Append Block operation. A number indicating the byte offset to compare. Append Block will succeed only if the append position is equal to this number. If it is not, the request will fail with the AppendPositionConditionNotMet error (HTTP status code 412 - Precondition Failed).
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
+     */
+    public Single<Void> appendBlockAsync(byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return appendBlockWithRestResponseAsync(body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
+            .map(new Func1<RestResponse<AppendBlobsAppendBlockHeaders, Void>, Void>() { public Void call(RestResponse<AppendBlobsAppendBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
 }

@@ -10,10 +10,8 @@
 
 package com.microsoft.azure.storage.implementation;
 
-import retrofit2.Retrofit;
-import com.microsoft.azure.storage.Containers;
-import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;
+import com.microsoft.azure.storage.Containers;
 import com.microsoft.azure.storage.models.ContainerCreateHeaders;
 import com.microsoft.azure.storage.models.ContainerDeleteHeaders;
 import com.microsoft.azure.storage.models.ContainerGetAclHeaders;
@@ -28,88 +26,108 @@ import com.microsoft.azure.storage.models.ListBlobsIncludeType;
 import com.microsoft.azure.storage.models.ListBlobsResponse;
 import com.microsoft.azure.storage.models.PublicAccessType;
 import com.microsoft.azure.storage.models.SignedIdentifier;
-import com.microsoft.rest.DateTimeRfc1123;
-import com.microsoft.rest.RestException;
-import com.microsoft.rest.ServiceCallback;
-import com.microsoft.rest.ServiceFuture;
-import com.microsoft.rest.ServiceResponseWithHeaders;
-import com.microsoft.rest.Validator;
+import com.microsoft.rest.v2.DateTimeRfc1123;
+import com.microsoft.rest.v2.RestException;
+import com.microsoft.rest.v2.RestProxy;
+import com.microsoft.rest.v2.RestResponse;
+import com.microsoft.rest.v2.ServiceCallback;
+import com.microsoft.rest.v2.ServiceFuture;
+import com.microsoft.rest.v2.Validator;
+import com.microsoft.rest.v2.annotations.BodyParam;
+import com.microsoft.rest.v2.annotations.DELETE;
+import com.microsoft.rest.v2.annotations.ExpectedResponses;
+import com.microsoft.rest.v2.annotations.GET;
+import com.microsoft.rest.v2.annotations.HeaderParam;
+import com.microsoft.rest.v2.annotations.Headers;
+import com.microsoft.rest.v2.annotations.Host;
+import com.microsoft.rest.v2.annotations.HostParam;
+import com.microsoft.rest.v2.annotations.PathParam;
+import com.microsoft.rest.v2.annotations.PUT;
+import com.microsoft.rest.v2.annotations.QueryParam;
+import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
+import com.microsoft.rest.v2.http.HttpClient;
 import java.io.IOException;
 import java.util.List;
-import okhttp3.ResponseBody;
 import org.joda.time.DateTime;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
-import retrofit2.http.HTTP;
-import retrofit2.http.PUT;
-import retrofit2.http.Query;
-import retrofit2.Response;
-import rx.functions.Func1;
 import rx.Observable;
+import rx.Single;
+import rx.functions.Func1;
 
 /**
- * An instance of this class provides access to all the operations defined
- * in Containers.
+ * An instance of this class provides access to all the operations defined in
+ * Containers.
  */
 public class ContainersImpl implements Containers {
-    /** The Retrofit service to perform REST calls. */
+    /**
+     * The RestProxy service to perform REST calls.
+     */
     private ContainersService service;
-    /** The service client containing this operation class. */
+
+    /**
+     * The service client containing this operation class.
+     */
     private AzureBlobStorageImpl client;
 
     /**
      * Initializes an instance of Containers.
      *
-     * @param retrofit the Retrofit instance built from a Retrofit Builder.
      * @param client the instance of the service client containing this operation class.
      */
-    public ContainersImpl(Retrofit retrofit, AzureBlobStorageImpl client) {
-        this.service = retrofit.create(ContainersService.class);
+    public ContainersImpl(AzureBlobStorageImpl client) {
+        this.service = RestProxy.create(ContainersService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }
 
     /**
-     * The interface defining all the services for Containers to be
-     * used by Retrofit to perform actually REST calls.
+     * The interface defining all the services for Containers to be used by
+     * RestProxy to perform REST calls.
      */
+    @Host("https://{accountUrl}")
     interface ContainersService {
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers create" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers create" })
         @PUT("{containerName}")
-        Observable<Response<ResponseBody>> create(@Query("timeout") Integer timeout, @Header("x-ms-meta") String metadata, @Header("x-ms-blob-public-access") PublicAccessType access, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({201})
+        Single<RestResponse<ContainerCreateHeaders, Void>> create(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers getProperties" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers getProperties" })
         @GET("{containerName}")
-        Observable<Response<ResponseBody>> getProperties(@Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getProperties(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers delete" })
-        @HTTP(path = "{containerName}", method = "DELETE", hasBody = true)
-        Observable<Response<ResponseBody>> delete(@Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers delete" })
+        @DELETE("{containerName}")
+        @ExpectedResponses({202})
+        Single<RestResponse<ContainerDeleteHeaders, Void>> delete(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers getMetadata" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers getMetadata" })
         @GET("{containerName}")
-        Observable<Response<ResponseBody>> getMetadata(@Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<ContainerGetMetadataHeaders, Void>> getMetadata(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers setMetadata" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers setMetadata" })
         @PUT("{containerName}")
-        Observable<Response<ResponseBody>> setMetadata(@Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-meta") String metadata, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadata(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers getAcl" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers getAcl" })
         @GET("{containerName}")
-        Observable<Response<ResponseBody>> getAcl(@Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getAcl(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers setAcl" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers setAcl" })
         @PUT("{containerName}")
-        Observable<Response<ResponseBody>> setAcl(@Body List<SignedIdentifier> containerAcl, @Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-blob-public-access") PublicAccessType access, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<ContainerSetAclHeaders, Void>> setAcl(@HostParam("accountUrl") String accountUrl, @BodyParam("application/xml; charset=utf-8") List<SignedIdentifier> containerAcl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers lease" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers lease" })
         @PUT("{containerName}")
-        Observable<Response<ResponseBody>> lease(@Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-lease-action") LeaseActionType action, @Header("x-ms-lease-break-period") Integer breakPeriod, @Header("x-ms-lease-duration") Integer duration, @Header("x-ms-proposed-lease-id") String proposedLeaseId, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Query("restype") String restype, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200, 201, 202})
+        Single<RestResponse<ContainerLeaseHeaders, Void>> lease(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-lease-action") LeaseActionType action, @HeaderParam("x-ms-lease-break-period") Integer breakPeriod, @HeaderParam("x-ms-lease-duration") Integer duration, @HeaderParam("x-ms-proposed-lease-id") String proposedLeaseId, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp, @QueryParam("restype") String restype);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.Containers listBlobs" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers listBlobs" })
         @GET("{containerName}")
-        Observable<Response<ResponseBody>> listBlobs(@Query("prefix") String prefix, @Query("delimiter") String delimiter, @Query("marker") String marker, @Query("maxresults") Integer maxresults, @Query("include") ListBlobsIncludeType include, @Query("timeout") Integer timeout, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("restype") String restype, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>> listBlobs(@HostParam("accountUrl") String accountUrl, @QueryParam("prefix") String prefix, @QueryParam("delimiter") String delimiter, @QueryParam("marker") String marker, @QueryParam("maxresults") Integer maxresults, @QueryParam("include") ListBlobsIncludeType include, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
 
     }
 
@@ -119,9 +137,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void create() {
-        createWithServiceResponseAsync().toBlocking().single().body();
+        createAsync().toBlocking().value();
     }
 
     /**
@@ -131,32 +150,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> createAsync(final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(createWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<Void> createAsync(ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(createAsync(), serviceCallback);
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Observable<Void> createAsync() {
-        return createWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerCreateHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>> createWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -168,20 +172,19 @@ public class ContainersImpl implements Containers {
         final String metadata = null;
         final PublicAccessType access = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.create(timeout, metadata, access, this.client.version(), requestId, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerCreateHeaders> clientResponse = createDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.create(this.client.accountUrl(), timeout, metadata, access, this.client.version(), requestId, restype);
     }
+
+    /**
+     * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
+     */
+    public Single<Void> createAsync() {
+        return createWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerCreateHeaders, Void>, Void>() { public Void call(RestResponse<ContainerCreateHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
@@ -193,9 +196,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void create(Integer timeout, String metadata, PublicAccessType access, String requestId) {
-        createWithServiceResponseAsync(timeout, metadata, access, requestId).toBlocking().single().body();
+        createAsync(timeout, metadata, access, requestId).toBlocking().value();
     }
 
     /**
@@ -209,8 +213,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(createWithServiceResponseAsync(timeout, metadata, access, requestId), serviceCallback);
+    public ServiceFuture<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(createAsync(timeout, metadata, access, requestId), serviceCallback);
     }
 
     /**
@@ -221,28 +225,9 @@ public class ContainersImpl implements Containers {
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Observable<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId) {
-        return createWithServiceResponseAsync(timeout, metadata, access, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerCreateHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
-     * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>> createWithServiceResponseAsync(Integer timeout, String metadata, PublicAccessType access, String requestId) {
+    public Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(Integer timeout, String metadata, PublicAccessType access, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -250,26 +235,24 @@ public class ContainersImpl implements Containers {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "container";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.create(timeout, metadata, access, this.client.version(), requestId, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerCreateHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerCreateHeaders> clientResponse = createDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.create(this.client.accountUrl(), timeout, metadata, access, this.client.version(), requestId, restype);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerCreateHeaders> createDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(201, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerCreateHeaders.class);
-    }
+    /**
+     * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
+     */
+    public Single<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId) {
+        return createWithRestResponseAsync(timeout, metadata, access, requestId)
+            .map(new Func1<RestResponse<ContainerCreateHeaders, Void>, Void>() { public Void call(RestResponse<ContainerCreateHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
@@ -277,9 +260,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void getProperties() {
-        getPropertiesWithServiceResponseAsync().toBlocking().single().body();
+        getPropertiesAsync().toBlocking().value();
     }
 
     /**
@@ -289,32 +273,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> getPropertiesAsync(final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getPropertiesWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<Void> getPropertiesAsync(ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(getPropertiesAsync(), serviceCallback);
     }
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
      */
-    public Observable<Void> getPropertiesAsync() {
-        return getPropertiesWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>> getPropertiesWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -325,20 +294,19 @@ public class ContainersImpl implements Containers {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getProperties(timeout, leaseId, this.client.version(), requestId, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders> clientResponse = getPropertiesDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getProperties(this.client.accountUrl(), timeout, leaseId, this.client.version(), requestId, restype);
     }
+
+    /**
+     * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
+     */
+    public Single<Void> getPropertiesAsync() {
+        return getPropertiesWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
@@ -349,9 +317,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void getProperties(Integer timeout, String leaseId, String requestId) {
-        getPropertiesWithServiceResponseAsync(timeout, leaseId, requestId).toBlocking().single().body();
+        getPropertiesAsync(timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
@@ -364,8 +333,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> getPropertiesAsync(Integer timeout, String leaseId, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getPropertiesWithServiceResponseAsync(timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<Void> getPropertiesAsync(Integer timeout, String leaseId, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(getPropertiesAsync(timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
@@ -375,27 +344,9 @@ public class ContainersImpl implements Containers {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
      */
-    public Observable<Void> getPropertiesAsync(Integer timeout, String leaseId, String requestId) {
-        return getPropertiesWithServiceResponseAsync(timeout, leaseId, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>> getPropertiesWithServiceResponseAsync(Integer timeout, String leaseId, String requestId) {
+    public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesWithRestResponseAsync(Integer timeout, String leaseId, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -403,26 +354,23 @@ public class ContainersImpl implements Containers {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "container";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getProperties(timeout, leaseId, this.client.version(), requestId, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders> clientResponse = getPropertiesDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getProperties(this.client.accountUrl(), timeout, leaseId, this.client.version(), requestId, restype);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerGetPropertiesHeaders> getPropertiesDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerGetPropertiesHeaders.class);
-    }
+    /**
+     * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
+     */
+    public Single<Void> getPropertiesAsync(Integer timeout, String leaseId, String requestId) {
+        return getPropertiesWithRestResponseAsync(timeout, leaseId, requestId)
+            .map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
@@ -430,9 +378,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void delete() {
-        deleteWithServiceResponseAsync().toBlocking().single().body();
+        deleteAsync().toBlocking().value();
     }
 
     /**
@@ -442,32 +391,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> deleteAsync(final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(deleteWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<Void> deleteAsync(ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(deleteAsync(), serviceCallback);
     }
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
      */
-    public Observable<Void> deleteAsync() {
-        return deleteWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerDeleteHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>> deleteWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerDeleteHeaders, Void>> deleteWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -482,7 +416,6 @@ public class ContainersImpl implements Containers {
         final String ifMatches = null;
         final String ifNoneMatch = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -491,19 +424,19 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.delete(timeout, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerDeleteHeaders> clientResponse = deleteDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.delete(this.client.accountUrl(), timeout, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype);
     }
+
+    /**
+     * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
+     */
+    public Single<Void> deleteAsync() {
+        return deleteWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerDeleteHeaders, Void>, Void>() { public Void call(RestResponse<ContainerDeleteHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
@@ -518,9 +451,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void delete(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        deleteWithServiceResponseAsync(timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+        deleteAsync(timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
     }
 
     /**
@@ -537,8 +471,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> deleteAsync(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(deleteWithServiceResponseAsync(timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
+    public ServiceFuture<Void> deleteAsync(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(deleteAsync(timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
@@ -552,31 +486,9 @@ public class ContainersImpl implements Containers {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
      */
-    public Observable<Void> deleteAsync(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return deleteWithServiceResponseAsync(timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerDeleteHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>> deleteWithServiceResponseAsync(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Single<RestResponse<ContainerDeleteHeaders, Void>> deleteWithRestResponseAsync(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -584,7 +496,6 @@ public class ContainersImpl implements Containers {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "container";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -593,25 +504,27 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.delete(timeout, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerDeleteHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerDeleteHeaders> clientResponse = deleteDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.delete(this.client.accountUrl(), timeout, leaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerDeleteHeaders> deleteDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(202, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerDeleteHeaders.class);
-    }
+    /**
+     * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
+     */
+    public Single<Void> deleteAsync(Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return deleteWithRestResponseAsync(timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
+            .map(new Func1<RestResponse<ContainerDeleteHeaders, Void>, Void>() { public Void call(RestResponse<ContainerDeleteHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * returns all user-defined metadata for the container.
@@ -619,9 +532,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void getMetadata() {
-        getMetadataWithServiceResponseAsync().toBlocking().single().body();
+        getMetadataAsync().toBlocking().value();
     }
 
     /**
@@ -631,32 +545,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> getMetadataAsync(final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getMetadataWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<Void> getMetadataAsync(ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(getMetadataAsync(), serviceCallback);
     }
 
     /**
      * returns all user-defined metadata for the container.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
      */
-    public Observable<Void> getMetadataAsync() {
-        return getMetadataWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * returns all user-defined metadata for the container.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>> getMetadataWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerGetMetadataHeaders, Void>> getMetadataWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -668,20 +567,19 @@ public class ContainersImpl implements Containers {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getMetadata(timeout, leaseId, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders> clientResponse = getMetadataDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getMetadata(this.client.accountUrl(), timeout, leaseId, this.client.version(), requestId, restype, comp);
     }
+
+    /**
+     * returns all user-defined metadata for the container.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
+     */
+    public Single<Void> getMetadataAsync() {
+        return getMetadataWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerGetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * returns all user-defined metadata for the container.
@@ -692,9 +590,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void getMetadata(Integer timeout, String leaseId, String requestId) {
-        getMetadataWithServiceResponseAsync(timeout, leaseId, requestId).toBlocking().single().body();
+        getMetadataAsync(timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
@@ -707,8 +606,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> getMetadataAsync(Integer timeout, String leaseId, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getMetadataWithServiceResponseAsync(timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<Void> getMetadataAsync(Integer timeout, String leaseId, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(getMetadataAsync(timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
@@ -718,27 +617,9 @@ public class ContainersImpl implements Containers {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
      */
-    public Observable<Void> getMetadataAsync(Integer timeout, String leaseId, String requestId) {
-        return getMetadataWithServiceResponseAsync(timeout, leaseId, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * returns all user-defined metadata for the container.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>> getMetadataWithServiceResponseAsync(Integer timeout, String leaseId, String requestId) {
+    public Single<RestResponse<ContainerGetMetadataHeaders, Void>> getMetadataWithRestResponseAsync(Integer timeout, String leaseId, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -747,26 +628,23 @@ public class ContainersImpl implements Containers {
         }
         final String restype = "container";
         final String comp = "metadata";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getMetadata(timeout, leaseId, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders> clientResponse = getMetadataDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getMetadata(this.client.accountUrl(), timeout, leaseId, this.client.version(), requestId, restype, comp);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerGetMetadataHeaders> getMetadataDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerGetMetadataHeaders.class);
-    }
+    /**
+     * returns all user-defined metadata for the container.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
+     */
+    public Single<Void> getMetadataAsync(Integer timeout, String leaseId, String requestId) {
+        return getMetadataWithRestResponseAsync(timeout, leaseId, requestId)
+            .map(new Func1<RestResponse<ContainerGetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
@@ -774,9 +652,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void setMetadata() {
-        setMetadataWithServiceResponseAsync().toBlocking().single().body();
+        setMetadataAsync().toBlocking().value();
     }
 
     /**
@@ -786,32 +665,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> setMetadataAsync(final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(setMetadataWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<Void> setMetadataAsync(ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(setMetadataAsync(), serviceCallback);
     }
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
      */
-    public Observable<Void> setMetadataAsync() {
-        return setMetadataWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * operation sets one or more user-defined name-value pairs for the specified container.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>> setMetadataWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadataWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -825,24 +689,23 @@ public class ContainersImpl implements Containers {
         final String metadata = null;
         final DateTime ifModifiedSince = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
         }
-        return service.setMetadata(timeout, leaseId, metadata, ifModifiedSinceConverted, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders> clientResponse = setMetadataDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.setMetadata(this.client.accountUrl(), timeout, leaseId, metadata, ifModifiedSinceConverted, this.client.version(), requestId, restype, comp);
     }
+
+    /**
+     * operation sets one or more user-defined name-value pairs for the specified container.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
+     */
+    public Single<Void> setMetadataAsync() {
+        return setMetadataWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerSetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
@@ -855,9 +718,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void setMetadata(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
-        setMetadataWithServiceResponseAsync(timeout, leaseId, metadata, ifModifiedSince, requestId).toBlocking().single().body();
+        setMetadataAsync(timeout, leaseId, metadata, ifModifiedSince, requestId).toBlocking().value();
     }
 
     /**
@@ -872,8 +736,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> setMetadataAsync(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(setMetadataWithServiceResponseAsync(timeout, leaseId, metadata, ifModifiedSince, requestId), serviceCallback);
+    public ServiceFuture<Void> setMetadataAsync(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(setMetadataAsync(timeout, leaseId, metadata, ifModifiedSince, requestId), serviceCallback);
     }
 
     /**
@@ -885,29 +749,9 @@ public class ContainersImpl implements Containers {
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
      */
-    public Observable<Void> setMetadataAsync(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
-        return setMetadataWithServiceResponseAsync(timeout, leaseId, metadata, ifModifiedSince, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * operation sets one or more user-defined name-value pairs for the specified container.
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>> setMetadataWithServiceResponseAsync(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
+    public Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadataWithRestResponseAsync(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -916,30 +760,29 @@ public class ContainersImpl implements Containers {
         }
         final String restype = "container";
         final String comp = "metadata";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
         }
-        return service.setMetadata(timeout, leaseId, metadata, ifModifiedSinceConverted, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders> clientResponse = setMetadataDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.setMetadata(this.client.accountUrl(), timeout, leaseId, metadata, ifModifiedSinceConverted, this.client.version(), requestId, restype, comp);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerSetMetadataHeaders> setMetadataDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerSetMetadataHeaders.class);
-    }
+    /**
+     * operation sets one or more user-defined name-value pairs for the specified container.
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
+     */
+    public Single<Void> setMetadataAsync(Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
+        return setMetadataWithRestResponseAsync(timeout, leaseId, metadata, ifModifiedSince, requestId)
+            .map(new Func1<RestResponse<ContainerSetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      *
@@ -949,7 +792,7 @@ public class ContainersImpl implements Containers {
      * @return the List&lt;SignedIdentifier&gt; object if successful.
      */
     public List<SignedIdentifier> getAcl() {
-        return getAclWithServiceResponseAsync().toBlocking().single().body();
+        return getAclAsync().toBlocking().value();
     }
 
     /**
@@ -958,30 +801,16 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<List<SignedIdentifier>> getAclAsync(final ServiceCallback<List<SignedIdentifier>> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getAclWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<List<SignedIdentifier>> getAclAsync(ServiceCallback<List<SignedIdentifier>> serviceCallback) {
+        return ServiceFuture.fromBody(getAclAsync(), serviceCallback);
     }
 
     /**
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the List&lt;SignedIdentifier&gt; object
+     * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
      */
-    public Observable<List<SignedIdentifier>> getAclAsync() {
-        return getAclWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>, List<SignedIdentifier>>() {
-            @Override
-            public List<SignedIdentifier> call(ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the List&lt;SignedIdentifier&gt; object
-     */
-    public Observable<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>> getAclWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getAclWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -993,20 +822,18 @@ public class ContainersImpl implements Containers {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getAcl(timeout, leaseId, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders> clientResponse = getAclDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getAcl(this.client.accountUrl(), timeout, leaseId, this.client.version(), requestId, restype, comp);
     }
+
+    /**
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
+     */
+    public Single<List<SignedIdentifier>> getAclAsync() {
+        return getAclWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>, List<SignedIdentifier>>() { public List<SignedIdentifier> call(RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      *
@@ -1019,7 +846,7 @@ public class ContainersImpl implements Containers {
      * @return the List&lt;SignedIdentifier&gt; object if successful.
      */
     public List<SignedIdentifier> getAcl(Integer timeout, String leaseId, String requestId) {
-        return getAclWithServiceResponseAsync(timeout, leaseId, requestId).toBlocking().single().body();
+        return getAclAsync(timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
@@ -1031,8 +858,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<List<SignedIdentifier>> getAclAsync(Integer timeout, String leaseId, String requestId, final ServiceCallback<List<SignedIdentifier>> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getAclWithServiceResponseAsync(timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<List<SignedIdentifier>> getAclAsync(Integer timeout, String leaseId, String requestId, ServiceCallback<List<SignedIdentifier>> serviceCallback) {
+        return ServiceFuture.fromBody(getAclAsync(timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
@@ -1041,26 +868,9 @@ public class ContainersImpl implements Containers {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the List&lt;SignedIdentifier&gt; object
+     * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
      */
-    public Observable<List<SignedIdentifier>> getAclAsync(Integer timeout, String leaseId, String requestId) {
-        return getAclWithServiceResponseAsync(timeout, leaseId, requestId).map(new Func1<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>, List<SignedIdentifier>>() {
-            @Override
-            public List<SignedIdentifier> call(ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     *
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the List&lt;SignedIdentifier&gt; object
-     */
-    public Observable<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>> getAclWithServiceResponseAsync(Integer timeout, String leaseId, String requestId) {
+    public Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getAclWithRestResponseAsync(Integer timeout, String leaseId, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -1069,35 +879,32 @@ public class ContainersImpl implements Containers {
         }
         final String restype = "container";
         final String comp = "acl";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getAcl(timeout, leaseId, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders> clientResponse = getAclDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getAcl(this.client.accountUrl(), timeout, leaseId, this.client.version(), requestId, restype, comp);
     }
 
-    private ServiceResponseWithHeaders<List<SignedIdentifier>, ContainerGetAclHeaders> getAclDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<List<SignedIdentifier>, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<List<SignedIdentifier>>() { }.getType())
-                .buildWithHeaders(response, ContainerGetAclHeaders.class);
-    }
+    /**
+     *
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
+     */
+    public Single<List<SignedIdentifier>> getAclAsync(Integer timeout, String leaseId, String requestId) {
+        return getAclWithRestResponseAsync(timeout, leaseId, requestId)
+            .map(new Func1<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>, List<SignedIdentifier>>() { public List<SignedIdentifier> call(RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void setAcl() {
-        setAclWithServiceResponseAsync().toBlocking().single().body();
+        setAclAsync().toBlocking().value();
     }
 
     /**
@@ -1106,30 +913,16 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> setAclAsync(final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(setAclWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<Void> setAclAsync(ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(setAclAsync(), serviceCallback);
     }
 
     /**
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
      */
-    public Observable<Void> setAclAsync() {
-        return setAclWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerSetAclHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>> setAclWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerSetAclHeaders, Void>> setAclWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -1147,7 +940,7 @@ public class ContainersImpl implements Containers {
         final String ifMatches = null;
         final String ifNoneMatch = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        Validator.validate(containerAcl);
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -1156,19 +949,18 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.setAcl(containerAcl, timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerSetAclHeaders> clientResponse = setAclDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.setAcl(this.client.accountUrl(), containerAcl, timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp);
     }
+
+    /**
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
+     */
+    public Single<Void> setAclAsync() {
+        return setAclWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerSetAclHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetAclHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      *
@@ -1184,9 +976,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void setAcl(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        setAclWithServiceResponseAsync(containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+        setAclAsync(containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
     }
 
     /**
@@ -1204,8 +997,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> setAclAsync(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(setAclWithServiceResponseAsync(containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
+    public ServiceFuture<Void> setAclAsync(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(setAclAsync(containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
@@ -1220,42 +1013,18 @@ public class ContainersImpl implements Containers {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
      */
-    public Observable<Void> setAclAsync(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return setAclWithServiceResponseAsync(containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerSetAclHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     *
-     * @param containerAcl the acls for the container
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>> setAclWithServiceResponseAsync(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Single<RestResponse<ContainerSetAclHeaders, Void>> setAclWithRestResponseAsync(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
         if (this.client.version() == null) {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
-        Validator.validate(containerAcl);
         final String restype = "container";
         final String comp = "acl";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        Validator.validate(containerAcl);
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -1264,25 +1033,28 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.setAcl(containerAcl, timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerSetAclHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerSetAclHeaders> clientResponse = setAclDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.setAcl(this.client.accountUrl(), containerAcl, timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerSetAclHeaders> setAclDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerSetAclHeaders.class);
-    }
+    /**
+     *
+     * @param containerAcl the acls for the container
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
+     */
+    public Single<Void> setAclAsync(List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return setAclWithRestResponseAsync(containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
+            .map(new Func1<RestResponse<ContainerSetAclHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetAclHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
@@ -1291,9 +1063,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void lease(LeaseActionType action) {
-        leaseWithServiceResponseAsync(action).toBlocking().single().body();
+        leaseAsync(action).toBlocking().value();
     }
 
     /**
@@ -1304,8 +1077,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> leaseAsync(LeaseActionType action, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(leaseWithServiceResponseAsync(action), serviceCallback);
+    public ServiceFuture<Void> leaseAsync(LeaseActionType action, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(leaseAsync(action), serviceCallback);
     }
 
     /**
@@ -1313,25 +1086,9 @@ public class ContainersImpl implements Containers {
      *
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
      */
-    public Observable<Void> leaseAsync(LeaseActionType action) {
-        return leaseWithServiceResponseAsync(action).map(new Func1<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerLeaseHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
-     *
-     * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>> leaseWithServiceResponseAsync(LeaseActionType action) {
+    public Single<RestResponse<ContainerLeaseHeaders, Void>> leaseWithRestResponseAsync(LeaseActionType action) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -1351,7 +1108,6 @@ public class ContainersImpl implements Containers {
         final DateTime ifModifiedSince = null;
         final DateTime ifUnmodifiedSince = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -1360,19 +1116,20 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.lease(timeout, leaseId, action, breakPeriod, duration, proposedLeaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, this.client.version(), requestId, comp, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerLeaseHeaders> clientResponse = leaseDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.lease(this.client.accountUrl(), timeout, leaseId, action, breakPeriod, duration, proposedLeaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, this.client.version(), requestId, comp, restype);
     }
+
+    /**
+     * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
+     *
+     * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
+     */
+    public Single<Void> leaseAsync(LeaseActionType action) {
+        return leaseWithRestResponseAsync(action)
+            .map(new Func1<RestResponse<ContainerLeaseHeaders, Void>, Void>() { public Void call(RestResponse<ContainerLeaseHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
@@ -1389,9 +1146,10 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void lease(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
-        leaseWithServiceResponseAsync(action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId).toBlocking().single().body();
+        leaseAsync(action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId).toBlocking().value();
     }
 
     /**
@@ -1410,8 +1168,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> leaseAsync(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(leaseWithServiceResponseAsync(action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId), serviceCallback);
+    public ServiceFuture<Void> leaseAsync(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(leaseAsync(action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId), serviceCallback);
     }
 
     /**
@@ -1427,33 +1185,9 @@ public class ContainersImpl implements Containers {
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
      */
-    public Observable<Void> leaseAsync(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
-        return leaseWithServiceResponseAsync(action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId).map(new Func1<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, ContainerLeaseHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
-     *
-     * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param breakPeriod For a break operation, proposed duration the lease should continue before it is broken, in seconds, between 0 and 60. This break period is only used if it is shorter than the time remaining on the lease. If longer, the time remaining on the lease is used. A new lease will not be available before the break period has expired, but the lease may be held for longer than the break period. If this header does not appear with a break operation, a fixed-duration lease breaks after the remaining lease period elapses, and an infinite lease breaks immediately.
-     * @param duration Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires. A non-infinite lease can be between 15 and 60 seconds. A lease duration cannot be changed using renew or change.
-     * @param proposedLeaseId Proposed lease ID, in a GUID string format. The Blob service returns 400 (Invalid request) if the proposed lease ID is not in the correct format. See Guid Constructor (String) for a list of valid GUID string formats.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>> leaseWithServiceResponseAsync(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
+    public Single<RestResponse<ContainerLeaseHeaders, Void>> leaseWithRestResponseAsync(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -1465,7 +1199,6 @@ public class ContainersImpl implements Containers {
         }
         final String comp = "lease";
         final String restype = "container";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -1474,27 +1207,29 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.lease(timeout, leaseId, action, breakPeriod, duration, proposedLeaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, this.client.version(), requestId, comp, restype, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, ContainerLeaseHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, ContainerLeaseHeaders> clientResponse = leaseDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.lease(this.client.accountUrl(), timeout, leaseId, action, breakPeriod, duration, proposedLeaseId, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, this.client.version(), requestId, comp, restype);
     }
 
-    private ServiceResponseWithHeaders<Void, ContainerLeaseHeaders> leaseDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<Void>() { }.getType())
-                .register(201, new TypeToken<Void>() { }.getType())
-                .register(202, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, ContainerLeaseHeaders.class);
-    }
+    /**
+     * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
+     *
+     * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param breakPeriod For a break operation, proposed duration the lease should continue before it is broken, in seconds, between 0 and 60. This break period is only used if it is shorter than the time remaining on the lease. If longer, the time remaining on the lease is used. A new lease will not be available before the break period has expired, but the lease may be held for longer than the break period. If this header does not appear with a break operation, a fixed-duration lease breaks after the remaining lease period elapses, and an infinite lease breaks immediately.
+     * @param duration Specifies the duration of the lease, in seconds, or negative one (-1) for a lease that never expires. A non-infinite lease can be between 15 and 60 seconds. A lease duration cannot be changed using renew or change.
+     * @param proposedLeaseId Proposed lease ID, in a GUID string format. The Blob service returns 400 (Invalid request) if the proposed lease ID is not in the correct format. See Guid Constructor (String) for a list of valid GUID string formats.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
+     */
+    public Single<Void> leaseAsync(LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
+        return leaseWithRestResponseAsync(action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId)
+            .map(new Func1<RestResponse<ContainerLeaseHeaders, Void>, Void>() { public Void call(RestResponse<ContainerLeaseHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
@@ -1505,7 +1240,7 @@ public class ContainersImpl implements Containers {
      * @return the ListBlobsResponse object if successful.
      */
     public ListBlobsResponse listBlobs() {
-        return listBlobsWithServiceResponseAsync().toBlocking().single().body();
+        return listBlobsAsync().toBlocking().value();
     }
 
     /**
@@ -1515,32 +1250,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<ListBlobsResponse> listBlobsAsync(final ServiceCallback<ListBlobsResponse> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(listBlobsWithServiceResponseAsync(), serviceCallback);
+    public ServiceFuture<ListBlobsResponse> listBlobsAsync(ServiceCallback<ListBlobsResponse> serviceCallback) {
+        return ServiceFuture.fromBody(listBlobsAsync(), serviceCallback);
     }
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListBlobsResponse object
+     * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
      */
-    public Observable<ListBlobsResponse> listBlobsAsync() {
-        return listBlobsWithServiceResponseAsync().map(new Func1<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>, ListBlobsResponse>() {
-            @Override
-            public ListBlobsResponse call(ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The List Blobs operation returns a list of the blobs under the specified container.
-     *
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListBlobsResponse object
-     */
-    public Observable<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>> listBlobsWithServiceResponseAsync() {
+    public Single<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>> listBlobsWithRestResponseAsync() {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -1556,20 +1276,19 @@ public class ContainersImpl implements Containers {
         final ListBlobsIncludeType include = null;
         final Integer timeout = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.listBlobs(prefix, delimiter, marker, maxresults, include, timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders> clientResponse = listBlobsDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.listBlobs(this.client.accountUrl(), prefix, delimiter, marker, maxresults, include, timeout, this.client.version(), requestId, restype, comp);
     }
+
+    /**
+     * The List Blobs operation returns a list of the blobs under the specified container.
+     *
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
+     */
+    public Single<ListBlobsResponse> listBlobsAsync() {
+        return listBlobsWithRestResponseAsync()
+            .map(new Func1<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>, ListBlobsResponse>() { public ListBlobsResponse call(RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
@@ -1587,7 +1306,7 @@ public class ContainersImpl implements Containers {
      * @return the ListBlobsResponse object if successful.
      */
     public ListBlobsResponse listBlobs(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
-        return listBlobsWithServiceResponseAsync(prefix, delimiter, marker, maxresults, include, timeout, requestId).toBlocking().single().body();
+        return listBlobsAsync(prefix, delimiter, marker, maxresults, include, timeout, requestId).toBlocking().value();
     }
 
     /**
@@ -1604,8 +1323,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<ListBlobsResponse> listBlobsAsync(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId, final ServiceCallback<ListBlobsResponse> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(listBlobsWithServiceResponseAsync(prefix, delimiter, marker, maxresults, include, timeout, requestId), serviceCallback);
+    public ServiceFuture<ListBlobsResponse> listBlobsAsync(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId, ServiceCallback<ListBlobsResponse> serviceCallback) {
+        return ServiceFuture.fromBody(listBlobsAsync(prefix, delimiter, marker, maxresults, include, timeout, requestId), serviceCallback);
     }
 
     /**
@@ -1619,31 +1338,9 @@ public class ContainersImpl implements Containers {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListBlobsResponse object
+     * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
      */
-    public Observable<ListBlobsResponse> listBlobsAsync(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
-        return listBlobsWithServiceResponseAsync(prefix, delimiter, marker, maxresults, include, timeout, requestId).map(new Func1<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>, ListBlobsResponse>() {
-            @Override
-            public ListBlobsResponse call(ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The List Blobs operation returns a list of the blobs under the specified container.
-     *
-     * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
-     * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix element in the response body that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.
-     * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
-     * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
-     * @param include Include this parameter to specify one or more datasets to include in the response. Possible values include: 'snapshots', 'metadata', 'uncommittedblobs', 'copy'
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListBlobsResponse object
-     */
-    public Observable<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>> listBlobsWithServiceResponseAsync(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
+    public Single<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>> listBlobsWithRestResponseAsync(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -1652,25 +1349,26 @@ public class ContainersImpl implements Containers {
         }
         final String restype = "container";
         final String comp = "list";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.listBlobs(prefix, delimiter, marker, maxresults, include, timeout, this.client.version(), requestId, restype, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders> clientResponse = listBlobsDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.listBlobs(this.client.accountUrl(), prefix, delimiter, marker, maxresults, include, timeout, this.client.version(), requestId, restype, comp);
     }
 
-    private ServiceResponseWithHeaders<ListBlobsResponse, ContainerListBlobsHeaders> listBlobsDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<ListBlobsResponse, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<ListBlobsResponse>() { }.getType())
-                .buildWithHeaders(response, ContainerListBlobsHeaders.class);
-    }
+    /**
+     * The List Blobs operation returns a list of the blobs under the specified container.
+     *
+     * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
+     * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix element in the response body that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.
+     * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
+     * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
+     * @param include Include this parameter to specify one or more datasets to include in the response. Possible values include: 'snapshots', 'metadata', 'uncommittedblobs', 'copy'
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
+     */
+    public Single<ListBlobsResponse> listBlobsAsync(String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
+        return listBlobsWithRestResponseAsync(prefix, delimiter, marker, maxresults, include, timeout, requestId)
+            .map(new Func1<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>, ListBlobsResponse>() { public ListBlobsResponse call(RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> restResponse) { return restResponse.body(); } });
+        }
+
 
 }

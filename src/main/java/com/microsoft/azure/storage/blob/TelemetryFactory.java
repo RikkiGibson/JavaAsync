@@ -14,8 +14,6 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.pipeline.IRequestPolicyFactory;
-import com.microsoft.azure.storage.pipeline.Pipeline;
 import com.microsoft.azure.storage.pipeline.RequestPolicyFactoryInterface;
 import com.microsoft.azure.storage.pipeline.RequestPolicyNode;
 import com.microsoft.rest.v2.http.HttpRequest;
@@ -23,7 +21,7 @@ import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import rx.Single;
 
-public final class TelemetryFactory implements IRequestPolicyFactory {
+public final class TelemetryFactory implements RequestPolicy.Factory {
 
     final private String userAgent;
 
@@ -38,20 +36,20 @@ public final class TelemetryFactory implements IRequestPolicyFactory {
     }
 
     private final class TelemetryPolicy implements RequestPolicy {
-        final RequestPolicyNode requestPolicyNode;
+        final RequestPolicy requestPolicy;
 
-        TelemetryPolicy(RequestPolicyNode requestPolicyNode) {
-            this.requestPolicyNode = requestPolicyNode;
+        TelemetryPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options) {
+            this.requestPolicy = requestPolicy;
         }
 
         public Single<HttpResponse> sendAsync(HttpRequest request) {
             request.headers().set(Constants.HeaderConstants.USER_AGENT, userAgent);
-            return this.requestPolicyNode.sendAsync(request);
+            return this.requestPolicy.sendAsync(request);
         }
     }
 
     @Override
-    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
-        return new TelemetryPolicy(requestPolicyNode);
+    public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+        return new TelemetryPolicy(next, options);
     }
 }

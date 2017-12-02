@@ -10,8 +10,9 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import java.util.List;
 
 /**
  * An enumeration of containers.
@@ -20,7 +21,7 @@ public class ListContainersResponse {
     /**
      * The serviceEndpoint property.
      */
-    @JsonProperty(value = "ServiceEndpoint", required = true)
+    @JacksonXmlProperty(localName = "ServiceEndpoint", isAttribute = true)
     private String serviceEndpoint;
 
     /**

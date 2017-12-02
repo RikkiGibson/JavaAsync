@@ -10,8 +10,8 @@
 
 package com.microsoft.azure.storage.models;
 
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 
 /**
  * An Azure Storage container.

@@ -318,4 +318,8 @@ final class Utility {
 
         return iso8601Format.format(value);
     }
+
+    public static String formatLogEntry(String format, Object... args) {
+        return String.format(format, args);//.replace('\n', '.');
+    }
 }

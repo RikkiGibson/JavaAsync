@@ -14,21 +14,18 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.pipeline.IRequestPolicyFactory;
-import com.microsoft.azure.storage.pipeline.Pipeline;
 import com.microsoft.azure.storage.pipeline.RequestPolicyNode;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import rx.Single;
 
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Factory for retrying requests
  */
-public final class RequestRetryFactory implements IRequestPolicyFactory {
+public final class RequestRetryFactory implements RequestPolicy.Factory {
 
     private final RequestRetryOptions requestRetryOptions;
 
@@ -42,13 +39,16 @@ public final class RequestRetryFactory implements IRequestPolicyFactory {
 
     private final class RequestRetryPolicy implements RequestPolicy {
 
-        private final AtomicReference<RequestPolicyNode> requestPolicyNode;
+        private final RequestPolicy requestPolicy;
 
-        final private AtomicReference<RequestRetryFactory> factory;
+        final private RequestRetryFactory factory;
 
-        RequestRetryPolicy(RequestPolicyNode requestPolicyNode, RequestRetryFactory factory) {
-            this.requestPolicyNode = new AtomicReference<>(requestPolicyNode);
-            this.factory = new AtomicReference<>(factory);
+        final private RequestPolicy.Options options;
+
+        RequestRetryPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, RequestRetryFactory factory) {
+            this.requestPolicy = requestPolicy;
+            this.options = options;
+            this.factory = factory;
         }
 
         @Override
@@ -58,7 +58,7 @@ public final class RequestRetryFactory implements IRequestPolicyFactory {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
-        return new RequestRetryPolicy(requestPolicyNode, this);
+    public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+        return new RequestRetryPolicy(next, options, this);
     }
 }

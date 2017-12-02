@@ -10,9 +10,9 @@
 
 package com.microsoft.azure.storage.models;
 
-import org.joda.time.DateTime;
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
+import org.joda.time.DateTime;
 
 /**
  * An Azure Storage blob.

@@ -10,9 +10,9 @@
 
 package com.microsoft.azure.storage.models;
 
-import org.joda.time.DateTime;
-import com.microsoft.rest.v2.DateTimeRfc1123;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.microsoft.rest.v2.DateTimeRfc1123;
+import org.joda.time.DateTime;
 
 /**
  * Defines headers for TakeSnapshot operation.

@@ -10,75 +10,84 @@
 
 package com.microsoft.azure.storage.implementation;
 
-import retrofit2.Retrofit;
-import com.microsoft.azure.storage.BlockBlobs;
-import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;
+import com.microsoft.azure.storage.BlockBlobs;
 import com.microsoft.azure.storage.models.BlockBlobsGetBlockListHeaders;
 import com.microsoft.azure.storage.models.BlockBlobsPutBlockHeaders;
 import com.microsoft.azure.storage.models.BlockBlobsPutBlockListHeaders;
 import com.microsoft.azure.storage.models.BlockList;
 import com.microsoft.azure.storage.models.BlockListType;
 import com.microsoft.azure.storage.models.BlockLookupList;
-import com.microsoft.rest.DateTimeRfc1123;
-import com.microsoft.rest.RestException;
-import com.microsoft.rest.ServiceCallback;
-import com.microsoft.rest.ServiceFuture;
-import com.microsoft.rest.ServiceResponseWithHeaders;
-import com.microsoft.rest.Validator;
-import java.io.InputStream;
+import com.microsoft.rest.v2.DateTimeRfc1123;
+import com.microsoft.rest.v2.RestException;
+import com.microsoft.rest.v2.RestProxy;
+import com.microsoft.rest.v2.RestResponse;
+import com.microsoft.rest.v2.ServiceCallback;
+import com.microsoft.rest.v2.ServiceFuture;
+import com.microsoft.rest.v2.Validator;
+import com.microsoft.rest.v2.annotations.BodyParam;
+import com.microsoft.rest.v2.annotations.ExpectedResponses;
+import com.microsoft.rest.v2.annotations.GET;
+import com.microsoft.rest.v2.annotations.HeaderParam;
+import com.microsoft.rest.v2.annotations.Headers;
+import com.microsoft.rest.v2.annotations.Host;
+import com.microsoft.rest.v2.annotations.HostParam;
+import com.microsoft.rest.v2.annotations.PathParam;
+import com.microsoft.rest.v2.annotations.PUT;
+import com.microsoft.rest.v2.annotations.QueryParam;
+import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
+import com.microsoft.rest.v2.http.HttpClient;
 import java.io.IOException;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import org.joda.time.DateTime;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.Header;
-import retrofit2.http.Headers;
-import retrofit2.http.PUT;
-import retrofit2.http.Query;
-import retrofit2.Response;
-import rx.functions.Func1;
 import rx.Observable;
+import rx.Single;
+import rx.functions.Func1;
 
 /**
- * An instance of this class provides access to all the operations defined
- * in BlockBlobs.
+ * An instance of this class provides access to all the operations defined in
+ * BlockBlobs.
  */
 public class BlockBlobsImpl implements BlockBlobs {
-    /** The Retrofit service to perform REST calls. */
+    /**
+     * The RestProxy service to perform REST calls.
+     */
     private BlockBlobsService service;
-    /** The service client containing this operation class. */
+
+    /**
+     * The service client containing this operation class.
+     */
     private AzureBlobStorageImpl client;
 
     /**
      * Initializes an instance of BlockBlobs.
      *
-     * @param retrofit the Retrofit instance built from a Retrofit Builder.
      * @param client the instance of the service client containing this operation class.
      */
-    public BlockBlobsImpl(Retrofit retrofit, AzureBlobStorageImpl client) {
-        this.service = retrofit.create(BlockBlobsService.class);
+    public BlockBlobsImpl(AzureBlobStorageImpl client) {
+        this.service = RestProxy.create(BlockBlobsService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }
 
     /**
-     * The interface defining all the services for BlockBlobs to be
-     * used by Retrofit to perform actually REST calls.
+     * The interface defining all the services for BlockBlobs to be used by
+     * RestProxy to perform REST calls.
      */
+    @Host("https://{accountUrl}")
     interface BlockBlobsService {
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlock" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlock" })
         @PUT("{containerName}/{blob}")
-        Observable<Response<ResponseBody>> putBlock(@Query("blockid") String blockId, @Body RequestBody body, @Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({201})
+        Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlock(@HostParam("accountUrl") String accountUrl, @QueryParam("blockid") String blockId, @BodyParam("application/xml; charset=utf-8") byte[] body, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlockList" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlockList" })
         @PUT("{containerName}/{blob}")
-        Observable<Response<ResponseBody>> putBlockList(@Query("timeout") Integer timeout, @Header("x-ms-blob-cache-control") String blobCacheControl, @Header("x-ms-blob-content-type") String blobContentType, @Header("x-ms-blob-content-encoding") String blobContentEncoding, @Header("x-ms-blob-content-language") String blobContentLanguage, @Header("x-ms-blob-content-md5") String blobContentMD5, @Header("x-ms-meta") String metadata, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-blob-content-disposition") String blobContentDisposition, @Header("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @Header("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @Header("If-Match") String ifMatches, @Header("If-None-Match") String ifNoneMatch, @Body BlockLookupList blocks, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({201})
+        Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockList(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-blob-cache-control") String blobCacheControl, @HeaderParam("x-ms-blob-content-type") String blobContentType, @HeaderParam("x-ms-blob-content-encoding") String blobContentEncoding, @HeaderParam("x-ms-blob-content-language") String blobContentLanguage, @HeaderParam("x-ms-blob-content-md5") String blobContentMD5, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-content-disposition") String blobContentDisposition, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @BodyParam("application/xml; charset=utf-8") BlockLookupList blocks, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
-        @Headers({ "Content-Type: application/xml; charset=utf-8", "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs getBlockList" })
+        @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs getBlockList" })
         @GET("{containerName}/{blob}")
-        Observable<Response<ResponseBody>> getBlockList(@Query("snapshot") DateTime snapshot, @Query("blocklisttype") BlockListType listType, @Query("timeout") Integer timeout, @Header("x-ms-lease-id") String leaseId, @Header("x-ms-version") String version, @Header("x-ms-client-request-id") String requestId, @Query("comp") String comp, @Header("x-ms-parameterized-host") String parameterizedHost);
+        @ExpectedResponses({200})
+        Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockList(@HostParam("accountUrl") String accountUrl, @QueryParam("snapshot") DateTime snapshot, @QueryParam("blocklisttype") BlockListType listType, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
     }
 
@@ -90,9 +99,10 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void putBlock(String blockId, byte[] body) {
-        putBlockWithServiceResponseAsync(blockId, body).toBlocking().single().body();
+        putBlockAsync(blockId, body).toBlocking().value();
     }
 
     /**
@@ -104,8 +114,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockAsync(String blockId, byte[] body, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(putBlockWithServiceResponseAsync(blockId, body), serviceCallback);
+    public ServiceFuture<Void> putBlockAsync(String blockId, byte[] body, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockAsync(blockId, body), serviceCallback);
     }
 
     /**
@@ -114,26 +124,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Observable<Void> putBlockAsync(String blockId, byte[] body) {
-        return putBlockWithServiceResponseAsync(blockId, body).map(new Func1<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Put Block operation creates a new block to be committed as part of a blob.
-     *
-     * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
-     * @param body Initial data
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>> putBlockWithServiceResponseAsync(String blockId, byte[] body) {
+    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockWithRestResponseAsync(String blockId, byte[] body) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -150,21 +143,21 @@ public class BlockBlobsImpl implements BlockBlobs {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        RequestBody bodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), body);
-        return service.putBlock(blockId, bodyConverted, timeout, leaseId, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders> clientResponse = putBlockDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.putBlock(this.client.accountUrl(), blockId, body, timeout, leaseId, this.client.version(), requestId, comp);
     }
+
+    /**
+     * The Put Block operation creates a new block to be committed as part of a blob.
+     *
+     * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
+     * @param body Initial data
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
+     */
+    public Single<Void> putBlockAsync(String blockId, byte[] body) {
+        return putBlockWithRestResponseAsync(blockId, body)
+            .map(new Func1<RestResponse<BlockBlobsPutBlockHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
@@ -177,9 +170,10 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void putBlock(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
-        putBlockWithServiceResponseAsync(blockId, body, timeout, leaseId, requestId).toBlocking().single().body();
+        putBlockAsync(blockId, body, timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
@@ -194,8 +188,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(putBlockWithServiceResponseAsync(blockId, body, timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<Void> putBlockAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockAsync(blockId, body, timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
@@ -207,29 +201,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Observable<Void> putBlockAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
-        return putBlockWithServiceResponseAsync(blockId, body, timeout, leaseId, requestId).map(new Func1<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Put Block operation creates a new block to be committed as part of a blob.
-     *
-     * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
-     * @param body Initial data
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>> putBlockWithServiceResponseAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
+    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockWithRestResponseAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -243,27 +217,25 @@ public class BlockBlobsImpl implements BlockBlobs {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "block";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        RequestBody bodyConverted = RequestBody.create(MediaType.parse("application/xml; charset=utf-8"), body);
-        return service.putBlock(blockId, bodyConverted, timeout, leaseId, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders> clientResponse = putBlockDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.putBlock(this.client.accountUrl(), blockId, body, timeout, leaseId, this.client.version(), requestId, comp);
     }
 
-    private ServiceResponseWithHeaders<Void, BlockBlobsPutBlockHeaders> putBlockDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(201, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, BlockBlobsPutBlockHeaders.class);
-    }
+    /**
+     * The Put Block operation creates a new block to be committed as part of a blob.
+     *
+     * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
+     * @param body Initial data
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
+     */
+    public Single<Void> putBlockAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
+        return putBlockWithRestResponseAsync(blockId, body, timeout, leaseId, requestId)
+            .map(new Func1<RestResponse<BlockBlobsPutBlockHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
@@ -272,9 +244,10 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void putBlockList(BlockLookupList blocks) {
-        putBlockListWithServiceResponseAsync(blocks).toBlocking().single().body();
+        putBlockListAsync(blocks).toBlocking().value();
     }
 
     /**
@@ -285,8 +258,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockListAsync(BlockLookupList blocks, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(putBlockListWithServiceResponseAsync(blocks), serviceCallback);
+    public ServiceFuture<Void> putBlockListAsync(BlockLookupList blocks, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockListAsync(blocks), serviceCallback);
     }
 
     /**
@@ -294,25 +267,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      *
      * @param blocks the BlockLookupList value
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Observable<Void> putBlockListAsync(BlockLookupList blocks) {
-        return putBlockListWithServiceResponseAsync(blocks).map(new Func1<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
-     *
-     * @param blocks the BlockLookupList value
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>> putBlockListWithServiceResponseAsync(BlockLookupList blocks) {
+    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListWithRestResponseAsync(BlockLookupList blocks) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -322,7 +279,6 @@ public class BlockBlobsImpl implements BlockBlobs {
         if (this.client.version() == null) {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
-        Validator.validate(blocks);
         final String comp = "blocklist";
         final Integer timeout = null;
         final String blobCacheControl = null;
@@ -338,7 +294,7 @@ public class BlockBlobsImpl implements BlockBlobs {
         final String ifMatches = null;
         final String ifNoneMatch = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        Validator.validate(blocks);
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -347,19 +303,20 @@ public class BlockBlobsImpl implements BlockBlobs {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.putBlockList(timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders> clientResponse = putBlockListDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.putBlockList(this.client.accountUrl(), timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp);
     }
+
+    /**
+     * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
+     *
+     * @param blocks the BlockLookupList value
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
+     */
+    public Single<Void> putBlockListAsync(BlockLookupList blocks) {
+        return putBlockListWithRestResponseAsync(blocks)
+            .map(new Func1<RestResponse<BlockBlobsPutBlockListHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockListHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
@@ -382,9 +339,10 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
+     * @return the void object if successful.
      */
     public void putBlockList(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        putBlockListWithServiceResponseAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().single().body();
+        putBlockListAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
     }
 
     /**
@@ -409,8 +367,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockListAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, final ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(putBlockListWithServiceResponseAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
+    public ServiceFuture<Void> putBlockListAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockListAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
@@ -432,39 +390,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Observable<Void> putBlockListAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return putBlockListWithServiceResponseAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).map(new Func1<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>, Void>() {
-            @Override
-            public Void call(ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
-     *
-     * @param blocks the BlockLookupList value
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
-     * @param blobContentType Optional. Sets the blob's content type. If specified, this property is stored with the blob and returned with a read request.
-     * @param blobContentEncoding Optional. Sets the blob's content encoding. If specified, this property is stored with the blob and returned with a read request.
-     * @param blobContentLanguage Optional. Set the blob's content language. If specified, this property is stored with the blob and returned with a read request.
-     * @param blobContentMD5 Optional. An MD5 hash of the blob content. Note that this hash is not validated, as the hashes for the individual blocks were validated when each was uploaded.
-     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param blobContentDisposition Optional. Sets the blob's Content-Disposition header.
-     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
-     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
-     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
-     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
-     */
-    public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>> putBlockListWithServiceResponseAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListWithRestResponseAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -474,9 +402,8 @@ public class BlockBlobsImpl implements BlockBlobs {
         if (this.client.version() == null) {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
-        Validator.validate(blocks);
         final String comp = "blocklist";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
+        Validator.validate(blocks);
         DateTimeRfc1123 ifModifiedSinceConverted = null;
         if (ifModifiedSince != null) {
             ifModifiedSinceConverted = new DateTimeRfc1123(ifModifiedSince);
@@ -485,25 +412,35 @@ public class BlockBlobsImpl implements BlockBlobs {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.putBlockList(timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders> clientResponse = putBlockListDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.putBlockList(this.client.accountUrl(), timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp);
     }
 
-    private ServiceResponseWithHeaders<Void, BlockBlobsPutBlockListHeaders> putBlockListDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<Void, RestException>newInstance(this.client.serializerAdapter())
-                .register(201, new TypeToken<Void>() { }.getType())
-                .buildWithHeaders(response, BlockBlobsPutBlockListHeaders.class);
-    }
+    /**
+     * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
+     *
+     * @param blocks the BlockLookupList value
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
+     * @param blobContentType Optional. Sets the blob's content type. If specified, this property is stored with the blob and returned with a read request.
+     * @param blobContentEncoding Optional. Sets the blob's content encoding. If specified, this property is stored with the blob and returned with a read request.
+     * @param blobContentLanguage Optional. Set the blob's content language. If specified, this property is stored with the blob and returned with a read request.
+     * @param blobContentMD5 Optional. An MD5 hash of the blob content. Note that this hash is not validated, as the hashes for the individual blocks were validated when each was uploaded.
+     * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param blobContentDisposition Optional. Sets the blob's Content-Disposition header.
+     * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
+     * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
+     * @param ifMatches Specify an ETag value to operate only on blobs with a matching value.
+     * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
+     */
+    public Single<Void> putBlockListAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return putBlockListWithRestResponseAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
+            .map(new Func1<RestResponse<BlockBlobsPutBlockListHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockListHeaders, Void> restResponse) { return restResponse.body(); } });
+        }
+
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
@@ -515,7 +452,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the BlockList object if successful.
      */
     public BlockList getBlockList(BlockListType listType) {
-        return getBlockListWithServiceResponseAsync(listType).toBlocking().single().body();
+        return getBlockListAsync(listType).toBlocking().value();
     }
 
     /**
@@ -526,8 +463,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<BlockList> getBlockListAsync(BlockListType listType, final ServiceCallback<BlockList> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getBlockListWithServiceResponseAsync(listType), serviceCallback);
+    public ServiceFuture<BlockList> getBlockListAsync(BlockListType listType, ServiceCallback<BlockList> serviceCallback) {
+        return ServiceFuture.fromBody(getBlockListAsync(listType), serviceCallback);
     }
 
     /**
@@ -535,25 +472,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      *
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the BlockList object
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Observable<BlockList> getBlockListAsync(BlockListType listType) {
-        return getBlockListWithServiceResponseAsync(listType).map(new Func1<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>, BlockList>() {
-            @Override
-            public BlockList call(ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
-     *
-     * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the BlockList object
-     */
-    public Observable<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>> getBlockListWithServiceResponseAsync(BlockListType listType) {
+    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListWithRestResponseAsync(BlockListType listType) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -568,20 +489,20 @@ public class BlockBlobsImpl implements BlockBlobs {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getBlockList(snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders> clientResponse = getBlockListDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getBlockList(this.client.accountUrl(), snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp);
     }
+
+    /**
+     * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
+     *
+     * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
+     */
+    public Single<BlockList> getBlockListAsync(BlockListType listType) {
+        return getBlockListWithRestResponseAsync(listType)
+            .map(new Func1<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, BlockList>() { public BlockList call(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) { return restResponse.body(); } });
+        }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
@@ -597,7 +518,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the BlockList object if successful.
      */
     public BlockList getBlockList(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
-        return getBlockListWithServiceResponseAsync(listType, snapshot, timeout, leaseId, requestId).toBlocking().single().body();
+        return getBlockListAsync(listType, snapshot, timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
@@ -612,8 +533,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<BlockList> getBlockListAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId, final ServiceCallback<BlockList> serviceCallback) {
-        return ServiceFuture.fromHeaderResponse(getBlockListWithServiceResponseAsync(listType, snapshot, timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<BlockList> getBlockListAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId, ServiceCallback<BlockList> serviceCallback) {
+        return ServiceFuture.fromBody(getBlockListAsync(listType, snapshot, timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
@@ -625,29 +546,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the BlockList object
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Observable<BlockList> getBlockListAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
-        return getBlockListWithServiceResponseAsync(listType, snapshot, timeout, leaseId, requestId).map(new Func1<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>, BlockList>() {
-            @Override
-            public BlockList call(ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders> response) {
-                return response.body();
-            }
-        });
-    }
-
-    /**
-     * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
-     *
-     * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
-     * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
-     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
-     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
-     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
-     * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the BlockList object
-     */
-    public Observable<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>> getBlockListWithServiceResponseAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
+    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListWithRestResponseAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
         }
@@ -658,25 +559,24 @@ public class BlockBlobsImpl implements BlockBlobs {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "blocklist";
-        String parameterizedHost = Joiner.on(", ").join("{accountUrl}", this.client.accountUrl());
-        return service.getBlockList(snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp, parameterizedHost)
-            .flatMap(new Func1<Response<ResponseBody>, Observable<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>>>() {
-                @Override
-                public Observable<ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders>> call(Response<ResponseBody> response) {
-                    try {
-                        ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders> clientResponse = getBlockListDelegate(response);
-                        return Observable.just(clientResponse);
-                    } catch (Throwable t) {
-                        return Observable.error(t);
-                    }
-                }
-            });
+        return service.getBlockList(this.client.accountUrl(), snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp);
     }
 
-    private ServiceResponseWithHeaders<BlockList, BlockBlobsGetBlockListHeaders> getBlockListDelegate(Response<ResponseBody> response) throws RestException, IOException, IllegalArgumentException {
-        return this.client.restClient().responseBuilderFactory().<BlockList, RestException>newInstance(this.client.serializerAdapter())
-                .register(200, new TypeToken<BlockList>() { }.getType())
-                .buildWithHeaders(response, BlockBlobsGetBlockListHeaders.class);
-    }
+    /**
+     * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
+     *
+     * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
+     * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
+     * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
+     * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
+     * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
+     * @throws IllegalArgumentException thrown if parameters fail the validation
+     * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
+     */
+    public Single<BlockList> getBlockListAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
+        return getBlockListWithRestResponseAsync(listType, snapshot, timeout, leaseId, requestId)
+            .map(new Func1<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, BlockList>() { public BlockList call(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) { return restResponse.body(); } });
+        }
+
 
 }

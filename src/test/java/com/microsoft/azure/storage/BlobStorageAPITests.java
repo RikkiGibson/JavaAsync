@@ -2,12 +2,15 @@ package com.microsoft.azure.storage;
 
 import com.microsoft.azure.storage.blob.HttpAccessConditions;
 import com.microsoft.azure.storage.blob.SharedKeyCredentials;
+import com.microsoft.azure.storage.implementation.AzureBlobStorageImpl;
 import com.microsoft.azure.v2.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.v2.serializer.AzureJacksonAdapter;
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.LogLevel;
 import com.microsoft.rest.v2.RestClient;
 import com.microsoft.rest.v2.RestClient.Builder;
+import com.microsoft.rest.v2.http.HttpClient;
+import com.microsoft.rest.v2.http.HttpPipeline;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
@@ -22,6 +25,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 public class BlobStorageAPITests {
     static class AddDatePolicy implements RequestPolicy {
@@ -51,13 +55,29 @@ public class BlobStorageAPITests {
 
     @Test
     public void testBasic() throws Exception {
+
+        HttpPipeline.Logger logger = new HttpPipeline.Logger() {
+            @Override
+            public void log(String message) {
+                Logger.getGlobal().info(message);
+            }
+        };
+        HttpPipeline.Builder builder = new HttpPipeline.Builder();
+        HttpClient.Configuration configuration = new HttpClient.Configuration(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)));
+        builder.withHttpClient(HttpClient.createDefault(configuration))
+                .withLogger(logger)
+                .withRequestPolicy()
+        AzureBlobStorageImpl client = new AzureBlobStorageImpl(builder.build());
+        client = client.withAccountUrl("http://xclientdev.blob.core.windows.net");
+        client.containers().w.createAsync();
+
         //final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
         QueryStringDecoder decoder = new QueryStringDecoder("/hello?key=ab+cd&key2=josh");
         //final HttpAccessConditions ac = new HttpAccessConditions() {
         //};
 
-        System.setProperty("http.proxyHost", "localhost");
-        System.setProperty("http.proxyPort", "8888");
+        //System.setProperty("http.proxyHost", "localhost");
+        //System.setProperty("http.proxyPort", "8888");
 
         RestClient config = new Builder()
                 //.withCredentials(ApplicationTokenCredentials.fromFile(credFile))

@@ -19,14 +19,16 @@ import com.microsoft.azure.storage.models.ServiceSetPropertiesHeaders;
 import com.microsoft.azure.storage.models.StorageServiceProperties;
 import com.microsoft.azure.storage.models.StorageServiceStats;
 import com.microsoft.rest.v2.RestException;
+import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.ServiceCallback;
 import com.microsoft.rest.v2.ServiceFuture;
-//import com.microsoft.rest.v2.ServiceResponseWithHeaders;
+import java.io.IOException;
 import rx.Observable;
+import rx.Single;
 
 /**
- * An instance of this class provides access to all the operations defined
- * in Services.
+ * An instance of this class provides access to all the operations defined in
+ * Services.
  */
 public interface Services {
     /**
@@ -45,7 +47,7 @@ public interface Services {
      * @param storageServiceProperties The StorageService properties.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;Void&gt;} object
      */
     ServiceFuture<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, final ServiceCallback<Void> serviceCallback);
 
@@ -54,18 +56,19 @@ public interface Services {
      *
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return the {@link Single&lt;Void&gt;} object if successful.
      */
-    Observable<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties);
+    Single<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties);
 
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return the {@link Single&lt;RestResponse&lt;ServiceSetPropertiesHeaders, Void&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>> setPropertiesWithServiceResponseAsync(StorageServiceProperties storageServiceProperties);
+    Single<RestResponse<ServiceSetPropertiesHeaders, Void>> setPropertiesWithRestResponseAsync(StorageServiceProperties storageServiceProperties);
+
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
@@ -86,7 +89,7 @@ public interface Services {
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;Void&gt;} object
      */
     ServiceFuture<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId, final ServiceCallback<Void> serviceCallback);
 
@@ -97,9 +100,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return the {@link Single&lt;Void&gt;} object if successful.
      */
-    Observable<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId);
+    Single<Void> setPropertiesAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId);
 
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
@@ -108,9 +111,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceResponseWithHeaders} object if successful.
+     * @return the {@link Single&lt;RestResponse&lt;ServiceSetPropertiesHeaders, Void&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<Void, ServiceSetPropertiesHeaders>> setPropertiesWithServiceResponseAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId);
+    Single<RestResponse<ServiceSetPropertiesHeaders, Void>> setPropertiesWithRestResponseAsync(StorageServiceProperties storageServiceProperties, Integer timeout, String requestId);
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
@@ -127,7 +130,7 @@ public interface Services {
      *
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;StorageServiceProperties&gt;} object
      */
     ServiceFuture<StorageServiceProperties> getPropertiesAsync(final ServiceCallback<StorageServiceProperties> serviceCallback);
 
@@ -135,17 +138,18 @@ public interface Services {
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceProperties object
+     * @return the {@link Single&lt;StorageServiceProperties&gt;} object if successful.
      */
-    Observable<StorageServiceProperties> getPropertiesAsync();
+    Single<StorageServiceProperties> getPropertiesAsync();
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceProperties object
+     * @return the {@link Single&lt;RestResponse&lt;ServiceGetPropertiesHeaders, StorageServiceProperties&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>> getPropertiesWithServiceResponseAsync();
+    Single<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>> getPropertiesWithRestResponseAsync();
+
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
@@ -165,7 +169,7 @@ public interface Services {
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;StorageServiceProperties&gt;} object
      */
     ServiceFuture<StorageServiceProperties> getPropertiesAsync(Integer timeout, String requestId, final ServiceCallback<StorageServiceProperties> serviceCallback);
 
@@ -175,9 +179,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceProperties object
+     * @return the {@link Single&lt;StorageServiceProperties&gt;} object if successful.
      */
-    Observable<StorageServiceProperties> getPropertiesAsync(Integer timeout, String requestId);
+    Single<StorageServiceProperties> getPropertiesAsync(Integer timeout, String requestId);
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
@@ -185,9 +189,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceProperties object
+     * @return the {@link Single&lt;RestResponse&lt;ServiceGetPropertiesHeaders, StorageServiceProperties&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<StorageServiceProperties, ServiceGetPropertiesHeaders>> getPropertiesWithServiceResponseAsync(Integer timeout, String requestId);
+    Single<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>> getPropertiesWithRestResponseAsync(Integer timeout, String requestId);
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
@@ -204,7 +208,7 @@ public interface Services {
      *
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;StorageServiceStats&gt;} object
      */
     ServiceFuture<StorageServiceStats> getStatsAsync(final ServiceCallback<StorageServiceStats> serviceCallback);
 
@@ -212,17 +216,18 @@ public interface Services {
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceStats object
+     * @return the {@link Single&lt;StorageServiceStats&gt;} object if successful.
      */
-    Observable<StorageServiceStats> getStatsAsync();
+    Single<StorageServiceStats> getStatsAsync();
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceStats object
+     * @return the {@link Single&lt;RestResponse&lt;ServiceGetStatsHeaders, StorageServiceStats&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>> getStatsWithServiceResponseAsync();
+    Single<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>> getStatsWithRestResponseAsync();
+
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
@@ -242,7 +247,7 @@ public interface Services {
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;StorageServiceStats&gt;} object
      */
     ServiceFuture<StorageServiceStats> getStatsAsync(Integer timeout, String requestId, final ServiceCallback<StorageServiceStats> serviceCallback);
 
@@ -252,9 +257,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceStats object
+     * @return the {@link Single&lt;StorageServiceStats&gt;} object if successful.
      */
-    Observable<StorageServiceStats> getStatsAsync(Integer timeout, String requestId);
+    Single<StorageServiceStats> getStatsAsync(Integer timeout, String requestId);
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
@@ -262,9 +267,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the StorageServiceStats object
+     * @return the {@link Single&lt;RestResponse&lt;ServiceGetStatsHeaders, StorageServiceStats&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<StorageServiceStats, ServiceGetStatsHeaders>> getStatsWithServiceResponseAsync(Integer timeout, String requestId);
+    Single<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>> getStatsWithRestResponseAsync(Integer timeout, String requestId);
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
@@ -281,7 +286,7 @@ public interface Services {
      *
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;ListContainersResponse&gt;} object
      */
     ServiceFuture<ListContainersResponse> listContainersAsync(final ServiceCallback<ListContainersResponse> serviceCallback);
 
@@ -289,17 +294,18 @@ public interface Services {
      * The List Containers operation returns a list of the containers under the specified account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListContainersResponse object
+     * @return the {@link Single&lt;ListContainersResponse&gt;} object if successful.
      */
-    Observable<ListContainersResponse> listContainersAsync();
+    Single<ListContainersResponse> listContainersAsync();
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListContainersResponse object
+     * @return the {@link Single&lt;RestResponse&lt;ServiceListContainersHeaders, ListContainersResponse&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>> listContainersWithServiceResponseAsync();
+    Single<RestResponse<ServiceListContainersHeaders, ListContainersResponse>> listContainersWithRestResponseAsync();
+
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
@@ -327,7 +333,7 @@ public interface Services {
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link ServiceFuture} object
+     * @return the {@link ServiceFuture&lt;ListContainersResponse&gt;} object
      */
     ServiceFuture<ListContainersResponse> listContainersAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId, final ServiceCallback<ListContainersResponse> serviceCallback);
 
@@ -341,9 +347,9 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListContainersResponse object
+     * @return the {@link Single&lt;ListContainersResponse&gt;} object if successful.
      */
-    Observable<ListContainersResponse> listContainersAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId);
+    Single<ListContainersResponse> listContainersAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId);
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
@@ -355,8 +361,8 @@ public interface Services {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the observable to the ListContainersResponse object
+     * @return the {@link Single&lt;RestResponse&lt;ServiceListContainersHeaders, ListContainersResponse&gt;&gt;} object if successful.
      */
-    Observable<ServiceResponseWithHeaders<ListContainersResponse, ServiceListContainersHeaders>> listContainersWithServiceResponseAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId);
+    Single<RestResponse<ServiceListContainersHeaders, ListContainersResponse>> listContainersWithRestResponseAsync(String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId);
 
 }

@@ -11,6 +11,7 @@
 package com.microsoft.azure.storage.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * An enumeration of blobs.
@@ -19,13 +20,13 @@ public class ListBlobsResponse {
     /**
      * The serviceEndpoint property.
      */
-    @JsonProperty(value = "ServiceEndpoint", required = true)
+    @JacksonXmlProperty(localName = "ServiceEndpoint", isAttribute = true)
     private String serviceEndpoint;
 
     /**
      * The containerName property.
      */
-    @JsonProperty(value = "ContainerName", required = true)
+    @JacksonXmlProperty(localName = "ContainerName", isAttribute = true)
     private String containerName;
 
     /**
