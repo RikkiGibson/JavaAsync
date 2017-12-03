@@ -14,8 +14,9 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.models.ContainerEnumerationResults;
+import com.microsoft.azure.storage.models.ListContainersResponse;
 import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.rest.v2.http.HttpPipeline;
 import rx.Single;
 
 /**
@@ -23,12 +24,12 @@ import rx.Single;
  */
 public final class ServiceURL extends StorageUrl {
 
-    public ServiceURL(String url, Pipeline pipeline) {
+    public ServiceURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
     public ContainerURL createContainerURL(String containerName) {
-        return new ContainerURL(this.url + "/" + containerName, this.storageClient.pipeline());
+        return new ContainerURL(this.url + "/" + containerName, this.storageClient.httpPipeline());
     }
 
     /**
@@ -49,8 +50,8 @@ public final class ServiceURL extends StorageUrl {
      * @param timeout
      * @return
      */
-    public Single<ContainerEnumerationResults> listConatinersAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
-        return this.storageClient.services().listContainersAsync(prefix, marker, maxresults, include, timeout);
+    public Single<ListContainersResponse> listConatinersAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
+        return this.storageClient.services().listContainersAsync();//prefix, marker, maxresults, include, timeout);
     }
 
     /**
@@ -60,7 +61,7 @@ public final class ServiceURL extends StorageUrl {
      * @return
      *      A {@link ServiceURL} object with the given pipeline.
      */
-    public ServiceURL withPipeline(Pipeline pipeline) {
+    public ServiceURL withPipeline(HttpPipeline pipeline) {
         return new ServiceURL(this.url, pipeline);
     }
 }

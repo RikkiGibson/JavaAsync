@@ -15,6 +15,7 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.rest.v2.http.HttpPipeline;
 import rx.Single;
 
 import java.io.InputStream;
@@ -35,18 +36,18 @@ public class BlobURL extends StorageUrl {
      * @param pipeline
      *      A {@link Pipeline} representing a pipeline for requests
      */
-    public BlobURL(String url, Pipeline pipeline) {
+    public BlobURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
     /**
      * Creates a new {@link BlobURL} with the given pipeline.
      * @param pipeline
-     *      A {@link Pipeline} object to set.
+     *      A {@link HttpPipeline} object to set.
      * @return
      *      A {@link BlobURL} object with the given pipeline.
      */
-    public BlobURL withPipeline(Pipeline pipeline) {
+    public BlobURL withPipeline(HttpPipeline pipeline) {
         return new BlobURL(super.url, pipeline);
     }
 
@@ -60,7 +61,7 @@ public class BlobURL extends StorageUrl {
     public BlobURL withSnapshot(Date snapshot) throws MalformedURLException, UnsupportedEncodingException {
         BlobURLParts blobURLParts = URLParser.ParseURL(super.url);
         blobURLParts.setSnapshot(snapshot);
-        return new BlobURL(blobURLParts.toURL(), super.storageClient.pipeline());
+        return new BlobURL(blobURLParts.toURL(), super.storageClient.httpPipeline());
     }
 
     /**
@@ -69,7 +70,7 @@ public class BlobURL extends StorageUrl {
      *      A {@link BlockBlobURL} object.
      */
     public BlockBlobURL toBlockBlobURL() {
-        return new BlockBlobURL(super.url, super.storageClient.pipeline());
+        return new BlockBlobURL(super.url, super.storageClient.httpPipeline());
     }
 
     /**
@@ -78,7 +79,7 @@ public class BlobURL extends StorageUrl {
      *      A {@link AppendBlobURL} object.
      */
     public AppendBlobURL toAppendBlobURL() {
-        return new AppendBlobURL(super.url, super.storageClient.pipeline());
+        return new AppendBlobURL(super.url, super.storageClient.httpPipeline());
     }
 
     /**
@@ -87,7 +88,7 @@ public class BlobURL extends StorageUrl {
      *      A {@link PageBlobURL} object.
      */
     public PageBlobURL toPageBlobURL() {
-        return new PageBlobURL(super.url, super.storageClient.pipeline());
+        return new PageBlobURL(super.url, super.storageClient.httpPipeline());
     }
 
     /**
@@ -106,8 +107,7 @@ public class BlobURL extends StorageUrl {
      *      A {@link Single<Void>} object if successful.
      */
     public Single<Void> startCopyAsync(String sourceURL, Metadata metadata, BlobAccessConditions sourceAccessConditions, BlobAccessConditions destAccessConditions) {
-        return this.storageClient.blobs().copyAsync();
-        return null;
+        return this.storageClient.blobs().copyAsync(sourceURL);
     }
 
     /**
@@ -139,7 +139,7 @@ public class BlobURL extends StorageUrl {
      *       {@link Single<InputStream>} object represetning the stream the blob is dowloaded to.
      */
     public Single<InputStream> getBlobAsync(Long offset, Long range, BlobAccessConditions blobAccessConditions) {
-        return this.storageClient.blobs().getAsync(super.url);
+        return this.storageClient.blobs().getAsync();//super.url);
     }
 
     /**

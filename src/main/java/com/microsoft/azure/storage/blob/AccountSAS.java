@@ -93,7 +93,15 @@ public final class AccountSAS extends BaseSAS {
 
         String signature = sharedKeyCredentials.computeHmac256(stringToSign);
 
-        return new SASQueryParameters(super.version, servicesString, resourceTypesString, super.protocol.toString(), super.startTime,
-                super.expiryTime, super.ipRange, null, null, super.permissions, signature);
+        SASQueryParameters sasParams = new SASQueryParameters();
+        sasParams.version = super.version;
+        sasParams.resourceTypes = resourceTypesString;
+        sasParams.protocol = super.protocol.toString();
+        sasParams.startTime = super.startTime;
+        sasParams.expiryTime = super.expiryTime;
+        sasParams.ipRange = super.ipRange;
+        sasParams.permissions = super.permissions;
+        sasParams.signature = signature;
+        return sasParams;
     }
 }

@@ -17,6 +17,7 @@ package com.microsoft.azure.storage.blob;
 import com.microsoft.azure.storage.models.ContainerGetPropertiesHeaders;
 import com.microsoft.azure.storage.pipeline.Pipeline;
 import com.microsoft.rest.v2.RestResponse;
+import com.microsoft.rest.v2.http.HttpPipeline;
 import rx.Single;
 import rx.functions.Func1;
 
@@ -25,7 +26,7 @@ import rx.functions.Func1;
  */
 public final class ContainerURL extends StorageUrl {
 
-    public ContainerURL(String url, Pipeline pipeline) {
+    public ContainerURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
@@ -37,7 +38,7 @@ public final class ContainerURL extends StorageUrl {
      * @return
      */
     public Single<Void> createAsync(ContainerAccessConditions containerAccessConditions) {
-        return this.storageClient.containers().createAsync(this.url, containerAccessConditions);
+        return this.storageClient.containers().createAsync();//this.url, containerAccessConditions);
     }
 
     /**
@@ -46,7 +47,7 @@ public final class ContainerURL extends StorageUrl {
      * @return
      */
     public Single<ContainerGetPropertiesHeaders> getPropertiesAndMetadataAsync() {
-        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync(this.url);
+        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync();//this.url);
 
         return restResponse.map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, ContainerGetPropertiesHeaders>() {
             public ContainerGetPropertiesHeaders call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) {
@@ -61,11 +62,11 @@ public final class ContainerURL extends StorageUrl {
      * @return
      */
     public Single<Void> deleteAsync() {
-        return this.storageClient.containers().deleteAsync(this.url);
+        return this.storageClient.containers().deleteAsync();//this.url);
     }
 
     /**
-     * Creates a new {@link BlockBlobUrl} object by concatenating the blobName to the end of
+     * Creates a new {@link BlockBlobURL} object by concatenating the blobName to the end of
      * ContainerURL's URL. The new BlockBlobUrl uses the same request policy pipeline as the ContainerURL.
      * To change the pipeline, create the BlockBlobUrl and then call its WithPipeline method passing in the
      * desired pipeline object. Or, call this package's NewBlockBlobUrl instead of calling this object's
@@ -73,18 +74,18 @@ public final class ContainerURL extends StorageUrl {
      * @param blobName
      * @return
      */
-    public BlockBlobUrl createBlockBlobUrl(String blobName) {
-        return new BlockBlobUrl(this.url, blobName, this.storageClient.restClient());
+    public BlockBlobURL createBlockBlobURL(String blobName) {
+        return new BlockBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
     }
 
     /**
      * Creates a new {@link ContainerURL} with the given pipeline.
      * @param pipeline
-     *      A {@link Pipeline} object to set.
+     *      A {@link HttpPipeline} object to set.
      * @return
      *      A {@link ContainerURL} object with the given pipeline.
      */
-    public ContainerURL withPipeline(Pipeline pipeline) {
+    public ContainerURL withPipeline(HttpPipeline pipeline) {
         return new ContainerURL(this.url, pipeline);
     }
 }

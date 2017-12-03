@@ -1,7 +1,6 @@
 package com.microsoft.azure.storage;
 
-import com.microsoft.azure.storage.blob.HttpAccessConditions;
-import com.microsoft.azure.storage.blob.SharedKeyCredentials;
+import com.microsoft.azure.storage.blob.*;
 import com.microsoft.azure.storage.implementation.AzureBlobStorageImpl;
 import com.microsoft.azure.v2.credentials.ApplicationTokenCredentials;
 import com.microsoft.azure.v2.serializer.AzureJacksonAdapter;
@@ -25,6 +24,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Locale;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BlobStorageAPITests {
@@ -63,37 +63,26 @@ public class BlobStorageAPITests {
             }
         };
         HttpPipeline.Builder builder = new HttpPipeline.Builder();
-        HttpClient.Configuration configuration = new HttpClient.Configuration(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)));
+        HttpClient.Configuration configuration = new HttpClient.Configuration(
+                new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)));
+        RequestLoggingOptions loggingOptions = new RequestLoggingOptions(Level.INFO);
+        LoggingFactory loggingFactory = new LoggingFactory(loggingOptions);
+        SharedKeyCredentials creds = new SharedKeyCredentials("xclientdev", "key");
+        RequestIDFactory requestIDFactory = new RequestIDFactory();
+        //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
+        TelemetryOptions telemetryOptions = new TelemetryOptions();
+        TelemetryFactory telemetryFactory = new TelemetryFactory(telemetryOptions);
         builder.withHttpClient(HttpClient.createDefault(configuration))
                 .withLogger(logger)
-                .withRequestPolicy()
+                .withRequestPolicy(loggingFactory)
+                .withRequestPolicy(creds)
+                .withRequestPolicy(requestIDFactory)
+                .withRequestPolicy(telemetryFactory);
         AzureBlobStorageImpl client = new AzureBlobStorageImpl(builder.build());
-        client = client.withAccountUrl("http://xclientdev.blob.core.windows.net");
-        client.containers().w.createAsync();
-
-        //final File credFile = new File(System.getenv("AZURE_AUTH_LOCATION"));
-        QueryStringDecoder decoder = new QueryStringDecoder("/hello?key=ab+cd&key2=josh");
-        //final HttpAccessConditions ac = new HttpAccessConditions() {
-        //};
+        client = client.withAccountUrl("http://xclientdev.blob.core.windows.net").withVersion("2016-05-31");
+        client.containers().createAsync();
 
         //System.setProperty("http.proxyHost", "localhost");
         //System.setProperty("http.proxyPort", "8888");
-
-        RestClient config = new Builder()
-                //.withCredentials(ApplicationTokenCredentials.fromFile(credFile))
-                .withBaseUrl("127.0.0.1")//"http://xclientdev.blob.core.windows.net")
-                .withLogLevel(LogLevel.BODY_AND_HEADERS)
-                .addRequestPolicy(new SharedKeyCredentials("dfs", "dfs"))
-                .addRequestPolicy(new AddDatePolicy.Factory())
-                .withSerializerAdapter(new AzureJacksonAdapter())
-                .withProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)))
-                .build();
-
-        //config.httpClient().
-        StorageClientImpl client = new StorageClientImpl(config)
-                .withAccountName("azstoragetodelete2")
-                .withVersion("2016-05-31");
-
-        client.containers().create("javacontainer");
     }
 }

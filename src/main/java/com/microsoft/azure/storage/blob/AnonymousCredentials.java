@@ -33,10 +33,10 @@ public final class AnonymousCredentials implements ICredentials {
      * Shared Access Signature (SAS).
      */
     private final class AnonymousCredentialsPolicy implements RequestPolicy {
-        final RequestPolicyNode requestPolicyNode;
+        final RequestPolicy requestPolicy;
 
-        AnonymousCredentialsPolicy(RequestPolicyNode requestPolicyNode) {
-            this.requestPolicyNode = requestPolicyNode;
+        AnonymousCredentialsPolicy(RequestPolicy requestPolicy) {
+            this.requestPolicy = requestPolicy;
         }
 
         /**
@@ -44,16 +44,16 @@ public final class AnonymousCredentials implements ICredentials {
          * @param request
          * @return
          */
-        public Single<HttpResponse> sendAsync(HttpRequest request) { return requestPolicyNode.sendAsync(request); }
+        public Single<HttpResponse> sendAsync(HttpRequest request) { return requestPolicy.sendAsync(request); }
     }
 
     /**
      * Creates a new <code>AnonymousCredentialsPolicy</code>
-     * @param requestPolicyNode
+     * @param nextRequestPolicy
      * @return
      */
     @Override
-    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
-        return new AnonymousCredentialsPolicy(requestPolicyNode);
+    public RequestPolicy create(RequestPolicy nextRequestPolicy, RequestPolicy.Options options) {
+        return new AnonymousCredentialsPolicy(nextRequestPolicy);
     }
 }

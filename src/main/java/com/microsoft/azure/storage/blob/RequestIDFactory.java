@@ -25,7 +25,7 @@ import java.util.UUID;
 /**
  * Factory to create a unique request ID and set the x-ms-client-request-id header.
  */
-final class RequestIDFactory implements RequestPolicy.Factory {
+public final class RequestIDFactory implements RequestPolicy.Factory {
 
     private final class RequestIDPolicy implements RequestPolicy {
         final RequestPolicy requestPolicy;

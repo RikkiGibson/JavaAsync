@@ -15,6 +15,7 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.rest.v2.http.HttpPipeline;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -32,7 +33,7 @@ public final class PageBlobURL extends BlobURL {
      * @param pipeline
      *      A {@link Pipeline} object representing the pipeline for requests.
      */
-    public PageBlobURL(String url, Pipeline pipeline) {
+    public PageBlobURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
@@ -43,7 +44,7 @@ public final class PageBlobURL extends BlobURL {
      * @return
      *      A {@link PageBlobURL} object with the given pipeline.
      */
-    public PageBlobURL withPipeline(Pipeline pipeline) {
+    public PageBlobURL withPipeline(HttpPipeline pipeline) {
         return new PageBlobURL(this.url, pipeline);
     }
 
@@ -57,6 +58,6 @@ public final class PageBlobURL extends BlobURL {
     public PageBlobURL withSnapshot(Date snapshot) throws MalformedURLException, UnsupportedEncodingException {
         BlobURLParts blobURLParts = URLParser.ParseURL(super.url);
         blobURLParts.setSnapshot(snapshot);
-        return new BlobURL(blobURLParts.toURL(), super.storageClient.pipeline());
+        return new PageBlobURL(blobURLParts.toURL(), super.storageClient.httpPipeline());
     }
 }

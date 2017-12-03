@@ -85,8 +85,17 @@ public final class ServiceSAS extends BaseSAS {
 
         String signature = sharedKeyCredentials.computeHmac256(stringToSign);
 
-        return new SASQueryParameters(super.version, null, null, super.protocol.toString(), super.startTime,
-                super.expiryTime, super.ipRange, this.identifier, resource, super.permissions, signature);
+        SASQueryParameters sasParams = new SASQueryParameters();
+        sasParams.version = super.version;
+        sasParams.protocol = super.protocol.toString();
+        sasParams.startTime = super.startTime;
+        sasParams.expiryTime = super.expiryTime;
+        sasParams.ipRange = super.ipRange;
+        sasParams.identifier = this.identifier;
+        sasParams.resource = resource;
+        sasParams.permissions = super.permissions;
+        sasParams.signature = signature;
+        return sasParams;
     }
 
     private String getCanonicalName(String accountName) {

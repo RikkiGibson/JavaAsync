@@ -18,6 +18,7 @@ import com.microsoft.azure.storage.models.BlobType;
 import com.microsoft.azure.storage.models.BlockList;
 import com.microsoft.azure.storage.models.BlockListType;
 import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.rest.v2.http.HttpPipeline;
 import rx.Single;
 
 import java.io.UnsupportedEncodingException;
@@ -36,18 +37,18 @@ public final class BlockBlobURL extends BlobURL {
      * @param pipeline
      *      A {@link Pipeline} object representing the pipeline for requests.
      */
-    public BlockBlobURL(String url, Pipeline pipeline) {
+    public BlockBlobURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
     /**
      * Creates a new {@link BlockBlobURL} with the given pipeline.
      * @param pipeline
-     *      A {@link Pipeline} object to set.
+     *      A {@link HttpPipeline} object to set.
      * @return
      *      A {@link BlockBlobURL} object with the given pipeline.
      */
-    public BlockBlobURL withPipeline(Pipeline pipeline) {
+    public BlockBlobURL withPipeline(HttpPipeline pipeline) {
         return new BlockBlobURL(this.url, pipeline);
     }
 
@@ -61,7 +62,7 @@ public final class BlockBlobURL extends BlobURL {
     public BlockBlobURL withSnapshot(Date snapshot) throws MalformedURLException, UnsupportedEncodingException {
         BlobURLParts blobURLParts = URLParser.ParseURL(super.url);
         blobURLParts.setSnapshot(snapshot);
-        return new BlockBlobURL(blobURLParts.toURL(), super.storageClient.pipeline());
+        return new BlockBlobURL(blobURLParts.toURL(), super.storageClient.httpPipeline());
     }
 
     /**
@@ -74,7 +75,7 @@ public final class BlockBlobURL extends BlobURL {
      * @return
      */
     public Single<Void> putBlobAsync(byte[] data) {
-        return this.storageClient.blobs().putAsync(super.url, BlobType.BLOCK_BLOB, data);
+        return this.storageClient.blobs().putAsync(BlobType.BLOCK_BLOB, data, null, null, null, null, null, null, null, null, null, null, null, null , null);//super.url, BlobType.BLOCK_BLOB, data);
     }
 
     /**
@@ -85,6 +86,6 @@ public final class BlockBlobURL extends BlobURL {
      * @return
      */
     public Single<BlockList> GetBlockListAsync(BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
-        return this.storageClient.blockBlobs().getBlockListAsync();
+        return this.storageClient.blockBlobs().getBlockListAsync(listType);
     }
 }

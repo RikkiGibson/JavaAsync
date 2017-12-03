@@ -22,6 +22,7 @@ import com.microsoft.rest.v2.http.HttpHeaders;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RetryPolicy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import org.apache.commons.lang3.StringUtils;
@@ -68,12 +69,15 @@ public final class SharedKeyCredentials implements ICredentials {
 
     private final class SharedKeyCredentialsPolicy implements RequestPolicy {
 
-        private final RequestPolicyNode requestPolicyNode;
+        private final RequestPolicy requestPolicy;
+
+        private final RequestPolicy.Options options;
 
         private final SharedKeyCredentials factory;
 
-        SharedKeyCredentialsPolicy(RequestPolicyNode requestPolicyNode, SharedKeyCredentials factory) {
-            this.requestPolicyNode = requestPolicyNode;
+        SharedKeyCredentialsPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, SharedKeyCredentials factory) {
+            this.requestPolicy = requestPolicy;
+            this.options = options;
             this.factory = factory;
         }
 
@@ -99,14 +103,14 @@ public final class SharedKeyCredentials implements ICredentials {
                 return Single.error(e);
             }
 
-            Single<HttpResponse> response = requestPolicyNode.sendAsync(request);
+            Single<HttpResponse> response = requestPolicy.sendAsync(request);
             return response.doOnSuccess(new Action1<HttpResponse>() {
                 @Override
                 public void call(HttpResponse response) {
                     if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
-                        if (requestPolicyNode.shouldLogRequest(LogLevel.ERROR)) {
+                        if (options.logger().shouldLogRequest(LogLevel.ERROR)) {
                             String temp = stringToSign.get();
-                            requestPolicyNode.log(LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp);
+                            options.logger().log(LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp);
                         }
                     }
                 }
@@ -115,8 +119,8 @@ public final class SharedKeyCredentials implements ICredentials {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicyNode requestPolicyNode) {
-        return new SharedKeyCredentialsPolicy(requestPolicyNode, this);
+    public RequestPolicy create(RequestPolicy nextRequestPolicy, RequestPolicy.Options options) {
+        return new SharedKeyCredentialsPolicy(nextRequestPolicy, options, this);
     }
 
     /**
