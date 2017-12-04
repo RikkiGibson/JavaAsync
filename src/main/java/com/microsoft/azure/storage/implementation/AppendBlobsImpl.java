@@ -49,14 +49,14 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The service client containing this operation class.
      */
-    private AzureBlobStorageImpl client;
+    private StorageClientImpl client;
 
     /**
      * Initializes an instance of AppendBlobs.
      *
      * @param client the instance of the service client containing this operation class.
      */
-    public AppendBlobsImpl(AzureBlobStorageImpl client) {
+    public AppendBlobsImpl(StorageClientImpl client) {
         this.service = RestProxy.create(AppendBlobsService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }

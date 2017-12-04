@@ -75,7 +75,8 @@ public final class BlockBlobURL extends BlobURL {
      * @return
      */
     public Single<Void> putBlobAsync(byte[] data) {
-        return this.storageClient.blobs().putAsync(BlobType.BLOCK_BLOB, data, null, null, null, null, null, null, null, null, null, null, null, null , null);//super.url, BlobType.BLOCK_BLOB, data);
+        //return this.storageClient.blobs().putAsync(BlobType.BLOCK_BLOB, data, null, null, null, null, null, null, null, null, null, null, null, null , null);//super.url, BlobType.BLOCK_BLOB, data);
+        return null;
     }
 
     /**

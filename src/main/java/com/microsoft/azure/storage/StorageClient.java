@@ -11,9 +11,9 @@
 package com.microsoft.azure.storage;
 
 /**
- * The interface for AzureBlobStorage class.
+ * The interface for StorageClient class.
  */
-public interface AzureBlobStorage {
+public interface StorageClient {
     /**
      * The default base URL.
      */
@@ -32,7 +32,7 @@ public interface AzureBlobStorage {
      * @param accountUrl the accountUrl value.
      * @return the service client itself
      */
-    AzureBlobStorage withAccountUrl(String accountUrl);
+    StorageClient withAccountUrl(String accountUrl);
 
     /**
      * Gets Specifies the version of the operation to use for this request.
@@ -47,7 +47,7 @@ public interface AzureBlobStorage {
      * @param version the version value.
      * @return the service client itself
      */
-    AzureBlobStorage withVersion(String version);
+    StorageClient withVersion(String version);
 
     /**
      * Gets the Services object to access its operations.

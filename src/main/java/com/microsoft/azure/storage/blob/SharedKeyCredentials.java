@@ -108,10 +108,10 @@ public final class SharedKeyCredentials implements ICredentials {
                 @Override
                 public void call(HttpResponse response) {
                     if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
-                        if (options.logger().shouldLogRequest(LogLevel.ERROR)) {
+                        //if (options.logger().shouldLogRequest(LogLevel.ERROR)) {
                             String temp = stringToSign.get();
-                            options.logger().log(LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp);
-                        }
+                            options.logger().log(/*LogLevel.ERROR,*/ String.format("===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp));
+                        //}
                     }
                 }
             });

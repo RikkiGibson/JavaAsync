@@ -11,20 +11,20 @@
 package com.microsoft.azure.storage.implementation;
 
 import com.microsoft.azure.storage.AppendBlobs;
-import com.microsoft.azure.storage.AzureBlobStorage;
 import com.microsoft.azure.storage.Blobs;
 import com.microsoft.azure.storage.BlockBlobs;
 import com.microsoft.azure.storage.Containers;
 import com.microsoft.azure.storage.PageBlobs;
 import com.microsoft.azure.storage.Services;
+import com.microsoft.azure.storage.StorageClient;
 import com.microsoft.rest.v2.RestProxy;
 import com.microsoft.rest.v2.ServiceClient;
 import com.microsoft.rest.v2.http.HttpPipeline;
 
 /**
- * Initializes a new instance of the AzureBlobStorage class.
+ * Initializes a new instance of the StorageClient class.
  */
-public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStorage {
+public class StorageClientImpl extends ServiceClient implements StorageClient {
 
     /**
      * The Azure storage account to use.
@@ -46,7 +46,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
      * @param accountUrl the accountUrl value.
      * @return the service client itself
      */
-    public AzureBlobStorageImpl withAccountUrl(String accountUrl) {
+    public StorageClientImpl withAccountUrl(String accountUrl) {
         this.accountUrl = accountUrl;
         return this;
     }
@@ -71,7 +71,7 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
      * @param version the version value.
      * @return the service client itself
      */
-    public AzureBlobStorageImpl withVersion(String version) {
+    public StorageClientImpl withVersion(String version) {
         this.version = version;
         return this;
     }
@@ -161,18 +161,18 @@ public class AzureBlobStorageImpl extends ServiceClient implements AzureBlobStor
     }
 
     /**
-     * Initializes an instance of AzureBlobStorage client.
+     * Initializes an instance of StorageClient client.
      */
-    public AzureBlobStorageImpl() {
+    public StorageClientImpl() {
         this(RestProxy.createDefaultPipeline());
     }
 
     /**
-     * Initializes an instance of AzureBlobStorage client.
+     * Initializes an instance of StorageClient client.
      *
      * @param httpPipeline The HTTP pipeline to send requests through.
      */
-    public AzureBlobStorageImpl(HttpPipeline httpPipeline) {
+    public StorageClientImpl(HttpPipeline httpPipeline) {
         super(httpPipeline);
 
         this.services = new ServicesImpl(this);

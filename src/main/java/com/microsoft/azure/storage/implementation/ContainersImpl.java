@@ -66,14 +66,14 @@ public class ContainersImpl implements Containers {
     /**
      * The service client containing this operation class.
      */
-    private AzureBlobStorageImpl client;
+    private StorageClientImpl client;
 
     /**
      * Initializes an instance of Containers.
      *
      * @param client the instance of the service client containing this operation class.
      */
-    public ContainersImpl(AzureBlobStorageImpl client) {
+    public ContainersImpl(StorageClientImpl client) {
         this.service = RestProxy.create(ContainersService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }
@@ -85,17 +85,17 @@ public class ContainersImpl implements Containers {
     @Host("https://{accountUrl}")
     interface ContainersService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers create" })
-        @PUT("{containerName}")
+        @PUT("{URL}")
         @ExpectedResponses({201})
-        Single<RestResponse<ContainerCreateHeaders, Void>> create(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
+        Single<RestResponse<ContainerCreateHeaders, Void>> create(@HostParam("accountUrl") String accountUrl, @PathParam("URL") String uRL, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers getProperties" })
-        @GET("{containerName}")
+        @GET("{URL}")
         @ExpectedResponses({200})
         Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getProperties(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers delete" })
-        @DELETE("{containerName}")
+        @DELETE("{URL}")
         @ExpectedResponses({202})
         Single<RestResponse<ContainerDeleteHeaders, Void>> delete(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
@@ -117,7 +117,7 @@ public class ContainersImpl implements Containers {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers setAcl" })
         @PUT("{containerName}")
         @ExpectedResponses({200})
-        Single<RestResponse<ContainerSetAclHeaders, Void>> setAcl(@HostParam("accountUrl") String accountUrl, @BodyParam("application/xml; charset=utf-8") List<SignedIdentifier> containerAcl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
+        Single<RestResponse<ContainerSetAclHeaders, Void>> setAcl(@HostParam("accountUrl") String accountUrl, @BodyParam("application/xml; charset=utf-8") SignedIdentifiersWrapper containerAcl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype, @QueryParam("comp") String comp);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers lease" })
         @PUT("{containerName}")
@@ -134,35 +134,41 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the void object if successful.
      */
-    public void create() {
-        createAsync().toBlocking().value();
+    public void create(String uRL) {
+        createAsync(uRL).toBlocking().value();
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> createAsync(ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(createAsync(), serviceCallback);
+    public ServiceFuture<Void> createAsync(String uRL, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(createAsync(uRL), serviceCallback);
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync() {
+    public Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(String uRL) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (uRL == null) {
+            throw new IllegalArgumentException("Parameter uRL is required and cannot be null.");
         }
         if (this.client.version() == null) {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
@@ -172,23 +178,25 @@ public class ContainersImpl implements Containers {
         final String metadata = null;
         final PublicAccessType access = null;
         final String requestId = null;
-        return service.create(this.client.accountUrl(), timeout, metadata, access, this.client.version(), requestId, restype);
+        return service.create(this.client.accountUrl(), uRL, timeout, metadata, access, this.client.version(), requestId, restype);
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Single<Void> createAsync() {
-        return createWithRestResponseAsync()
+    public Single<Void> createAsync(String uRL) {
+        return createWithRestResponseAsync(uRL)
             .map(new Func1<RestResponse<ContainerCreateHeaders, Void>, Void>() { public Void call(RestResponse<ContainerCreateHeaders, Void> restResponse) { return restResponse.body(); } });
         }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -198,13 +206,14 @@ public class ContainersImpl implements Containers {
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the void object if successful.
      */
-    public void create(Integer timeout, String metadata, PublicAccessType access, String requestId) {
-        createAsync(timeout, metadata, access, requestId).toBlocking().value();
+    public void create(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId) {
+        createAsync(uRL, timeout, metadata, access, requestId).toBlocking().value();
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -213,13 +222,14 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(createAsync(timeout, metadata, access, requestId), serviceCallback);
+    public ServiceFuture<Void> createAsync(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(createAsync(uRL, timeout, metadata, access, requestId), serviceCallback);
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -227,20 +237,24 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(Integer timeout, String metadata, PublicAccessType access, String requestId) {
+    public Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId) {
         if (this.client.accountUrl() == null) {
             throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+        }
+        if (uRL == null) {
+            throw new IllegalArgumentException("Parameter uRL is required and cannot be null.");
         }
         if (this.client.version() == null) {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String restype = "container";
-        return service.create(this.client.accountUrl(), timeout, metadata, access, this.client.version(), requestId, restype);
+        return service.create(this.client.accountUrl(), uRL, timeout, metadata, access, this.client.version(), requestId, restype);
     }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -248,8 +262,8 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Single<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId) {
-        return createWithRestResponseAsync(timeout, metadata, access, requestId)
+    public Single<Void> createAsync(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId) {
+        return createWithRestResponseAsync(uRL, timeout, metadata, access, requestId)
             .map(new Func1<RestResponse<ContainerCreateHeaders, Void>, Void>() { public Void call(RestResponse<ContainerCreateHeaders, Void> restResponse) { return restResponse.body(); } });
         }
 
@@ -949,7 +963,7 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.setAcl(this.client.accountUrl(), containerAcl, timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp);
+        return service.setAcl(this.client.accountUrl(), new SignedIdentifiersWrapper(containerAcl), timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp);
     }
 
     /**
@@ -1033,7 +1047,7 @@ public class ContainersImpl implements Containers {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.setAcl(this.client.accountUrl(), containerAcl, timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp);
+        return service.setAcl(this.client.accountUrl(), new SignedIdentifiersWrapper(containerAcl), timeout, leaseId, access, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, this.client.version(), requestId, restype, comp);
     }
 
     /**

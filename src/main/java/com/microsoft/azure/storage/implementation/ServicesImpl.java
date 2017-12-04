@@ -56,14 +56,14 @@ public class ServicesImpl implements Services {
     /**
      * The service client containing this operation class.
      */
-    private AzureBlobStorageImpl client;
+    private StorageClientImpl client;
 
     /**
      * Initializes an instance of Services.
      *
      * @param client the instance of the service client containing this operation class.
      */
-    public ServicesImpl(AzureBlobStorageImpl client) {
+    public ServicesImpl(StorageClientImpl client) {
         this.service = RestProxy.create(ServicesService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }

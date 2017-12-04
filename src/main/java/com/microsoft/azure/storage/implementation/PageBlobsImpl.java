@@ -54,14 +54,14 @@ public class PageBlobsImpl implements PageBlobs {
     /**
      * The service client containing this operation class.
      */
-    private AzureBlobStorageImpl client;
+    private StorageClientImpl client;
 
     /**
      * Initializes an instance of PageBlobs.
      *
      * @param client the instance of the service client containing this operation class.
      */
-    public PageBlobsImpl(AzureBlobStorageImpl client) {
+    public PageBlobsImpl(StorageClientImpl client) {
         this.service = RestProxy.create(PageBlobsService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }

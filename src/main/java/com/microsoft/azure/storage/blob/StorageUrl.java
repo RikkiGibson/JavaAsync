@@ -14,15 +14,14 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.implementation.AzureBlobStorageImpl;
-import com.microsoft.azure.storage.pipeline.Pipeline;
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.http.HttpPipeline;
 
 public abstract class StorageUrl {
 
     protected final String url;
 
-    protected final AzureBlobStorageImpl storageClient;
+    protected final StorageClientImpl storageClient;
 
     protected StorageUrl(String url, HttpPipeline pipeline) {
         if (url == null) {
@@ -33,7 +32,7 @@ public abstract class StorageUrl {
         }
 
         this.url = url;
-        this.storageClient = new AzureBlobStorageImpl(pipeline);
+        this.storageClient = new StorageClientImpl(pipeline);
     }
 
     @Override

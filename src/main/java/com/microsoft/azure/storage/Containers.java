@@ -42,40 +42,45 @@ public interface Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      */
-    void create();
+    void create(String uRL);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture&lt;Void&gt;} object
      */
-    ServiceFuture<Void> createAsync(final ServiceCallback<Void> serviceCallback);
+    ServiceFuture<Void> createAsync(String uRL, final ServiceCallback<Void> serviceCallback);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link Single&lt;Void&gt;} object if successful.
      */
-    Single<Void> createAsync();
+    Single<Void> createAsync(String uRL);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link Single&lt;RestResponse&lt;ContainerCreateHeaders, Void&gt;&gt;} object if successful.
      */
-    Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync();
+    Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(String uRL);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -84,11 +89,12 @@ public interface Containers {
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      */
-    void create(Integer timeout, String metadata, PublicAccessType access, String requestId);
+    void create(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -97,11 +103,12 @@ public interface Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture&lt;Void&gt;} object
      */
-    ServiceFuture<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId, final ServiceCallback<Void> serviceCallback);
+    ServiceFuture<Void> createAsync(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId, final ServiceCallback<Void> serviceCallback);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -109,11 +116,12 @@ public interface Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link Single&lt;Void&gt;} object if successful.
      */
-    Single<Void> createAsync(Integer timeout, String metadata, PublicAccessType access, String requestId);
+    Single<Void> createAsync(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
+     * @param uRL The full URL to the resource
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -121,7 +129,7 @@ public interface Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link Single&lt;RestResponse&lt;ContainerCreateHeaders, Void&gt;&gt;} object if successful.
      */
-    Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(Integer timeout, String metadata, PublicAccessType access, String requestId);
+    Single<RestResponse<ContainerCreateHeaders, Void>> createWithRestResponseAsync(String uRL, Integer timeout, String metadata, PublicAccessType access, String requestId);
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.

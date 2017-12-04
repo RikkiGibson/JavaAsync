@@ -73,21 +73,21 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                 this.operationStartTime = requestStartTime;
             }
 
-            if (this.options.logger().shouldLog(LogLevel.INFO)) {
-                this.options.logger().log(LogLevel.INFO,
-                        Utility.formatLogEntry("'%s'==> OUTGOING REQUEST (Try number='%d')%n", request.url(), this.tryCount));
-            }
+            //if (this.options.logger().shouldLog(LogLevel.INFO)) {
+                this.options.logger().log(/*LogLevel.INFO,*/
+                        String.format("'%s'==> OUTGOING REQUEST (Try number='%d')%n", request.url(), this.tryCount));
+            //}
 
             // TODO: Need to change logic slightly when support for writing to event log/sys log support is added
             return requestPolicy.sendAsync(request)
                     .doOnError(new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            if (options.logger().shouldLog(LogLevel.ERROR)) {
-                                options.logger().log(LogLevel.ERROR,
-                                    "Unexpected failure attempting to make request.%nError message:'%s'%n",
-                                        throwable.getMessage());
-                            }
+                            //if (options.logger().shouldLog(LogLevel.ERROR)) {
+                                options.logger().log(/*LogLevel.ERROR,*/
+                                        String.format("Unexpected failure attempting to make request.%nError message:'%s'%n",
+                                        throwable.getMessage()));
+                            //}
                         }
                     })
                     .doOnSuccess(new Action1<HttpResponse>() {
@@ -95,23 +95,23 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                         public void call(HttpResponse response) {
                             long requestCompletionTime = System.currentTimeMillis() - requestStartTime;
                             // check if error should be logged since there is nothing of higher priority
-                            if (!options.logger().shouldLog(LogLevel.ERROR)) {
-                                return;
-                            }
+//                            if (!options.logger().shouldLog(LogLevel.ERROR)) {
+//                                return;
+//                            }
 
-                            if (options.logger().shouldLog(LogLevel.INFO)) {
+                            //if (options.logger().shouldLog(LogLevel.INFO)) {
                                 // assume success and default to informational logging
-                                options.logger().log(LogLevel.INFO, "Successfully Received Response\n");
-                            }
+                                options.logger().log(/*LogLevel.INFO,*/ "Successfully Received Response\n");
+                            //}
 
                             // if the response took too long, we'll upgrade to warning.
                             if (requestCompletionTime >=
                                     factory.requestLoggingOptions.getMinDurationToLogSlowRequestsInMs()) {
                                 // log a warning if the try duration exceeded the specified threshold
-                                if (options.logger().shouldLog(LogLevel.WARNING)) {
-                                    options.logger().log(LogLevel.WARNING,
-                                    "Slow Operation. Try duration of %l ms", requestCompletionTime);
-                                }
+                                //if (options.logger().shouldLog(LogLevel.WARNING)) {
+                                    options.logger().log(/*LogLevel.WARNING,*/
+                                            String.format("Slow Operation. Try duration of %l ms", requestCompletionTime));
+                                //}
                             }
 
                             // TODO: Find symoblic reference nad look at updated Go code and change to just one log statement
@@ -119,19 +119,19 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                                     (response.statusCode() >= 400 && response.statusCode() != 404 &&
                                      response.statusCode() != 409 && response.statusCode() != 412 &&
                                      response.statusCode() != 416)) {
-                                options.logger().log(LogLevel.ERROR,
-                                        Utility.formatLogEntry("HTTP request failed with status code:'%d'%n",
+                                options.logger().log(/*LogLevel.ERROR,*/
+                                        String.format("HTTP request failed with status code:'%d'%n",
                                                 response.statusCode()));
                             }
 
-                            if ( options.logger().shouldLog(LogLevel.INFO)) {
+                            //if ( options.logger().shouldLog(LogLevel.INFO)) {
                                 long requestEndTime = System.nanoTime();
                                 long requestDuration = requestEndTime - requestStartTime;
                                 long operationDuration = requestEndTime - operationStartTime;
-                                options.logger().log(LogLevel.INFO, Utility.formatLogEntry(
+                                options.logger().log(/*LogLevel.INFO,*/ String.format(
                                         "Request try:'%d', request duration:'%d' ms, operation duration:'%d' ms",
                                         tryCount, requestDuration, operationDuration));
-                            }
+                            //}
                         }
                     });
         }

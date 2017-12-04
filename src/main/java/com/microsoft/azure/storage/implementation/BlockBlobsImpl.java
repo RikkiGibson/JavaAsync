@@ -56,14 +56,14 @@ public class BlockBlobsImpl implements BlockBlobs {
     /**
      * The service client containing this operation class.
      */
-    private AzureBlobStorageImpl client;
+    private StorageClientImpl client;
 
     /**
      * Initializes an instance of BlockBlobs.
      *
      * @param client the instance of the service client containing this operation class.
      */
-    public BlockBlobsImpl(AzureBlobStorageImpl client) {
+    public BlockBlobsImpl(StorageClientImpl client) {
         this.service = RestProxy.create(BlockBlobsService.class, client.httpPipeline(), client.serializerAdapter());
         this.client = client;
     }

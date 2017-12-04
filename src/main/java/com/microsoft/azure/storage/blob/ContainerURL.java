@@ -37,8 +37,8 @@ public final class ContainerURL extends StorageUrl {
      * @param containerAccessConditions
      * @return
      */
-    public Single<Void> createAsync(ContainerAccessConditions containerAccessConditions) {
-        return this.storageClient.containers().createAsync();//this.url, containerAccessConditions);
+    public Single<Void> createAsync(ContainerAccessConditions containerAccessConditions, String url) {
+        return this.storageClient.containers().createAsync(url);//this.url, containerAccessConditions);
     }
 
     /**
