@@ -51,7 +51,8 @@ public final class ServiceURL extends StorageUrl {
      * @return
      */
     public Single<ListContainersResponse> listConatinersAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
-        return this.storageClient.services().listContainersAsync();//prefix, marker, maxresults, include, timeout);
+        //return this.storageClient.services().listContainersAsync();//prefix, marker, maxresults, include, timeout);
+        return null;
     }
 
     /**

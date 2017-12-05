@@ -17,7 +17,7 @@ public interface StorageClient {
     /**
      * The default base URL.
      */
-    String DEFAULT_BASE_URL = "https://{accountUrl}";
+    String DEFAULT_BASE_URL = "https://{url}";
 
     /**
      * Gets The Azure storage account to use.

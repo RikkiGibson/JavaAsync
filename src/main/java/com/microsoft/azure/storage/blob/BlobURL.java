@@ -107,7 +107,8 @@ public class BlobURL extends StorageUrl {
      *      A {@link Single<Void>} object if successful.
      */
     public Single<Void> startCopyAsync(String sourceURL, Metadata metadata, BlobAccessConditions sourceAccessConditions, BlobAccessConditions destAccessConditions) {
-        return this.storageClient.blobs().copyAsync(sourceURL);
+        //return this.storageClient.blobs().copyAsync(sourceURL);
+        return null;
     }
 
     /**
@@ -139,7 +140,8 @@ public class BlobURL extends StorageUrl {
      *       {@link Single<InputStream>} object represetning the stream the blob is dowloaded to.
      */
     public Single<InputStream> getBlobAsync(Long offset, Long range, BlobAccessConditions blobAccessConditions) {
-        return this.storageClient.blobs().getAsync();//super.url);
+        //return this.storageClient.blobs().getAsync();//super.url);
+        return null;
     }
 
     /**

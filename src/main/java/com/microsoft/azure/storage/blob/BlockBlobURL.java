@@ -87,6 +87,7 @@ public final class BlockBlobURL extends BlobURL {
      * @return
      */
     public Single<BlockList> GetBlockListAsync(BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
-        return this.storageClient.blockBlobs().getBlockListAsync(listType);
+        //return this.storageClient.blockBlobs().getBlockListAsync(listType);
+        return null;
     }
 }

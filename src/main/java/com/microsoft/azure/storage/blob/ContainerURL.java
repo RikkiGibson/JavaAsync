@@ -47,13 +47,14 @@ public final class ContainerURL extends StorageUrl {
      * @return
      */
     public Single<ContainerGetPropertiesHeaders> getPropertiesAndMetadataAsync() {
-        Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync();//this.url);
+        //Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync();//this.url);
 
-        return restResponse.map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, ContainerGetPropertiesHeaders>() {
-            public ContainerGetPropertiesHeaders call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) {
-                return restResponse.headers();
-            }
-        });
+//        return restResponse.map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, ContainerGetPropertiesHeaders>() {
+//            public ContainerGetPropertiesHeaders call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) {
+//                return restResponse.headers();
+//            }
+//        });
+        return null;
     }
 
     /**
@@ -62,7 +63,8 @@ public final class ContainerURL extends StorageUrl {
      * @return
      */
     public Single<Void> deleteAsync() {
-        return this.storageClient.containers().deleteAsync();//this.url);
+        //return this.storageClient.containers().deleteAsync();//this.url);
+        return null;
     }
 
     /**

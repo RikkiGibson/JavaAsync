@@ -72,28 +72,29 @@ public class BlockBlobsImpl implements BlockBlobs {
      * The interface defining all the services for BlockBlobs to be used by
      * RestProxy to perform REST calls.
      */
-    @Host("https://{accountUrl}")
+    @Host("https://{url}")
     interface BlockBlobsService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlock" })
         @PUT("{containerName}/{blob}")
         @ExpectedResponses({201})
-        Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlock(@HostParam("accountUrl") String accountUrl, @QueryParam("blockid") String blockId, @BodyParam("application/xml; charset=utf-8") byte[] body, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
+        Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlock(@HostParam("url") String url, @QueryParam("blockid") String blockId, @BodyParam("application/xml; charset=utf-8") byte[] body, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlockList" })
         @PUT("{containerName}/{blob}")
         @ExpectedResponses({201})
-        Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockList(@HostParam("accountUrl") String accountUrl, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-blob-cache-control") String blobCacheControl, @HeaderParam("x-ms-blob-content-type") String blobContentType, @HeaderParam("x-ms-blob-content-encoding") String blobContentEncoding, @HeaderParam("x-ms-blob-content-language") String blobContentLanguage, @HeaderParam("x-ms-blob-content-md5") String blobContentMD5, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-content-disposition") String blobContentDisposition, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @BodyParam("application/xml; charset=utf-8") BlockLookupList blocks, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
+        Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockList(@HostParam("url") String url, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-blob-cache-control") String blobCacheControl, @HeaderParam("x-ms-blob-content-type") String blobContentType, @HeaderParam("x-ms-blob-content-encoding") String blobContentEncoding, @HeaderParam("x-ms-blob-content-language") String blobContentLanguage, @HeaderParam("x-ms-blob-content-md5") String blobContentMD5, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-blob-content-disposition") String blobContentDisposition, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @BodyParam("application/xml; charset=utf-8") BlockLookupList blocks, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs getBlockList" })
         @GET("{containerName}/{blob}")
         @ExpectedResponses({200})
-        Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockList(@HostParam("accountUrl") String accountUrl, @QueryParam("snapshot") DateTime snapshot, @QueryParam("blocklisttype") BlockListType listType, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
+        Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockList(@HostParam("url") String url, @QueryParam("snapshot") DateTime snapshot, @QueryParam("blocklisttype") BlockListType listType, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("comp") String comp);
 
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -101,34 +102,36 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the void object if successful.
      */
-    public void putBlock(String blockId, byte[] body) {
-        putBlockAsync(blockId, body).toBlocking().value();
+    public void putBlock(String url, String blockId, byte[] body) {
+        putBlockAsync(url, blockId, body).toBlocking().value();
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockAsync(String blockId, byte[] body, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(putBlockAsync(blockId, body), serviceCallback);
+    public ServiceFuture<Void> putBlockAsync(String url, String blockId, byte[] body, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockAsync(url, blockId, body), serviceCallback);
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockWithRestResponseAsync(String blockId, byte[] body) {
-        if (this.client.accountUrl() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockWithRestResponseAsync(String url, String blockId, byte[] body) {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter url is required and cannot be null.");
         }
         if (blockId == null) {
             throw new IllegalArgumentException("Parameter blockId is required and cannot be null.");
@@ -143,25 +146,27 @@ public class BlockBlobsImpl implements BlockBlobs {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        return service.putBlock(this.client.accountUrl(), blockId, body, timeout, leaseId, this.client.version(), requestId, comp);
+        return service.putBlock(url, blockId, body, timeout, leaseId, this.client.version(), requestId, comp);
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Single<Void> putBlockAsync(String blockId, byte[] body) {
-        return putBlockWithRestResponseAsync(blockId, body)
+    public Single<Void> putBlockAsync(String url, String blockId, byte[] body) {
+        return putBlockWithRestResponseAsync(url, blockId, body)
             .map(new Func1<RestResponse<BlockBlobsPutBlockHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockHeaders, Void> restResponse) { return restResponse.body(); } });
         }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -172,13 +177,14 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the void object if successful.
      */
-    public void putBlock(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
-        putBlockAsync(blockId, body, timeout, leaseId, requestId).toBlocking().value();
+    public void putBlock(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
+        putBlockAsync(url, blockId, body, timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -188,13 +194,14 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(putBlockAsync(blockId, body, timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<Void> putBlockAsync(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockAsync(url, blockId, body, timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -203,9 +210,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockWithRestResponseAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
-        if (this.client.accountUrl() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockWithRestResponseAsync(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter url is required and cannot be null.");
         }
         if (blockId == null) {
             throw new IllegalArgumentException("Parameter blockId is required and cannot be null.");
@@ -217,12 +224,13 @@ public class BlockBlobsImpl implements BlockBlobs {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "block";
-        return service.putBlock(this.client.accountUrl(), blockId, body, timeout, leaseId, this.client.version(), requestId, comp);
+        return service.putBlock(url, blockId, body, timeout, leaseId, this.client.version(), requestId, comp);
     }
 
     /**
      * The Put Block operation creates a new block to be committed as part of a blob.
      *
+     * @param url The full URL to the resource
      * @param blockId A valid Base64 string value that identifies the block. Prior to encoding, the string must be less than or equal to 64 bytes in size. For a given blob, the length of the value specified for the blockid parameter must be the same size for each block.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -231,8 +239,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Single<Void> putBlockAsync(String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
-        return putBlockWithRestResponseAsync(blockId, body, timeout, leaseId, requestId)
+    public Single<Void> putBlockAsync(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
+        return putBlockWithRestResponseAsync(url, blockId, body, timeout, leaseId, requestId)
             .map(new Func1<RestResponse<BlockBlobsPutBlockHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockHeaders, Void> restResponse) { return restResponse.body(); } });
         }
 
@@ -240,38 +248,41 @@ public class BlockBlobsImpl implements BlockBlobs {
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the void object if successful.
      */
-    public void putBlockList(BlockLookupList blocks) {
-        putBlockListAsync(blocks).toBlocking().value();
+    public void putBlockList(String url, BlockLookupList blocks) {
+        putBlockListAsync(url, blocks).toBlocking().value();
     }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockListAsync(BlockLookupList blocks, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(putBlockListAsync(blocks), serviceCallback);
+    public ServiceFuture<Void> putBlockListAsync(String url, BlockLookupList blocks, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockListAsync(url, blocks), serviceCallback);
     }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListWithRestResponseAsync(BlockLookupList blocks) {
-        if (this.client.accountUrl() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListWithRestResponseAsync(String url, BlockLookupList blocks) {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter url is required and cannot be null.");
         }
         if (blocks == null) {
             throw new IllegalArgumentException("Parameter blocks is required and cannot be null.");
@@ -303,24 +314,26 @@ public class BlockBlobsImpl implements BlockBlobs {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.putBlockList(this.client.accountUrl(), timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp);
+        return service.putBlockList(url, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp);
     }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Single<Void> putBlockListAsync(BlockLookupList blocks) {
-        return putBlockListWithRestResponseAsync(blocks)
+    public Single<Void> putBlockListAsync(String url, BlockLookupList blocks) {
+        return putBlockListWithRestResponseAsync(url, blocks)
             .map(new Func1<RestResponse<BlockBlobsPutBlockListHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockListHeaders, Void> restResponse) { return restResponse.body(); } });
         }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
@@ -341,13 +354,14 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the void object if successful.
      */
-    public void putBlockList(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        putBlockListAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+    public void putBlockList(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        putBlockListAsync(url, blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
     }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
@@ -367,13 +381,14 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<Void> putBlockListAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, ServiceCallback<Void> serviceCallback) {
-        return ServiceFuture.fromBody(putBlockListAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
+    public ServiceFuture<Void> putBlockListAsync(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId, ServiceCallback<Void> serviceCallback) {
+        return ServiceFuture.fromBody(putBlockListAsync(url, blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId), serviceCallback);
     }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
@@ -392,9 +407,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListWithRestResponseAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        if (this.client.accountUrl() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListWithRestResponseAsync(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter url is required and cannot be null.");
         }
         if (blocks == null) {
             throw new IllegalArgumentException("Parameter blocks is required and cannot be null.");
@@ -412,12 +427,13 @@ public class BlockBlobsImpl implements BlockBlobs {
         if (ifUnmodifiedSince != null) {
             ifUnmodifiedSinceConverted = new DateTimeRfc1123(ifUnmodifiedSince);
         }
-        return service.putBlockList(this.client.accountUrl(), timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp);
+        return service.putBlockList(url, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSinceConverted, ifUnmodifiedSinceConverted, ifMatches, ifNoneMatch, blocks, this.client.version(), requestId, comp);
     }
 
     /**
      * The Put Block List operation writes a blob by specifying the list of block IDs that make up the blob. In order to be written as part of a blob, a block must have been successfully written to the server in a prior Put Block operation. You can call Put Block List to update a blob by uploading only those blocks that have changed, then committing the new and existing blocks together. You can do this by specifying whether to commit a block from the committed block list or from the uncommitted block list, or to commit the most recently uploaded version of the block, whichever list it may belong to.
      *
+     * @param url The full URL to the resource
      * @param blocks the BlockLookupList value
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
@@ -436,8 +452,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Single<Void> putBlockListAsync(BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return putBlockListWithRestResponseAsync(blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
+    public Single<Void> putBlockListAsync(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+        return putBlockListWithRestResponseAsync(url, blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .map(new Func1<RestResponse<BlockBlobsPutBlockListHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockListHeaders, Void> restResponse) { return restResponse.body(); } });
         }
 
@@ -445,38 +461,41 @@ public class BlockBlobsImpl implements BlockBlobs {
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the BlockList object if successful.
      */
-    public BlockList getBlockList(BlockListType listType) {
-        return getBlockListAsync(listType).toBlocking().value();
+    public BlockList getBlockList(String url, BlockListType listType) {
+        return getBlockListAsync(url, listType).toBlocking().value();
     }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<BlockList> getBlockListAsync(BlockListType listType, ServiceCallback<BlockList> serviceCallback) {
-        return ServiceFuture.fromBody(getBlockListAsync(listType), serviceCallback);
+    public ServiceFuture<BlockList> getBlockListAsync(String url, BlockListType listType, ServiceCallback<BlockList> serviceCallback) {
+        return ServiceFuture.fromBody(getBlockListAsync(url, listType), serviceCallback);
     }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListWithRestResponseAsync(BlockListType listType) {
-        if (this.client.accountUrl() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListWithRestResponseAsync(String url, BlockListType listType) {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter url is required and cannot be null.");
         }
         if (listType == null) {
             throw new IllegalArgumentException("Parameter listType is required and cannot be null.");
@@ -489,24 +508,26 @@ public class BlockBlobsImpl implements BlockBlobs {
         final Integer timeout = null;
         final String leaseId = null;
         final String requestId = null;
-        return service.getBlockList(this.client.accountUrl(), snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp);
+        return service.getBlockList(url, snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp);
     }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Single<BlockList> getBlockListAsync(BlockListType listType) {
-        return getBlockListWithRestResponseAsync(listType)
+    public Single<BlockList> getBlockListAsync(String url, BlockListType listType) {
+        return getBlockListWithRestResponseAsync(url, listType)
             .map(new Func1<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, BlockList>() { public BlockList call(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) { return restResponse.body(); } });
         }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -517,13 +538,14 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
      * @return the BlockList object if successful.
      */
-    public BlockList getBlockList(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
-        return getBlockListAsync(listType, snapshot, timeout, leaseId, requestId).toBlocking().value();
+    public BlockList getBlockList(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
+        return getBlockListAsync(url, listType, snapshot, timeout, leaseId, requestId).toBlocking().value();
     }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -533,13 +555,14 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
      */
-    public ServiceFuture<BlockList> getBlockListAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId, ServiceCallback<BlockList> serviceCallback) {
-        return ServiceFuture.fromBody(getBlockListAsync(listType, snapshot, timeout, leaseId, requestId), serviceCallback);
+    public ServiceFuture<BlockList> getBlockListAsync(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId, ServiceCallback<BlockList> serviceCallback) {
+        return ServiceFuture.fromBody(getBlockListAsync(url, listType, snapshot, timeout, leaseId, requestId), serviceCallback);
     }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -548,9 +571,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListWithRestResponseAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
-        if (this.client.accountUrl() == null) {
-            throw new IllegalArgumentException("Parameter this.client.accountUrl() is required and cannot be null.");
+    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListWithRestResponseAsync(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
+        if (url == null) {
+            throw new IllegalArgumentException("Parameter url is required and cannot be null.");
         }
         if (listType == null) {
             throw new IllegalArgumentException("Parameter listType is required and cannot be null.");
@@ -559,12 +582,13 @@ public class BlockBlobsImpl implements BlockBlobs {
             throw new IllegalArgumentException("Parameter this.client.version() is required and cannot be null.");
         }
         final String comp = "blocklist";
-        return service.getBlockList(this.client.accountUrl(), snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp);
+        return service.getBlockList(url, snapshot, listType, timeout, leaseId, this.client.version(), requestId, comp);
     }
 
     /**
      * The Get Block List operation retrieves the list of blocks that have been uploaded as part of a block blob.
      *
+     * @param url The full URL to the resource
      * @param listType Specifies whether to return the list of committed blocks, the list of uncommitted blocks, or both lists together. Possible values include: 'committed', 'uncommitted', 'all'
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -573,8 +597,8 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Single<BlockList> getBlockListAsync(BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
-        return getBlockListWithRestResponseAsync(listType, snapshot, timeout, leaseId, requestId)
+    public Single<BlockList> getBlockListAsync(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
+        return getBlockListWithRestResponseAsync(url, listType, snapshot, timeout, leaseId, requestId)
             .map(new Func1<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, BlockList>() { public BlockList call(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) { return restResponse.body(); } });
         }
 

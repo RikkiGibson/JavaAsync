@@ -21,8 +21,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
-final class Utility {
+// TODO: REMOVE public
+public final class Utility {
 
     /**
      * Thread local for storing GMT date format.
