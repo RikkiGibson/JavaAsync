@@ -53,8 +53,21 @@ public class BlobStorageAPITests {
 
         HttpPipeline.Logger logger = new HttpPipeline.Logger() {
             @Override
-            public void log(String message) {
-                Logger.getGlobal().info(message);
+            public HttpPipeline.LogLevel minimumLogLevel() {
+                return HttpPipeline.LogLevel.INFO;
+            }
+
+            @Override
+            public void log(HttpPipeline.LogLevel logLevel, String s, Object... objects) {
+                if (logLevel == HttpPipeline.LogLevel.INFO) {
+                    Logger.getGlobal().info(String.format(s, objects));
+                }
+                else if (logLevel == HttpPipeline.LogLevel.WARNING) {
+                    Logger.getGlobal().warning(String.format(s, objects));
+                }
+                else if (logLevel == HttpPipeline.LogLevel.ERROR) {
+                    Logger.getGlobal().severe(String.format(s, objects));
+                }
             }
         };
         HttpPipeline.Builder builder = new HttpPipeline.Builder();
@@ -62,8 +75,8 @@ public class BlobStorageAPITests {
                 new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)));
         RequestLoggingOptions loggingOptions = new RequestLoggingOptions(Level.INFO);
         LoggingFactory loggingFactory = new LoggingFactory(loggingOptions);
-        //SharedKeyCredentials creds = new SharedKeyCredentials("xclientdev", "key");
-        AnonymousCredentials creds = new AnonymousCredentials();
+        SharedKeyCredentials creds = new SharedKeyCredentials("xclientdev", "key");
+        //AnonymousCredentials creds = new AnonymousCredentials();
         RequestIDFactory requestIDFactory = new RequestIDFactory();
         //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
         TelemetryOptions telemetryOptions = new TelemetryOptions();
@@ -77,8 +90,8 @@ public class BlobStorageAPITests {
                 .withRequestPolicy(creds)
                 .withRequestPolicy(loggingFactory);
         StorageClientImpl client = new StorageClientImpl(builder.build());
-        client = client.withAccountUrl("").withVersion("2016-05-31");
-        client.containers().create("http://xclientdev.blob.core.windows.net/autogencontainer?");
+        client = client.withVersion("2016-05-31");
+        client.containers().createAsync("http://xclientdev.blob.core.windows.net/newautogencontainer");
 
         //System.setProperty("http.proxyHost", "localhost");
         //System.setProperty("http.proxyPort", "8888");

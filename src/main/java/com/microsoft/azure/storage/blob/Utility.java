@@ -318,4 +318,23 @@ public final class Utility {
 
         return iso8601Format.format(value);
     }
+
+    /**
+     * Asserts that the specified integer is in the valid range.
+     *
+     * @param param
+     *            A <code>String</code> that represents the name of the parameter, which becomes the exception message
+     *            text if the <code>value</code> parameter is out of bounds.
+     * @param value
+     *            The value of the specified parameter.
+     * @param min
+     *            The minimum value for the specified parameter.
+     * @param max
+     *            The maximum value for the specified parameter.
+     */
+    public static void assertInBounds(final String param, final long value, final long min, final long max) {
+        if (value < min || value > max) {
+            throw new IllegalArgumentException(String.format(SR.PARAMETER_NOT_IN_RANGE, param, min, max));
+        }
+    }
 }

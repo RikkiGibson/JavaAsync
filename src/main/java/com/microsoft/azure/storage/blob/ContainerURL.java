@@ -15,7 +15,6 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.models.ContainerGetPropertiesHeaders;
-import com.microsoft.azure.storage.pipeline.Pipeline;
 import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
 import rx.Single;

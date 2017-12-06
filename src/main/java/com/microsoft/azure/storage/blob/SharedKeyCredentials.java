@@ -14,13 +14,7 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.pipeline.LogLevel;
-import com.microsoft.azure.storage.pipeline.Pipeline;
-import com.microsoft.azure.storage.pipeline.RequestPolicyNode;
-import com.microsoft.rest.v2.http.HttpHeader;
-import com.microsoft.rest.v2.http.HttpHeaders;
-import com.microsoft.rest.v2.http.HttpRequest;
-import com.microsoft.rest.v2.http.HttpResponse;
+import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import com.microsoft.rest.v2.policy.RetryPolicy;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -109,8 +103,7 @@ public final class SharedKeyCredentials implements ICredentials {
                 public void call(HttpResponse response) {
                     if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
                         //if (options.logger().shouldLogRequest(LogLevel.ERROR)) {
-                            String temp = stringToSign.get();
-                            options.logger().log(/*LogLevel.ERROR,*/ String.format("===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", temp));
+                            options.logger().log(HttpPipeline.LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", stringToSign.get());
                         //}
                     }
                 }

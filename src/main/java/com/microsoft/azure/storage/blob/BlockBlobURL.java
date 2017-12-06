@@ -17,7 +17,6 @@ package com.microsoft.azure.storage.blob;
 import com.microsoft.azure.storage.models.BlobType;
 import com.microsoft.azure.storage.models.BlockList;
 import com.microsoft.azure.storage.models.BlockListType;
-import com.microsoft.azure.storage.pipeline.Pipeline;
 import com.microsoft.rest.v2.http.HttpPipeline;
 import rx.Single;
 

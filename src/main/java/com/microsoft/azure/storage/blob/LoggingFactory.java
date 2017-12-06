@@ -14,15 +14,17 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.pipeline.*;
+import com.microsoft.rest.v2.http.HttpPipeline;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 //import org.apache.log4j.Level;
+import io.netty.handler.codec.http.HttpStatusClass;
 import rx.Single;
 import rx.functions.Action1;
 
+import java.net.HttpURLConnection;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
@@ -68,14 +70,14 @@ public final class LoggingFactory implements RequestPolicy.Factory {
         @Override
         public Single<HttpResponse> sendAsync(final HttpRequest request) {
             this.tryCount++;
-            this.requestStartTime = System.currentTimeMillis();
+            this.requestStartTime = System.nanoTime();
             if (this.tryCount == 1) {
                 this.operationStartTime = requestStartTime;
             }
 
             //if (this.options.logger().shouldLog(LogLevel.INFO)) {
-                this.options.logger().log(/*LogLevel.INFO,*/
-                        String.format("'%s'==> OUTGOING REQUEST (Try number='%d')%n", request.url(), this.tryCount));
+                this.options.logger().log(HttpPipeline.LogLevel.INFO,
+                        "'%s'==> OUTGOING REQUEST (Try number='%d')%n", request.url(), this.tryCount);
             //}
 
             // TODO: Need to change logic slightly when support for writing to event log/sys log support is added
@@ -84,24 +86,26 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                         @Override
                         public void call(Throwable throwable) {
                             //if (options.logger().shouldLog(LogLevel.ERROR)) {
-                                options.logger().log(/*LogLevel.ERROR,*/
-                                        String.format("Unexpected failure attempting to make request.%nError message:'%s'%n",
-                                        throwable.getMessage()));
+                                options.logger().log(HttpPipeline.LogLevel.ERROR,
+                                        "Unexpected failure attempting to make request.%nError message:'%s'%n",
+                                        throwable.getMessage());
                             //}
                         }
                     })
                     .doOnSuccess(new Action1<HttpResponse>() {
                         @Override
                         public void call(HttpResponse response) {
-                            long requestCompletionTime = System.currentTimeMillis() - requestStartTime;
+                            long requestCompletionTime = System.nanoTime() - requestStartTime;
+                            HttpPipeline.LogLevel currentLevel = HttpPipeline.LogLevel.INFO;
                             // check if error should be logged since there is nothing of higher priority
 //                            if (!options.logger().shouldLog(LogLevel.ERROR)) {
 //                                return;
 //                            }
 
+                            String logMessage = Constants.EMPTY_STRING;
                             //if (options.logger().shouldLog(LogLevel.INFO)) {
                                 // assume success and default to informational logging
-                                options.logger().log(/*LogLevel.INFO,*/ "Successfully Received Response\n");
+                                logMessage = "Successfully Received Response" + System.lineSeparator();
                             //}
 
                             // if the response took too long, we'll upgrade to warning.
@@ -109,29 +113,36 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                                     factory.requestLoggingOptions.getMinDurationToLogSlowRequestsInMs()) {
                                 // log a warning if the try duration exceeded the specified threshold
                                 //if (options.logger().shouldLog(LogLevel.WARNING)) {
-                                    options.logger().log(/*LogLevel.WARNING,*/
-                                            String.format("Slow Operation. Try duration of %l ms", requestCompletionTime));
+                                    currentLevel = HttpPipeline.LogLevel.WARNING;
+                                    logMessage = String.format("SLOW OPERATION. Duration > %d ms.%n", factory.requestLoggingOptions.getMinDurationToLogSlowRequestsInMs());
                                 //}
                             }
 
-                            // TODO: Find symoblic reference nad look at updated Go code and change to just one log statement
-                            if (response.statusCode() >= 500 ||
-                                    (response.statusCode() >= 400 && response.statusCode() != 404 &&
-                                     response.statusCode() != 409 && response.statusCode() != 412 &&
-                                     response.statusCode() != 416)) {
-                                options.logger().log(/*LogLevel.ERROR,*/
-                                        String.format("HTTP request failed with status code:'%d'%n",
-                                                response.statusCode()));
+                            if (response.statusCode() >= HttpURLConnection.HTTP_INTERNAL_ERROR ||
+                                    (response.statusCode() >= HttpURLConnection.HTTP_BAD_REQUEST && response.statusCode() != HttpURLConnection.HTTP_NOT_FOUND &&
+                                     response.statusCode() != HttpURLConnection.HTTP_CONFLICT && response.statusCode() != HttpURLConnection.HTTP_PRECON_FAILED &&
+                                     response.statusCode() != 416 /* 416 is missing from the Enum but it is Range Not Satisfiable */)) {
+                                String errorString = String.format("REQUEST ERROR%nHTTP request failed with status code:'%d'%n", response.statusCode());
+                                if (currentLevel == HttpPipeline.LogLevel.WARNING) {
+                                    logMessage += errorString;
+                                }
+                                else {
+                                    logMessage = errorString;
+                                }
+
+                                currentLevel = HttpPipeline.LogLevel.ERROR;
+                                // TODO: LOG THIS TO WINDOWS EVENT LOG/SYS LOG
                             }
 
-                            //if ( options.logger().shouldLog(LogLevel.INFO)) {
+                            //if (shouldlog(currentLevel) {
                                 long requestEndTime = System.nanoTime();
                                 long requestDuration = requestEndTime - requestStartTime;
                                 long operationDuration = requestEndTime - operationStartTime;
-                                options.logger().log(/*LogLevel.INFO,*/ String.format(
-                                        "Request try:'%d', request duration:'%d' ms, operation duration:'%d' ms",
-                                        tryCount, requestDuration, operationDuration));
-                            //}
+                                String messageInfo = String.format(
+                                        "Request try:'%d', request duration:'%d' ms, operation duration:'%d' ms%n",
+                                        tryCount, requestDuration, operationDuration);
+                                options.logger().log(HttpPipeline.LogLevel.INFO, logMessage + messageInfo);
+                            // }
                         }
                     });
         }
