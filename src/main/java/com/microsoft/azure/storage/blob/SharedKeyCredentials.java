@@ -47,9 +47,9 @@ public final class SharedKeyCredentials implements ICredentials {
      * @param key
      *      A string that represent the account access key.
      */
-    public SharedKeyCredentials(String accountName, String key) {
+    public SharedKeyCredentials(String accountName, String key) throws UnsupportedEncodingException {
         this.accountName = accountName;
-        this.key = key.getBytes();
+        this.key = Base64.decode(key);
     }
 
     /**
@@ -91,7 +91,7 @@ public final class SharedKeyCredentials implements ICredentials {
             final AtomicReference<String> stringToSign = new AtomicReference<>();
             try {
                 stringToSign.set(this.factory.buildStringToSign(request));
-                final String computedBase64Signature = this.factory.computeHmac256(stringToSign.get());
+                final String computedBase64Signature = this.factory.computeSig(stringToSign.get());//.computeHmac256(stringToSign.get());
                 request.headers().set(Constants.HeaderConstants.AUTHORIZATION, "SharedKey " + this.factory.accountName + ":"  + computedBase64Signature);
             } catch (Exception e) {
                 return Single.error(e);
@@ -206,8 +206,8 @@ public final class SharedKeyCredentials implements ICredentials {
         if (urlDecoder.path().length() > 0) {
             String path = urlDecoder.path();
 
-            // There are two slashes after the protocol and another slash after the account portion of the path
-            path = path.substring(StringUtils.ordinalIndexOf(path, "/", 2) + 1);
+            // There are two slashes after the protocol and include slash after the account portion of the path
+            path = path.substring(StringUtils.ordinalIndexOf(path, "/", 3));
             canonicalizedResource.append(path);
         }
         else {
@@ -287,6 +287,33 @@ public final class SharedKeyCredentials implements ICredentials {
 
         hmacSha256.init(new SecretKeySpec(this.key, "HmacSHA256"));
         return Base64.encode(hmacSha256.doFinal(utf8Bytes));
+    }
+
+    private String computeSig(String stringToSign) throws InvalidKeyException {
+        byte[] utf8Bytes = null;
+        try {
+            utf8Bytes = stringToSign.getBytes(Constants.UTF8_CHARSET);
+        }
+        catch (final UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(e);
+        }
+        return Base64.encode(getHmac256().doFinal(utf8Bytes));
+    }
+
+    private Mac hmacSha256;
+
+    private synchronized Mac getHmac256() throws InvalidKeyException {
+        if (this.hmacSha256 == null) {
+            // Initializes the HMAC-SHA256 Mac and SecretKey.
+            try {
+                this.hmacSha256 = Mac.getInstance("HmacSHA256");
+            }
+            catch (final NoSuchAlgorithmException e) {
+                throw new IllegalArgumentException();
+            }
+            this.hmacSha256.init(new SecretKeySpec(this.key, "HmacSHA256"));
+        }
+        return this.hmacSha256;
     }
 }
 
