@@ -204,7 +204,11 @@ public final class SharedKeyCredentials implements ICredentials {
         // Note that AbsolutePath starts with a '/'.
         QueryStringDecoder urlDecoder = new QueryStringDecoder(requestURL);
         if (urlDecoder.path().length() > 0) {
-            canonicalizedResource.append(urlDecoder.path());
+            String path = urlDecoder.path();
+
+            // There are two slashes after the protocol and another slash after the account portion of the path
+            path = path.substring(StringUtils.ordinalIndexOf(path, "/", 2) + 1);
+            canonicalizedResource.append(path);
         }
         else {
             canonicalizedResource.append('/');

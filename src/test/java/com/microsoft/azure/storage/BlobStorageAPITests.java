@@ -91,7 +91,7 @@ public class BlobStorageAPITests {
                 .withRequestPolicy(loggingFactory);
         StorageClientImpl client = new StorageClientImpl(builder.build());
         client = client.withVersion("2016-05-31");
-        client.containers().createAsync("http://xclientdev.blob.core.windows.net/newautogencontainer");
+        client.containers().createAsync("http://xclientdev.blob.core.windows.net/newautogencontainer").toBlocking().value();
 
         //System.setProperty("http.proxyHost", "localhost");
         //System.setProperty("http.proxyPort", "8888");
