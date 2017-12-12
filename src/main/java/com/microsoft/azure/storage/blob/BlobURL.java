@@ -14,8 +14,9 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.http.HttpPipeline;
-import rx.Single;
+import io.reactivex.Single;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -26,7 +27,7 @@ import java.util.Date;
 /**
  * Represents a URL to an Azure Storage blob; the blob may be a block blob, append blob, or page blob.
  */
-public class BlobURL extends StorageUrl {
+public class BlobURL extends StorageURL {
 
     /**
      * Creates a new {@link BlobURL} object

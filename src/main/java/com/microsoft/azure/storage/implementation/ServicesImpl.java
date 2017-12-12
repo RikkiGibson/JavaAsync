@@ -38,10 +38,12 @@ import com.microsoft.rest.v2.annotations.PUT;
 import com.microsoft.rest.v2.annotations.QueryParam;
 import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
 import com.microsoft.rest.v2.http.HttpClient;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import java.io.IOException;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func1;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -72,7 +74,7 @@ public class ServicesImpl implements Services {
      * The interface defining all the services for Services to be used by
      * RestProxy to perform REST calls.
      */
-    @Host("https://{url}")
+    @Host("{url}")
     interface ServicesService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Services setProperties" })
         @PUT("")
@@ -107,7 +109,7 @@ public class ServicesImpl implements Services {
      * @return the void object if successful.
      */
     public void setProperties(String url, StorageServiceProperties storageServiceProperties) {
-        setPropertiesAsync(url, storageServiceProperties).toBlocking().value();
+        setPropertiesAsync(url, storageServiceProperties).blockingAwait();
     }
 
     /**
@@ -157,9 +159,9 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
      */
-    public Single<Void> setPropertiesAsync(String url, StorageServiceProperties storageServiceProperties) {
+    public Completable setPropertiesAsync(String url, StorageServiceProperties storageServiceProperties) {
         return setPropertiesWithRestResponseAsync(url, storageServiceProperties)
-            .map(new Func1<RestResponse<ServiceSetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ServiceSetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -175,7 +177,7 @@ public class ServicesImpl implements Services {
      * @return the void object if successful.
      */
     public void setProperties(String url, StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
-        setPropertiesAsync(url, storageServiceProperties, timeout, requestId).toBlocking().value();
+        setPropertiesAsync(url, storageServiceProperties, timeout, requestId).blockingAwait();
     }
 
     /**
@@ -229,9 +231,9 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
      */
-    public Single<Void> setPropertiesAsync(String url, StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
+    public Completable setPropertiesAsync(String url, StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
         return setPropertiesWithRestResponseAsync(url, storageServiceProperties, timeout, requestId)
-            .map(new Func1<RestResponse<ServiceSetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ServiceSetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -245,7 +247,7 @@ public class ServicesImpl implements Services {
      * @return the StorageServiceProperties object if successful.
      */
     public StorageServiceProperties getProperties(String url) {
-        return getPropertiesAsync(url).toBlocking().value();
+        return getPropertiesAsync(url).blockingGet();
     }
 
     /**
@@ -288,9 +290,17 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
      */
-    public Single<StorageServiceProperties> getPropertiesAsync(String url) {
+    public Maybe<StorageServiceProperties> getPropertiesAsync(String url) {
         return getPropertiesWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>, StorageServiceProperties>() { public StorageServiceProperties call(RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>, Maybe<StorageServiceProperties>>() {
+                public Maybe<StorageServiceProperties> apply(RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -305,7 +315,7 @@ public class ServicesImpl implements Services {
      * @return the StorageServiceProperties object if successful.
      */
     public StorageServiceProperties getProperties(String url, Integer timeout, String requestId) {
-        return getPropertiesAsync(url, timeout, requestId).toBlocking().value();
+        return getPropertiesAsync(url, timeout, requestId).blockingGet();
     }
 
     /**
@@ -352,9 +362,17 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
      */
-    public Single<StorageServiceProperties> getPropertiesAsync(String url, Integer timeout, String requestId) {
+    public Maybe<StorageServiceProperties> getPropertiesAsync(String url, Integer timeout, String requestId) {
         return getPropertiesWithRestResponseAsync(url, timeout, requestId)
-            .map(new Func1<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>, StorageServiceProperties>() { public StorageServiceProperties call(RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties>, Maybe<StorageServiceProperties>>() {
+                public Maybe<StorageServiceProperties> apply(RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 
@@ -368,7 +386,7 @@ public class ServicesImpl implements Services {
      * @return the StorageServiceStats object if successful.
      */
     public StorageServiceStats getStats(String url) {
-        return getStatsAsync(url).toBlocking().value();
+        return getStatsAsync(url).blockingGet();
     }
 
     /**
@@ -411,9 +429,17 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
      */
-    public Single<StorageServiceStats> getStatsAsync(String url) {
+    public Maybe<StorageServiceStats> getStatsAsync(String url) {
         return getStatsWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>, StorageServiceStats>() { public StorageServiceStats call(RestResponse<ServiceGetStatsHeaders, StorageServiceStats> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>, Maybe<StorageServiceStats>>() {
+                public Maybe<StorageServiceStats> apply(RestResponse<ServiceGetStatsHeaders, StorageServiceStats> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -428,7 +454,7 @@ public class ServicesImpl implements Services {
      * @return the StorageServiceStats object if successful.
      */
     public StorageServiceStats getStats(String url, Integer timeout, String requestId) {
-        return getStatsAsync(url, timeout, requestId).toBlocking().value();
+        return getStatsAsync(url, timeout, requestId).blockingGet();
     }
 
     /**
@@ -475,9 +501,17 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
      */
-    public Single<StorageServiceStats> getStatsAsync(String url, Integer timeout, String requestId) {
+    public Maybe<StorageServiceStats> getStatsAsync(String url, Integer timeout, String requestId) {
         return getStatsWithRestResponseAsync(url, timeout, requestId)
-            .map(new Func1<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>, StorageServiceStats>() { public StorageServiceStats call(RestResponse<ServiceGetStatsHeaders, StorageServiceStats> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ServiceGetStatsHeaders, StorageServiceStats>, Maybe<StorageServiceStats>>() {
+                public Maybe<StorageServiceStats> apply(RestResponse<ServiceGetStatsHeaders, StorageServiceStats> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 
@@ -491,7 +525,7 @@ public class ServicesImpl implements Services {
      * @return the ListContainersResponse object if successful.
      */
     public ListContainersResponse listContainers(String url) {
-        return listContainersAsync(url).toBlocking().value();
+        return listContainersAsync(url).blockingGet();
     }
 
     /**
@@ -537,9 +571,17 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ListContainersResponse> object
      */
-    public Single<ListContainersResponse> listContainersAsync(String url) {
+    public Maybe<ListContainersResponse> listContainersAsync(String url) {
         return listContainersWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ServiceListContainersHeaders, ListContainersResponse>, ListContainersResponse>() { public ListContainersResponse call(RestResponse<ServiceListContainersHeaders, ListContainersResponse> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ServiceListContainersHeaders, ListContainersResponse>, Maybe<ListContainersResponse>>() {
+                public Maybe<ListContainersResponse> apply(RestResponse<ServiceListContainersHeaders, ListContainersResponse> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -558,7 +600,7 @@ public class ServicesImpl implements Services {
      * @return the ListContainersResponse object if successful.
      */
     public ListContainersResponse listContainers(String url, String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId) {
-        return listContainersAsync(url, prefix, marker, maxresults, include, timeout, requestId).toBlocking().value();
+        return listContainersAsync(url, prefix, marker, maxresults, include, timeout, requestId).blockingGet();
     }
 
     /**
@@ -616,9 +658,17 @@ public class ServicesImpl implements Services {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ListContainersResponse> object
      */
-    public Single<ListContainersResponse> listContainersAsync(String url, String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId) {
+    public Maybe<ListContainersResponse> listContainersAsync(String url, String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout, String requestId) {
         return listContainersWithRestResponseAsync(url, prefix, marker, maxresults, include, timeout, requestId)
-            .map(new Func1<RestResponse<ServiceListContainersHeaders, ListContainersResponse>, ListContainersResponse>() { public ListContainersResponse call(RestResponse<ServiceListContainersHeaders, ListContainersResponse> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ServiceListContainersHeaders, ListContainersResponse>, Maybe<ListContainersResponse>>() {
+                public Maybe<ListContainersResponse> apply(RestResponse<ServiceListContainersHeaders, ListContainersResponse> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 

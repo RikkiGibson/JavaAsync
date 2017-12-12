@@ -28,23 +28,23 @@ public final class RequestRetryOptions {
 
     // MaxTries specifies the maximum number of attempts an operation will be tried before producing an error (0=default).
     // A value of zero means that you accept our default policy. A value of 1 means 1 try and no retries.
-    private Integer maxRetries = 4;
+    private int maxRetries = 4;
 
     // TryTimeout indicates the maximum time allowed for any single try of an HTTP request.
     // A value of zero means that you accept our default timeout. NOTE: When transferring large amounts
     // of data, the default TryTimeout will probably not be sufficient. You should override this value
     // based on the bandwidth available to the host machine and proximity to the Storage service. A good
     // starting point may be something like (60 seconds per MB of anticipated-payload-size).
-    private Long tryTimeoutInMs = TimeUnit.SECONDS.toMillis(30);
+    private long tryTimeoutInMs = TimeUnit.SECONDS.toMillis(30);
 
     // RetryDelay specifies the amount of delay to use before retrying an operation (0=default).
     // The delay increases (exponentially or linearly) with each retry up to a maximum specified by
     // MaxRetryDelay. If you specify 0, then you must also specify 0 for MaxRetryDelay.
-    private Long retryDelayInMs = TimeUnit.SECONDS.toMillis(4);
+    private long retryDelayInMs = TimeUnit.SECONDS.toMillis(4);
 
     // MaxRetryDelay specifies the maximum delay allowed before retrying an operation (0=default).
     // If you specify 0, then you must also specify 0 for RetryDelay.
-    private Long maxRetryDelayInMs = TimeUnit.SECONDS.toMillis(120);
+    private long maxRetryDelayInMs = TimeUnit.SECONDS.toMillis(120);
 
     // RetryReadsFromSecondaryHost specifies whether the retry policy should retry a read operation against another host.
     // If RetryReadsFromSecondaryHost is "" (the default) then operations are not retried against another host.
@@ -85,5 +85,29 @@ public final class RequestRetryOptions {
             this.maxRetryDelayInMs = maxRetryDelayInMs;
             this.retryDelayInMs = Math.min(this.retryDelayInMs, this.maxRetryDelayInMs);
         }
+    }
+
+    public long calculatedDelayInMs(int tryCount) {
+        long delay = 0;
+        switch (this.retryPolicyType) {
+            case EXPONENTIAL:
+                delay = (pow(2L, tryCount - 1) - 1L) * this.retryDelayInMs;
+                break;
+
+            case FIXED:
+                delay = this.retryDelayInMs;
+                break;
+        }
+
+        return delay;
+    }
+
+    private long pow(long number, int exponent) {
+        long result = 1;
+        for (int i = 0; i < exponent; i++) {
+            result *= number;
+        }
+
+        return result;
     }
 }

@@ -17,38 +17,38 @@ package com.microsoft.azure.storage.blob;
 import java.util.logging.Level;
 
 /**
- * Request logging options
+ * Logging options
  */
-public final class RequestLoggingOptions {
+public final class LoggingOptions {
 
     private final Long minDurationToLogSlowRequestsInMs;
 
     private final Level loggingLevel;
 
     /**
-     * Creates a new {@link RequestLoggingOptions} object
+     * Creates a new {@link LoggingOptions} object
      */
-    public RequestLoggingOptions() {
+    public LoggingOptions() {
         this(Level.SEVERE);
     }
 
     /**
-     * Creates a new {@link RequestLoggingOptions} object
+     * Creates a new {@link LoggingOptions} object
      * @param loggingLevel
      *      The minimum {@code java.util.logging.Level} to log requests
      */
-    public RequestLoggingOptions(Level loggingLevel) {
+    public LoggingOptions(Level loggingLevel) {
         this(loggingLevel, 3000L);
     }
 
     /**
-     * Creates a new {@link RequestLoggingOptions} object
+     * Creates a new {@link LoggingOptions} object
      * @param loggingLevel
      *      The minimum {@code java.util.logging.Level} to log requests
      * @param minDurationToLogSlowRequestsInMs
      *      A {@code Long} representing the minimum duration for a tried operation to log a warning
      */
-    public RequestLoggingOptions(Level loggingLevel, Long minDurationToLogSlowRequestsInMs) {
+    public LoggingOptions(Level loggingLevel, Long minDurationToLogSlowRequestsInMs) {
         this.loggingLevel = loggingLevel;
         this.minDurationToLogSlowRequestsInMs = minDurationToLogSlowRequestsInMs;
     }

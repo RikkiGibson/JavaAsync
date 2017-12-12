@@ -19,10 +19,12 @@ import com.microsoft.rest.v2.RestException;
 import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.ServiceCallback;
 import com.microsoft.rest.v2.ServiceFuture;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import java.io.IOException;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -63,9 +65,9 @@ public interface PageBlobs {
      *   - Update: Writes the bytes specified by the request body into the specified range. The Range and Content-Length headers must match to perform the update.
      *   - Clear: Clears the specified range and releases the space used in storage for that range. To clear a range, set the Content-Length header to zero, and the Range header to a value that indicates the range to clear, up to maximum blob size. Possible values include: 'update', 'clear'
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> putPageAsync(String url, PageWriteType pageWrite);
+    Completable putPageAsync(String url, PageWriteType pageWrite);
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
@@ -149,9 +151,9 @@ public interface PageBlobs {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> putPageAsync(String url, PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
+    Completable putPageAsync(String url, PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
 
     /**
      * The Put Page operation writes a range of pages to a page blob.
@@ -203,9 +205,9 @@ public interface PageBlobs {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;PageList&gt;} object if successful.
+     * @return the {@link Maybe&lt;PageList&gt;} object if successful.
      */
-    Single<PageList> getPageRangesAsync(String url);
+    Maybe<PageList> getPageRangesAsync(String url);
 
     /**
      * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
@@ -272,9 +274,9 @@ public interface PageBlobs {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;PageList&gt;} object if successful.
+     * @return the {@link Maybe&lt;PageList&gt;} object if successful.
      */
-    Single<PageList> getPageRangesAsync(String url, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
+    Maybe<PageList> getPageRangesAsync(String url, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
 
     /**
      * The Get Page Ranges operation returns the list of valid page ranges for a page blob or snapshot of a page blob.
@@ -323,9 +325,9 @@ public interface PageBlobs {
      * @param url The full URL to the resource
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> incrementalCopyAsync(String url, String copySource);
+    Completable incrementalCopyAsync(String url, String copySource);
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.
@@ -386,9 +388,9 @@ public interface PageBlobs {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> incrementalCopyAsync(String url, String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
+    Completable incrementalCopyAsync(String url, String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
 
     /**
      * The Incremental Copy Blob operation copies a snapshot of the source page blob to a destination page blob. The snapshot is copied such that only the differential changes between the previously copied snapshot are transferred to the destination. The copied snapshots are complete copies of the original snapshot and can be read or copied from as usual. This API is supported since REST version 2016-05-31.

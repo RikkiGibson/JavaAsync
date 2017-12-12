@@ -14,6 +14,7 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.http.HttpPipeline;
 
 import java.io.UnsupportedEncodingException;
@@ -44,7 +45,7 @@ public final class AppendBlobURL extends BlobURL {
      *      A {@link AppendBlobURL} object with the given pipeline.
      */
     public AppendBlobURL withPipeline(HttpPipeline pipeline) {
-        return new AppendBlobURL(this.url, pipeline);
+        return new AppendBlobURL(super.url, pipeline);
     }
 
     /**

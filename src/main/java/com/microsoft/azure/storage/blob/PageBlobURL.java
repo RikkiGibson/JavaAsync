@@ -14,6 +14,7 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.http.HttpPipeline;
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +34,7 @@ public final class PageBlobURL extends BlobURL {
      *      A {@link Pipeline} object representing the pipeline for requests.
      */
     public PageBlobURL(String url, HttpPipeline pipeline) {
-        super(url, pipeline);
+        super( url, pipeline);
     }
 
     /**
@@ -44,7 +45,7 @@ public final class PageBlobURL extends BlobURL {
      *      A {@link PageBlobURL} object with the given pipeline.
      */
     public PageBlobURL withPipeline(HttpPipeline pipeline) {
-        return new PageBlobURL(this.url, pipeline);
+        return new PageBlobURL(super.url, pipeline);
     }
 
     /**

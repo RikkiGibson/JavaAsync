@@ -14,11 +14,12 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.azure.storage.models.BlobType;
 import com.microsoft.azure.storage.models.BlockList;
 import com.microsoft.azure.storage.models.BlockListType;
 import com.microsoft.rest.v2.http.HttpPipeline;
-import rx.Single;
+import io.reactivex.Single;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -86,6 +87,7 @@ public final class BlockBlobURL extends BlobURL {
      * @return
      */
     public Single<BlockList> GetBlockListAsync(BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
+        //this.storageClient.blockBlobs().getBlockList()
         //return this.storageClient.blockBlobs().getBlockListAsync(listType);
         return null;
     }

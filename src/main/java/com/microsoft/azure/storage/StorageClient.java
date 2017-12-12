@@ -14,10 +14,6 @@ package com.microsoft.azure.storage;
  * The interface for StorageClient class.
  */
 public interface StorageClient {
-    /**
-     * The default base URL.
-     */
-    String DEFAULT_BASE_URL = "https://{url}";
 
     /**
      * Gets The Azure storage account to use.

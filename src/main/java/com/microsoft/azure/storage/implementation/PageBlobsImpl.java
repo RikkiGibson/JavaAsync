@@ -35,11 +35,13 @@ import com.microsoft.rest.v2.annotations.PUT;
 import com.microsoft.rest.v2.annotations.QueryParam;
 import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
 import com.microsoft.rest.v2.http.HttpClient;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import java.io.IOException;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func1;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -70,7 +72,7 @@ public class PageBlobsImpl implements PageBlobs {
      * The interface defining all the services for PageBlobs to be used by
      * RestProxy to perform REST calls.
      */
-    @Host("https://{url}")
+    @Host("{url}")
     interface PageBlobsService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.PageBlobs putPage" })
         @PUT("{containerName}/{blob}")
@@ -102,7 +104,7 @@ public class PageBlobsImpl implements PageBlobs {
      * @return the void object if successful.
      */
     public void putPage(String url, PageWriteType pageWrite) {
-        putPageAsync(url, pageWrite).toBlocking().value();
+        putPageAsync(url, pageWrite).blockingAwait();
     }
 
     /**
@@ -174,9 +176,9 @@ public class PageBlobsImpl implements PageBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<PageBlobsPutPageHeaders, Void> object
      */
-    public Single<Void> putPageAsync(String url, PageWriteType pageWrite) {
+    public Completable putPageAsync(String url, PageWriteType pageWrite) {
         return putPageWithRestResponseAsync(url, pageWrite)
-            .map(new Func1<RestResponse<PageBlobsPutPageHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsPutPageHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -204,7 +206,7 @@ public class PageBlobsImpl implements PageBlobs {
      * @return the void object if successful.
      */
     public void putPage(String url, PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        putPageAsync(url, pageWrite, optionalbody, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        putPageAsync(url, pageWrite, optionalbody, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -300,9 +302,9 @@ public class PageBlobsImpl implements PageBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<PageBlobsPutPageHeaders, Void> object
      */
-    public Single<Void> putPageAsync(String url, PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable putPageAsync(String url, PageWriteType pageWrite, byte[] optionalbody, Integer timeout, String range, String leaseId, Integer ifSequenceNumberLessThanOrEqualTo, Integer ifSequenceNumberLessThan, Integer ifSequenceNumberEqualTo, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return putPageWithRestResponseAsync(url, pageWrite, optionalbody, timeout, range, leaseId, ifSequenceNumberLessThanOrEqualTo, ifSequenceNumberLessThan, ifSequenceNumberEqualTo, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<PageBlobsPutPageHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsPutPageHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -316,7 +318,7 @@ public class PageBlobsImpl implements PageBlobs {
      * @return the PageList object if successful.
      */
     public PageList getPageRanges(String url) {
-        return getPageRangesAsync(url).toBlocking().value();
+        return getPageRangesAsync(url).blockingGet();
     }
 
     /**
@@ -374,9 +376,17 @@ public class PageBlobsImpl implements PageBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<PageBlobsGetPageRangesHeaders, PageList> object
      */
-    public Single<PageList> getPageRangesAsync(String url) {
+    public Maybe<PageList> getPageRangesAsync(String url) {
         return getPageRangesWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<PageBlobsGetPageRangesHeaders, PageList>, PageList>() { public PageList call(RestResponse<PageBlobsGetPageRangesHeaders, PageList> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<PageBlobsGetPageRangesHeaders, PageList>, Maybe<PageList>>() {
+                public Maybe<PageList> apply(RestResponse<PageBlobsGetPageRangesHeaders, PageList> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -399,7 +409,7 @@ public class PageBlobsImpl implements PageBlobs {
      * @return the PageList object if successful.
      */
     public PageList getPageRanges(String url, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return getPageRangesAsync(url, snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        return getPageRangesAsync(url, snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingGet();
     }
 
     /**
@@ -477,9 +487,17 @@ public class PageBlobsImpl implements PageBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<PageBlobsGetPageRangesHeaders, PageList> object
      */
-    public Single<PageList> getPageRangesAsync(String url, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Maybe<PageList> getPageRangesAsync(String url, DateTime snapshot, Integer timeout, DateTime prevsnapshot, String range, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return getPageRangesWithRestResponseAsync(url, snapshot, timeout, prevsnapshot, range, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<PageBlobsGetPageRangesHeaders, PageList>, PageList>() { public PageList call(RestResponse<PageBlobsGetPageRangesHeaders, PageList> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<PageBlobsGetPageRangesHeaders, PageList>, Maybe<PageList>>() {
+                public Maybe<PageList> apply(RestResponse<PageBlobsGetPageRangesHeaders, PageList> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 
@@ -494,7 +512,7 @@ public class PageBlobsImpl implements PageBlobs {
      * @return the void object if successful.
      */
     public void incrementalCopy(String url, String copySource) {
-        incrementalCopyAsync(url, copySource).toBlocking().value();
+        incrementalCopyAsync(url, copySource).blockingAwait();
     }
 
     /**
@@ -555,9 +573,9 @@ public class PageBlobsImpl implements PageBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<PageBlobsIncrementalCopyHeaders, Void> object
      */
-    public Single<Void> incrementalCopyAsync(String url, String copySource) {
+    public Completable incrementalCopyAsync(String url, String copySource) {
         return incrementalCopyWithRestResponseAsync(url, copySource)
-            .map(new Func1<RestResponse<PageBlobsIncrementalCopyHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsIncrementalCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -578,7 +596,7 @@ public class PageBlobsImpl implements PageBlobs {
      * @return the void object if successful.
      */
     public void incrementalCopy(String url, String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        incrementalCopyAsync(url, copySource, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        incrementalCopyAsync(url, copySource, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -653,9 +671,9 @@ public class PageBlobsImpl implements PageBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<PageBlobsIncrementalCopyHeaders, Void> object
      */
-    public Single<Void> incrementalCopyAsync(String url, String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable incrementalCopyAsync(String url, String copySource, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return incrementalCopyWithRestResponseAsync(url, copySource, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<PageBlobsIncrementalCopyHeaders, Void>, Void>() { public Void call(RestResponse<PageBlobsIncrementalCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 

@@ -10,7 +10,7 @@ import com.microsoft.rest.v2.policy.RequestPolicy;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
-import rx.Single;
+import io.reactivex.Single;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -70,30 +70,32 @@ public class BlobStorageAPITests {
                 }
             }
         };
-        HttpPipeline.Builder builder = new HttpPipeline.Builder();
+
         HttpClient.Configuration configuration = new HttpClient.Configuration(
                 new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)));
-        RequestLoggingOptions loggingOptions = new RequestLoggingOptions(Level.INFO);
-        LoggingFactory loggingFactory = new LoggingFactory(loggingOptions);
+        LoggingOptions loggingOptions = new LoggingOptions(Level.INFO);
         SharedKeyCredentials creds = new SharedKeyCredentials("xclientdev", "key");
         //AnonymousCredentials creds = new AnonymousCredentials();
-        RequestIDFactory requestIDFactory = new RequestIDFactory();
         //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
         TelemetryOptions telemetryOptions = new TelemetryOptions();
-        TelemetryFactory telemetryFactory = new TelemetryFactory(telemetryOptions);
         AddDatePolicy addDate = new AddDatePolicy();
-        builder.withHttpClient(HttpClient.createDefault(configuration))
-                .withLogger(logger)
-                .withRequestPolicy(requestIDFactory)
-                .withRequestPolicy(telemetryFactory)
-                .withRequestPolicy(addDate)
-                .withRequestPolicy(creds)
-                .withRequestPolicy(loggingFactory);
-        StorageClientImpl client = new StorageClientImpl(builder.build());
-        client = client.withVersion("2016-05-31");
-        client.containers().createAsync("http://xclientdev.blob.core.windows.net/newautogencontainerr").toBlocking().value();
 
-        //System.setProperty("http.proxyHost", "localhost");
-        //System.setProperty("http.proxyPort", "8888");
+
+//        builder.withHttpClient(HttpClient.createDefault(configuration))
+//                .withLogger(logger)
+//                .withRequestPolicies(requestIDFactory, telemetryFactory, addDate, creds, loggingFactory);
+        //StorageClientImpl client = new StorageClientImpl(builder.build());
+
+        PipelineOptions pop = new PipelineOptions();
+        pop.logger = logger;
+        pop.client = HttpClient.createDefault(configuration);
+        pop.loggingOptions = loggingOptions;
+        pop.telemetryOptions = telemetryOptions;
+        HttpPipeline pipeline = StorageURL.CreatePipeline(creds, pop);
+        ContainerURL containerURL = new ContainerURL("http://xclientdev.blob.core.windows.net/newautogencontainerr", pipeline);
+        //containerURL.deleteAsync("\"http://xclientdev.blob.core.windows.net/newautogencontainer").toBlocking().value();
+        //containerURL.createAsync().blockingGet();
+        //containerURL.deleteAsync().blockingGet();
     }
+
 }

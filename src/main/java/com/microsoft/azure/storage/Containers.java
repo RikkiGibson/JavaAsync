@@ -28,11 +28,13 @@ import com.microsoft.rest.v2.RestException;
 import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.ServiceCallback;
 import com.microsoft.rest.v2.ServiceFuture;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import java.io.IOException;
 import java.util.List;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -64,9 +66,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> createAsync(String url);
+    Completable createAsync(String url);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
@@ -114,9 +116,9 @@ public interface Containers {
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> createAsync(String url, Integer timeout, String metadata, PublicAccessType access, String requestId);
+    Completable createAsync(String url, Integer timeout, String metadata, PublicAccessType access, String requestId);
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
@@ -156,9 +158,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> getPropertiesAsync(String url);
+    Completable getPropertiesAsync(String url);
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
@@ -203,9 +205,9 @@ public interface Containers {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> getPropertiesAsync(String url, Integer timeout, String leaseId, String requestId);
+    Completable getPropertiesAsync(String url, Integer timeout, String leaseId, String requestId);
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
@@ -244,9 +246,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> deleteAsync(String url);
+    Completable deleteAsync(String url);
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
@@ -303,9 +305,9 @@ public interface Containers {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> deleteAsync(String url, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
+    Completable deleteAsync(String url, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
@@ -348,9 +350,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> getMetadataAsync(String url);
+    Completable getMetadataAsync(String url);
 
     /**
      * returns all user-defined metadata for the container.
@@ -395,9 +397,9 @@ public interface Containers {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> getMetadataAsync(String url, Integer timeout, String leaseId, String requestId);
+    Completable getMetadataAsync(String url, Integer timeout, String leaseId, String requestId);
 
     /**
      * returns all user-defined metadata for the container.
@@ -436,9 +438,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> setMetadataAsync(String url);
+    Completable setMetadataAsync(String url);
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
@@ -489,9 +491,9 @@ public interface Containers {
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> setMetadataAsync(String url, Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId);
+    Completable setMetadataAsync(String url, Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId);
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
@@ -533,9 +535,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;List&lt;SignedIdentifier&gt;&gt;} object if successful.
+     * @return the {@link Maybe&lt;List&lt;SignedIdentifier&gt;&gt;} object if successful.
      */
-    Single<List<SignedIdentifier>> getAclAsync(String url);
+    Maybe<List<SignedIdentifier>> getAclAsync(String url);
 
     /**
      *
@@ -581,9 +583,9 @@ public interface Containers {
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;List&lt;SignedIdentifier&gt;&gt;} object if successful.
+     * @return the {@link Maybe&lt;List&lt;SignedIdentifier&gt;&gt;} object if successful.
      */
-    Single<List<SignedIdentifier>> getAclAsync(String url, Integer timeout, String leaseId, String requestId);
+    Maybe<List<SignedIdentifier>> getAclAsync(String url, Integer timeout, String leaseId, String requestId);
 
     /**
      *
@@ -622,9 +624,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> setAclAsync(String url);
+    Completable setAclAsync(String url);
 
     /**
      *
@@ -687,9 +689,9 @@ public interface Containers {
      * @param ifNoneMatch Specify an ETag value to operate only on blobs without a matching value.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> setAclAsync(String url, List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
+    Completable setAclAsync(String url, List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId);
 
     /**
      *
@@ -737,9 +739,9 @@ public interface Containers {
      * @param url The full URL to the resource
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> leaseAsync(String url, LeaseActionType action);
+    Completable leaseAsync(String url, LeaseActionType action);
 
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
@@ -803,9 +805,9 @@ public interface Containers {
      * @param ifUnmodifiedSince Specify this header value to operate only on a blob if it has not been modified since the specified date/time.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;Void&gt;} object if successful.
+     * @return the {@link Completable} object if successful.
      */
-    Single<Void> leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId);
+    Completable leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId);
 
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
@@ -851,9 +853,9 @@ public interface Containers {
      *
      * @param url The full URL to the resource
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;ListBlobsResponse&gt;} object if successful.
+     * @return the {@link Maybe&lt;ListBlobsResponse&gt;} object if successful.
      */
-    Single<ListBlobsResponse> listBlobsAsync(String url);
+    Maybe<ListBlobsResponse> listBlobsAsync(String url);
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
@@ -911,9 +913,9 @@ public interface Containers {
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
-     * @return the {@link Single&lt;ListBlobsResponse&gt;} object if successful.
+     * @return the {@link Maybe&lt;ListBlobsResponse&gt;} object if successful.
      */
-    Single<ListBlobsResponse> listBlobsAsync(String url, String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId);
+    Maybe<ListBlobsResponse> listBlobsAsync(String url, String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId);
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.

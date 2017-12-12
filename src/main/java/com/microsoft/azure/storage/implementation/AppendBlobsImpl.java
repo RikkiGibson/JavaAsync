@@ -30,11 +30,12 @@ import com.microsoft.rest.v2.annotations.PUT;
 import com.microsoft.rest.v2.annotations.QueryParam;
 import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
 import com.microsoft.rest.v2.http.HttpClient;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import java.io.IOException;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func1;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -65,7 +66,7 @@ public class AppendBlobsImpl implements AppendBlobs {
      * The interface defining all the services for AppendBlobs to be used by
      * RestProxy to perform REST calls.
      */
-    @Host("https://{url}")
+    @Host("{url}")
     interface AppendBlobsService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.AppendBlobs appendBlock" })
         @PUT("{containerName}/{blob}")
@@ -85,7 +86,7 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @return the void object if successful.
      */
     public void appendBlock(String url, byte[] body) {
-        appendBlockAsync(url, body).toBlocking().value();
+        appendBlockAsync(url, body).blockingAwait();
     }
 
     /**
@@ -148,9 +149,9 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
      */
-    public Single<Void> appendBlockAsync(String url, byte[] body) {
+    public Completable appendBlockAsync(String url, byte[] body) {
         return appendBlockWithRestResponseAsync(url, body)
-            .map(new Func1<RestResponse<AppendBlobsAppendBlockHeaders, Void>, Void>() { public Void call(RestResponse<AppendBlobsAppendBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -173,7 +174,7 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @return the void object if successful.
      */
     public void appendBlock(String url, byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        appendBlockAsync(url, body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        appendBlockAsync(url, body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -254,9 +255,9 @@ public class AppendBlobsImpl implements AppendBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
      */
-    public Single<Void> appendBlockAsync(String url, byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable appendBlockAsync(String url, byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return appendBlockWithRestResponseAsync(url, body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<AppendBlobsAppendBlockHeaders, Void>, Void>() { public Void call(RestResponse<AppendBlobsAppendBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 

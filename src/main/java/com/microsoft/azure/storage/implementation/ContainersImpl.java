@@ -46,12 +46,14 @@ import com.microsoft.rest.v2.annotations.PUT;
 import com.microsoft.rest.v2.annotations.QueryParam;
 import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
 import com.microsoft.rest.v2.http.HttpClient;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import java.io.IOException;
 import java.util.List;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func1;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -141,7 +143,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void create(String url) {
-        createAsync(url).toBlocking().value();
+        createAsync(url).blockingAwait();
     }
 
     /**
@@ -185,9 +187,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Single<Void> createAsync(String url) {
+    public Completable createAsync(String url) {
         return createWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerCreateHeaders, Void>, Void>() { public Void call(RestResponse<ContainerCreateHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -204,7 +206,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void create(String url, Integer timeout, String metadata, PublicAccessType access, String requestId) {
-        createAsync(url, timeout, metadata, access, requestId).toBlocking().value();
+        createAsync(url, timeout, metadata, access, requestId).blockingAwait();
     }
 
     /**
@@ -256,9 +258,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
-    public Single<Void> createAsync(String url, Integer timeout, String metadata, PublicAccessType access, String requestId) {
+    public Completable createAsync(String url, Integer timeout, String metadata, PublicAccessType access, String requestId) {
         return createWithRestResponseAsync(url, timeout, metadata, access, requestId)
-            .map(new Func1<RestResponse<ContainerCreateHeaders, Void>, Void>() { public Void call(RestResponse<ContainerCreateHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -272,7 +274,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void getProperties(String url) {
-        getPropertiesAsync(url).toBlocking().value();
+        getPropertiesAsync(url).blockingAwait();
     }
 
     /**
@@ -315,9 +317,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
      */
-    public Single<Void> getPropertiesAsync(String url) {
+    public Completable getPropertiesAsync(String url) {
         return getPropertiesWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -333,7 +335,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void getProperties(String url, Integer timeout, String leaseId, String requestId) {
-        getPropertiesAsync(url, timeout, leaseId, requestId).toBlocking().value();
+        getPropertiesAsync(url, timeout, leaseId, requestId).blockingAwait();
     }
 
     /**
@@ -382,9 +384,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
      */
-    public Single<Void> getPropertiesAsync(String url, Integer timeout, String leaseId, String requestId) {
+    public Completable getPropertiesAsync(String url, Integer timeout, String leaseId, String requestId) {
         return getPropertiesWithRestResponseAsync(url, timeout, leaseId, requestId)
-            .map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -398,7 +400,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void delete(String url) {
-        deleteAsync(url).toBlocking().value();
+        deleteAsync(url).blockingAwait();
     }
 
     /**
@@ -453,9 +455,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
      */
-    public Single<Void> deleteAsync(String url) {
+    public Completable deleteAsync(String url) {
         return deleteWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerDeleteHeaders, Void>, Void>() { public Void call(RestResponse<ContainerDeleteHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -475,7 +477,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void delete(String url, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        deleteAsync(url, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        deleteAsync(url, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -544,9 +546,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
      */
-    public Single<Void> deleteAsync(String url, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable deleteAsync(String url, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return deleteWithRestResponseAsync(url, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<ContainerDeleteHeaders, Void>, Void>() { public Void call(RestResponse<ContainerDeleteHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -560,7 +562,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void getMetadata(String url) {
-        getMetadataAsync(url).toBlocking().value();
+        getMetadataAsync(url).blockingAwait();
     }
 
     /**
@@ -604,9 +606,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
      */
-    public Single<Void> getMetadataAsync(String url) {
+    public Completable getMetadataAsync(String url) {
         return getMetadataWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerGetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -622,7 +624,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void getMetadata(String url, Integer timeout, String leaseId, String requestId) {
-        getMetadataAsync(url, timeout, leaseId, requestId).toBlocking().value();
+        getMetadataAsync(url, timeout, leaseId, requestId).blockingAwait();
     }
 
     /**
@@ -672,9 +674,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
      */
-    public Single<Void> getMetadataAsync(String url, Integer timeout, String leaseId, String requestId) {
+    public Completable getMetadataAsync(String url, Integer timeout, String leaseId, String requestId) {
         return getMetadataWithRestResponseAsync(url, timeout, leaseId, requestId)
-            .map(new Func1<RestResponse<ContainerGetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerGetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -688,7 +690,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void setMetadata(String url) {
-        setMetadataAsync(url).toBlocking().value();
+        setMetadataAsync(url).blockingAwait();
     }
 
     /**
@@ -738,9 +740,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
      */
-    public Single<Void> setMetadataAsync(String url) {
+    public Completable setMetadataAsync(String url) {
         return setMetadataWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerSetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -758,7 +760,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void setMetadata(String url, Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
-        setMetadataAsync(url, timeout, leaseId, metadata, ifModifiedSince, requestId).toBlocking().value();
+        setMetadataAsync(url, timeout, leaseId, metadata, ifModifiedSince, requestId).blockingAwait();
     }
 
     /**
@@ -818,9 +820,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
      */
-    public Single<Void> setMetadataAsync(String url, Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
+    public Completable setMetadataAsync(String url, Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
         return setMetadataWithRestResponseAsync(url, timeout, leaseId, metadata, ifModifiedSince, requestId)
-            .map(new Func1<RestResponse<ContainerSetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -833,7 +835,7 @@ public class ContainersImpl implements Containers {
      * @return the List&lt;SignedIdentifier&gt; object if successful.
      */
     public List<SignedIdentifier> getAcl(String url) {
-        return getAclAsync(url).toBlocking().value();
+        return getAclAsync(url).blockingGet();
     }
 
     /**
@@ -874,9 +876,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
      */
-    public Single<List<SignedIdentifier>> getAclAsync(String url) {
+    public Maybe<List<SignedIdentifier>> getAclAsync(String url) {
         return getAclWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>, List<SignedIdentifier>>() { public List<SignedIdentifier> call(RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>, Maybe<List<SignedIdentifier>>>() {
+                public Maybe<List<SignedIdentifier>> apply(RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -891,7 +901,7 @@ public class ContainersImpl implements Containers {
      * @return the List&lt;SignedIdentifier&gt; object if successful.
      */
     public List<SignedIdentifier> getAcl(String url, Integer timeout, String leaseId, String requestId) {
-        return getAclAsync(url, timeout, leaseId, requestId).toBlocking().value();
+        return getAclAsync(url, timeout, leaseId, requestId).blockingGet();
     }
 
     /**
@@ -938,9 +948,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
      */
-    public Single<List<SignedIdentifier>> getAclAsync(String url, Integer timeout, String leaseId, String requestId) {
+    public Maybe<List<SignedIdentifier>> getAclAsync(String url, Integer timeout, String leaseId, String requestId) {
         return getAclWithRestResponseAsync(url, timeout, leaseId, requestId)
-            .map(new Func1<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>, List<SignedIdentifier>>() { public List<SignedIdentifier> call(RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>, Maybe<List<SignedIdentifier>>>() {
+                public Maybe<List<SignedIdentifier>> apply(RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 
@@ -953,7 +971,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void setAcl(String url) {
-        setAclAsync(url).toBlocking().value();
+        setAclAsync(url).blockingAwait();
     }
 
     /**
@@ -1009,9 +1027,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
      */
-    public Single<Void> setAclAsync(String url) {
+    public Completable setAclAsync(String url) {
         return setAclWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerSetAclHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetAclHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1032,7 +1050,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void setAcl(String url, List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        setAclAsync(url, containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        setAclAsync(url, containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -1106,9 +1124,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
      */
-    public Single<Void> setAclAsync(String url, List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable setAclAsync(String url, List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return setAclWithRestResponseAsync(url, containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<ContainerSetAclHeaders, Void>, Void>() { public Void call(RestResponse<ContainerSetAclHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1123,7 +1141,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void lease(String url, LeaseActionType action) {
-        leaseAsync(url, action).toBlocking().value();
+        leaseAsync(url, action).blockingAwait();
     }
 
     /**
@@ -1186,9 +1204,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
      */
-    public Single<Void> leaseAsync(String url, LeaseActionType action) {
+    public Completable leaseAsync(String url, LeaseActionType action) {
         return leaseWithRestResponseAsync(url, action)
-            .map(new Func1<RestResponse<ContainerLeaseHeaders, Void>, Void>() { public Void call(RestResponse<ContainerLeaseHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1210,7 +1228,7 @@ public class ContainersImpl implements Containers {
      * @return the void object if successful.
      */
     public void lease(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
-        leaseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId).toBlocking().value();
+        leaseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId).blockingAwait();
     }
 
     /**
@@ -1289,9 +1307,9 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
      */
-    public Single<Void> leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
+    public Completable leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
         return leaseWithRestResponseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId)
-            .map(new Func1<RestResponse<ContainerLeaseHeaders, Void>, Void>() { public Void call(RestResponse<ContainerLeaseHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1305,7 +1323,7 @@ public class ContainersImpl implements Containers {
      * @return the ListBlobsResponse object if successful.
      */
     public ListBlobsResponse listBlobs(String url) {
-        return listBlobsAsync(url).toBlocking().value();
+        return listBlobsAsync(url).blockingGet();
     }
 
     /**
@@ -1353,9 +1371,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
      */
-    public Single<ListBlobsResponse> listBlobsAsync(String url) {
+    public Maybe<ListBlobsResponse> listBlobsAsync(String url) {
         return listBlobsWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>, ListBlobsResponse>() { public ListBlobsResponse call(RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>, Maybe<ListBlobsResponse>>() {
+                public Maybe<ListBlobsResponse> apply(RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -1375,7 +1401,7 @@ public class ContainersImpl implements Containers {
      * @return the ListBlobsResponse object if successful.
      */
     public ListBlobsResponse listBlobs(String url, String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
-        return listBlobsAsync(url, prefix, delimiter, marker, maxresults, include, timeout, requestId).toBlocking().value();
+        return listBlobsAsync(url, prefix, delimiter, marker, maxresults, include, timeout, requestId).blockingGet();
     }
 
     /**
@@ -1437,9 +1463,17 @@ public class ContainersImpl implements Containers {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
      */
-    public Single<ListBlobsResponse> listBlobsAsync(String url, String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
+    public Maybe<ListBlobsResponse> listBlobsAsync(String url, String prefix, String delimiter, String marker, Integer maxresults, ListBlobsIncludeType include, Integer timeout, String requestId) {
         return listBlobsWithRestResponseAsync(url, prefix, delimiter, marker, maxresults, include, timeout, requestId)
-            .map(new Func1<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>, ListBlobsResponse>() { public ListBlobsResponse call(RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<ContainerListBlobsHeaders, ListBlobsResponse>, Maybe<ListBlobsResponse>>() {
+                public Maybe<ListBlobsResponse> apply(RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 

@@ -14,18 +14,22 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
+import com.microsoft.azure.storage.models.ContainerCreateHeaders;
+import com.microsoft.azure.storage.models.ContainerDeleteHeaders;
 import com.microsoft.azure.storage.models.ContainerGetPropertiesHeaders;
+import com.microsoft.azure.storage.models.PublicAccessType;
 import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
-import rx.Single;
-import rx.functions.Func1;
+import org.joda.time.DateTime;
+import io.reactivex.Single;
 
 /**
  * Represents a URL to the Azure Storage container allowing you to manipulate its blobs.
  */
-public final class ContainerURL extends StorageUrl {
+public final class ContainerURL extends StorageURL {
 
-    public ContainerURL(String url, HttpPipeline pipeline) {
+    public ContainerURL( String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
@@ -36,24 +40,9 @@ public final class ContainerURL extends StorageUrl {
      * @param containerAccessConditions
      * @return
      */
-    public Single<Void> createAsync(ContainerAccessConditions containerAccessConditions, String url) {
-        return this.storageClient.containers().createAsync(url);//this.url, containerAccessConditions);
-    }
-
-    /**
-     * GetPropertiesAndMetadata returns the container's metadata and system properties.
-     * For more information, see https://docs.microsoft.com/rest/api/storageservices/get-container-metadata.
-     * @return
-     */
-    public Single<ContainerGetPropertiesHeaders> getPropertiesAndMetadataAsync() {
-        //Single<RestResponse<ContainerGetPropertiesHeaders, Void>> restResponse = this.storageClient.containers().getPropertiesWithRestResponseAsync();//this.url);
-
-//        return restResponse.map(new Func1<RestResponse<ContainerGetPropertiesHeaders, Void>, ContainerGetPropertiesHeaders>() {
-//            public ContainerGetPropertiesHeaders call(RestResponse<ContainerGetPropertiesHeaders, Void> restResponse) {
-//                return restResponse.headers();
-//            }
-//        });
-        return null;
+    public Single<RestResponse<ContainerCreateHeaders, Void>> createAsync(
+            Integer timeout, String metadata, PublicAccessType access) {
+        return this.storageClient.containers().createWithRestResponseAsync(super.url, timeout, metadata, null, null);
     }
 
     /**
@@ -61,9 +50,29 @@ public final class ContainerURL extends StorageUrl {
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/delete-container.
      * @return
      */
-    public Single<Void> deleteAsync() {
-        //return this.storageClient.containers().deleteAsync();//this.url);
-        return null;
+    public Single<RestResponse<ContainerDeleteHeaders, Void>> deleteAsync(
+            Integer timeout, ContainerAccessConditions containerAccessConditions) {
+        return this.storageClient.containers().deleteWithRestResponseAsync(super.url, timeout,
+                containerAccessConditions.getLeaseID().toString(),
+                containerAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
+                containerAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
+                containerAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
+                containerAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
+                null);
+    }
+
+    /**
+     * GetPropertiesAndMetadata returns the container's metadata and system properties.
+     * For more information, see https://docs.microsoft.com/rest/api/storageservices/get-container-metadata.
+     * @return
+     */
+    public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesAndMetadataAsync(Integer timeout, LeaseAccessConditions leaseAccessConditions) {
+        return this.storageClient.containers().getPropertiesWithRestResponseAsync(super.url, timeout, leaseAccessConditions.toString(), null);
+    }
+
+    public void setMetadataAsync() {
+        //return this.storageClient.containers().setMetadataWithRestResponseAsync();
+        return;
     }
 
     /**

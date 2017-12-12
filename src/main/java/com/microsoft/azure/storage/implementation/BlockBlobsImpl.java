@@ -37,11 +37,13 @@ import com.microsoft.rest.v2.annotations.PUT;
 import com.microsoft.rest.v2.annotations.QueryParam;
 import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
 import com.microsoft.rest.v2.http.HttpClient;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import java.io.IOException;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func1;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -72,7 +74,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * The interface defining all the services for BlockBlobs to be used by
      * RestProxy to perform REST calls.
      */
-    @Host("https://{url}")
+    @Host("{url}")
     interface BlockBlobsService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.BlockBlobs putBlock" })
         @PUT("{containerName}/{blob}")
@@ -103,7 +105,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the void object if successful.
      */
     public void putBlock(String url, String blockId, byte[] body) {
-        putBlockAsync(url, blockId, body).toBlocking().value();
+        putBlockAsync(url, blockId, body).blockingAwait();
     }
 
     /**
@@ -158,9 +160,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Single<Void> putBlockAsync(String url, String blockId, byte[] body) {
+    public Completable putBlockAsync(String url, String blockId, byte[] body) {
         return putBlockWithRestResponseAsync(url, blockId, body)
-            .map(new Func1<RestResponse<BlockBlobsPutBlockHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -178,7 +180,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the void object if successful.
      */
     public void putBlock(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
-        putBlockAsync(url, blockId, body, timeout, leaseId, requestId).toBlocking().value();
+        putBlockAsync(url, blockId, body, timeout, leaseId, requestId).blockingAwait();
     }
 
     /**
@@ -239,9 +241,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockHeaders, Void> object
      */
-    public Single<Void> putBlockAsync(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
+    public Completable putBlockAsync(String url, String blockId, byte[] body, Integer timeout, String leaseId, String requestId) {
         return putBlockWithRestResponseAsync(url, blockId, body, timeout, leaseId, requestId)
-            .map(new Func1<RestResponse<BlockBlobsPutBlockHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -256,7 +258,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the void object if successful.
      */
     public void putBlockList(String url, BlockLookupList blocks) {
-        putBlockListAsync(url, blocks).toBlocking().value();
+        putBlockListAsync(url, blocks).blockingAwait();
     }
 
     /**
@@ -325,9 +327,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Single<Void> putBlockListAsync(String url, BlockLookupList blocks) {
+    public Completable putBlockListAsync(String url, BlockLookupList blocks) {
         return putBlockListWithRestResponseAsync(url, blocks)
-            .map(new Func1<RestResponse<BlockBlobsPutBlockListHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockListHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -355,7 +357,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the void object if successful.
      */
     public void putBlockList(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        putBlockListAsync(url, blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        putBlockListAsync(url, blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -452,9 +454,9 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsPutBlockListHeaders, Void> object
      */
-    public Single<Void> putBlockListAsync(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable putBlockListAsync(String url, BlockLookupList blocks, Integer timeout, String blobCacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return putBlockListWithRestResponseAsync(url, blocks, timeout, blobCacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlockBlobsPutBlockListHeaders, Void>, Void>() { public Void call(RestResponse<BlockBlobsPutBlockListHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -469,7 +471,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the BlockList object if successful.
      */
     public BlockList getBlockList(String url, BlockListType listType) {
-        return getBlockListAsync(url, listType).toBlocking().value();
+        return getBlockListAsync(url, listType).blockingGet();
     }
 
     /**
@@ -519,9 +521,17 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Single<BlockList> getBlockListAsync(String url, BlockListType listType) {
+    public Maybe<BlockList> getBlockListAsync(String url, BlockListType listType) {
         return getBlockListWithRestResponseAsync(url, listType)
-            .map(new Func1<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, BlockList>() { public BlockList call(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, Maybe<BlockList>>() {
+                public Maybe<BlockList> apply(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -539,7 +549,7 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @return the BlockList object if successful.
      */
     public BlockList getBlockList(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
-        return getBlockListAsync(url, listType, snapshot, timeout, leaseId, requestId).toBlocking().value();
+        return getBlockListAsync(url, listType, snapshot, timeout, leaseId, requestId).blockingGet();
     }
 
     /**
@@ -597,9 +607,17 @@ public class BlockBlobsImpl implements BlockBlobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlockBlobsGetBlockListHeaders, BlockList> object
      */
-    public Single<BlockList> getBlockListAsync(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
+    public Maybe<BlockList> getBlockListAsync(String url, BlockListType listType, DateTime snapshot, Integer timeout, String leaseId, String requestId) {
         return getBlockListWithRestResponseAsync(url, listType, snapshot, timeout, leaseId, requestId)
-            .map(new Func1<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, BlockList>() { public BlockList call(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>, Maybe<BlockList>>() {
+                public Maybe<BlockList> apply(RestResponse<BlockBlobsGetBlockListHeaders, BlockList> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 

@@ -21,8 +21,8 @@ import com.microsoft.rest.v2.policy.RequestPolicy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 //import org.apache.log4j.Level;
 import io.netty.handler.codec.http.HttpStatusClass;
-import rx.Single;
-import rx.functions.Action1;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 import java.net.HttpURLConnection;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,13 +34,13 @@ import java.util.logging.Level;
  */
 public final class LoggingFactory implements RequestPolicy.Factory {
 
-    private final RequestLoggingOptions requestLoggingOptions;
+    private final LoggingOptions loggingOptions;
 
-    public LoggingFactory(RequestLoggingOptions requestLoggingOptions) {
-        this.requestLoggingOptions = requestLoggingOptions;
+    public LoggingFactory(LoggingOptions loggingOptions) {
+        this.loggingOptions = loggingOptions;
     }
 
-    private final class RequestLoggingPolicy implements RequestPolicy {
+    private final class LoggingPolicy implements RequestPolicy {
 
         private int tryCount;
 
@@ -54,7 +54,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
 
         private Long requestStartTime;
 
-        RequestLoggingPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, LoggingFactory factory) {
+        LoggingPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, LoggingFactory factory) {
             this.requestPolicy = requestPolicy;
             this.options = options;
             this.factory = factory;
@@ -70,32 +70,34 @@ public final class LoggingFactory implements RequestPolicy.Factory {
         @Override
         public Single<HttpResponse> sendAsync(final HttpRequest request) {
             this.tryCount++;
-            this.requestStartTime = System.nanoTime();
+            this.requestStartTime = System.currentTimeMillis();
             if (this.tryCount == 1) {
                 this.operationStartTime = requestStartTime;
             }
 
-            //if (this.options.logger().shouldLog(LogLevel.INFO)) {
-                this.options.logger().log(HttpPipeline.LogLevel.INFO,
+            if (this.options.shouldLog(HttpPipeline.LogLevel.INFO)) {
+                this.options.log(HttpPipeline.LogLevel.INFO,
                         "'%s'==> OUTGOING REQUEST (Try number='%d')%n", request.url(), this.tryCount);
-            //}
+            }
 
             // TODO: Need to change logic slightly when support for writing to event log/sys log support is added
             return requestPolicy.sendAsync(request)
-                    .doOnError(new Action1<Throwable>() {
+                    .doOnError(new Consumer<Throwable>() {
                         @Override
-                        public void call(Throwable throwable) {
-                            //if (options.logger().shouldLog(LogLevel.ERROR)) {
-                                options.logger().log(HttpPipeline.LogLevel.ERROR,
+                        public void accept(Throwable throwable) {
+                            if (options.shouldLog(HttpPipeline.LogLevel.ERROR)) {
+                                options.log(HttpPipeline.LogLevel.ERROR,
                                         "Unexpected failure attempting to make request.%nError message:'%s'%n",
                                         throwable.getMessage());
-                            //}
+                            }
                         }
                     })
-                    .doOnSuccess(new Action1<HttpResponse>() {
+                    .doOnSuccess(new Consumer<HttpResponse>() {
                         @Override
-                        public void call(HttpResponse response) {
-                            long requestCompletionTime = System.nanoTime() - requestStartTime;
+                        public void accept(HttpResponse response) {
+                            long requestEndTime = System.currentTimeMillis();
+                            long requestCompletionTime = requestEndTime - requestStartTime;
+                            long operationDuration = requestEndTime - operationStartTime;
                             HttpPipeline.LogLevel currentLevel = HttpPipeline.LogLevel.INFO;
                             // check if error should be logged since there is nothing of higher priority
 //                            if (!options.logger().shouldLog(LogLevel.ERROR)) {
@@ -109,12 +111,14 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                             //}
 
                             // if the response took too long, we'll upgrade to warning.
+                            boolean forceLog = false;
                             if (requestCompletionTime >=
-                                    factory.requestLoggingOptions.getMinDurationToLogSlowRequestsInMs()) {
+                                    factory.loggingOptions.getMinDurationToLogSlowRequestsInMs()) {
                                 // log a warning if the try duration exceeded the specified threshold
                                 //if (options.logger().shouldLog(LogLevel.WARNING)) {
                                     currentLevel = HttpPipeline.LogLevel.WARNING;
-                                    logMessage = String.format("SLOW OPERATION. Duration > %d ms.%n", factory.requestLoggingOptions.getMinDurationToLogSlowRequestsInMs());
+                                    forceLog = true;
+                                    logMessage = String.format("SLOW OPERATION. Duration > %d ms.%n", factory.loggingOptions.getMinDurationToLogSlowRequestsInMs());
                                 //}
                             }
 
@@ -131,18 +135,16 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                                 }
 
                                 currentLevel = HttpPipeline.LogLevel.ERROR;
+                                forceLog = true;
                                 // TODO: LOG THIS TO WINDOWS EVENT LOG/SYS LOG
                             }
 
                             //if (shouldlog(currentLevel) {
-                                long requestEndTime = System.nanoTime();
-                                long requestDuration = requestEndTime - requestStartTime;
-                                long operationDuration = requestEndTime - operationStartTime;
                                 String messageInfo = String.format(
                                         "Request try:'%d', request duration:'%d' ms, operation duration:'%d' ms%n",
-                                        tryCount, requestDuration, operationDuration);
-                                options.logger().log(HttpPipeline.LogLevel.INFO, logMessage + messageInfo);
-                            // }
+                                        tryCount, requestCompletionTime, operationDuration);
+                                options.log(HttpPipeline.LogLevel.INFO, logMessage + messageInfo);
+                            //}
                         }
                     });
         }
@@ -150,6 +152,6 @@ public final class LoggingFactory implements RequestPolicy.Factory {
 
     @Override
     public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
-        return new RequestLoggingPolicy(next, options, this);
+        return new LoggingPolicy(next, options, this);
     }
 }

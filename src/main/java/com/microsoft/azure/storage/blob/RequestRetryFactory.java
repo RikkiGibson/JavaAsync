@@ -14,12 +14,10 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.rest.v2.http.HttpRequest;
-import com.microsoft.rest.v2.http.HttpResponse;
+import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
-import rx.Single;
-
-import java.util.concurrent.atomic.AtomicReference;
+import io.reactivex.Single;
+import io.reactivex.functions.Consumer;
 
 /**
  * Factory for retrying requests
@@ -27,10 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class RequestRetryFactory implements RequestPolicy.Factory {
 
     private final RequestRetryOptions requestRetryOptions;
-
-    private int tryCount;
-
-    private long operationStartTime;
 
     public RequestRetryFactory(RequestRetryOptions requestRetryOptions) {
         this.requestRetryOptions = requestRetryOptions;
@@ -40,24 +34,48 @@ public final class RequestRetryFactory implements RequestPolicy.Factory {
 
         private final RequestPolicy requestPolicy;
 
-        final private RequestRetryFactory factory;
+        final private RequestRetryOptions requestRetryOptions;
 
         final private RequestPolicy.Options options;
 
-        RequestRetryPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, RequestRetryFactory factory) {
+        private int tryCount;
+
+        private long operationStartTime;
+
+        private HttpRequest httpRequest;
+
+        RequestRetryPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, RequestRetryOptions requestRetryOptions) {
             this.requestPolicy = requestPolicy;
             this.options = options;
-            this.factory = factory;
+            this.requestRetryOptions = requestRetryOptions;
         }
 
         @Override
         public Single<HttpResponse> sendAsync(HttpRequest httpRequest) {
-            return null;
+            // TODO: Clone httpRequest
+            //httpRequest.clone()
+            this.httpRequest = new HttpRequest(httpRequest.callerMethod(), httpRequest.httpMethod(), httpRequest.url(),
+                    httpRequest.headers(), httpRequest.body());
+            return this.requestPolicy.sendAsync(httpRequest)
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                })
+                .doOnSuccess(new Consumer<HttpResponse>() {
+                    @Override
+                    public void accept(HttpResponse httpResponse) throws Exception {
+                        long requestEndTime = System.currentTimeMillis();
+                        //long requestCompletionTime = requestEndTime - requestStartTime;
+                        long operationDuration = requestEndTime - operationStartTime;
+                    }
+                });
         }
     }
 
     @Override
     public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
-        return new RequestRetryPolicy(next, options, this);
+        return new RequestRetryPolicy(next, options, this.requestRetryOptions);
     }
 }

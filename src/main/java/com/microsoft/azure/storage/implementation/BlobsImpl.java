@@ -47,12 +47,14 @@ import com.microsoft.rest.v2.annotations.PUT;
 import com.microsoft.rest.v2.annotations.QueryParam;
 import com.microsoft.rest.v2.annotations.UnexpectedResponseExceptionType;
 import com.microsoft.rest.v2.http.HttpClient;
+import io.reactivex.Completable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import java.io.InputStream;
 import java.io.IOException;
 import org.joda.time.DateTime;
-import rx.Observable;
-import rx.Single;
-import rx.functions.Func1;
 
 /**
  * An instance of this class provides access to all the operations defined in
@@ -83,7 +85,7 @@ public class BlobsImpl implements Blobs {
      * The interface defining all the services for Blobs to be used by
      * RestProxy to perform REST calls.
      */
-    @Host("https://{url}")
+    @Host("{url}")
     interface BlobsService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Blobs get" })
         @GET("{containerName}/{blob}")
@@ -153,7 +155,7 @@ public class BlobsImpl implements Blobs {
      * @return the InputStream object if successful.
      */
     public InputStream get(String url) {
-        return getAsync(url).toBlocking().value();
+        return getAsync(url).blockingGet();
     }
 
     /**
@@ -210,9 +212,17 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetHeaders, InputStream> object
      */
-    public Single<InputStream> getAsync(String url) {
+    public Maybe<InputStream> getAsync(String url) {
         return getWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsGetHeaders, InputStream>, InputStream>() { public InputStream call(RestResponse<BlobsGetHeaders, InputStream> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<BlobsGetHeaders, InputStream>, Maybe<InputStream>>() {
+                public Maybe<InputStream> apply(RestResponse<BlobsGetHeaders, InputStream> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
     /**
@@ -235,7 +245,7 @@ public class BlobsImpl implements Blobs {
      * @return the InputStream object if successful.
      */
     public InputStream get(String url, DateTime snapshot, Integer timeout, String range, String leaseId, Boolean rangeGetContentMD5, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        return getAsync(url, snapshot, timeout, range, leaseId, rangeGetContentMD5, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        return getAsync(url, snapshot, timeout, range, leaseId, rangeGetContentMD5, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingGet();
     }
 
     /**
@@ -312,9 +322,17 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetHeaders, InputStream> object
      */
-    public Single<InputStream> getAsync(String url, DateTime snapshot, Integer timeout, String range, String leaseId, Boolean rangeGetContentMD5, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Maybe<InputStream> getAsync(String url, DateTime snapshot, Integer timeout, String range, String leaseId, Boolean rangeGetContentMD5, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return getWithRestResponseAsync(url, snapshot, timeout, range, leaseId, rangeGetContentMD5, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlobsGetHeaders, InputStream>, InputStream>() { public InputStream call(RestResponse<BlobsGetHeaders, InputStream> restResponse) { return restResponse.body(); } });
+            .flatMapMaybe(new Function<RestResponse<BlobsGetHeaders, InputStream>, Maybe<InputStream>>() {
+                public Maybe<InputStream> apply(RestResponse<BlobsGetHeaders, InputStream> restResponse) {
+                    if (restResponse.body() == null) {
+                        return Maybe.empty();
+                    } else {
+                        return Maybe.just(restResponse.body());
+                    }
+                }
+            });
         }
 
 
@@ -328,7 +346,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void getProperties(String url) {
-        getPropertiesAsync(url).toBlocking().value();
+        getPropertiesAsync(url).blockingAwait();
     }
 
     /**
@@ -383,9 +401,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetPropertiesHeaders, Void> object
      */
-    public Single<Void> getPropertiesAsync(String url) {
+    public Completable getPropertiesAsync(String url) {
         return getPropertiesWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsGetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<BlobsGetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -406,7 +424,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void getProperties(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        getPropertiesAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        getPropertiesAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -477,9 +495,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetPropertiesHeaders, Void> object
      */
-    public Single<Void> getPropertiesAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable getPropertiesAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return getPropertiesWithRestResponseAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlobsGetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<BlobsGetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -493,7 +511,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void delete(String url) {
-        deleteAsync(url).toBlocking().value();
+        deleteAsync(url).blockingAwait();
     }
 
     /**
@@ -549,9 +567,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsDeleteHeaders, Void> object
      */
-    public Single<Void> deleteAsync(String url) {
+    public Completable deleteAsync(String url) {
         return deleteWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsDeleteHeaders, Void>, Void>() { public Void call(RestResponse<BlobsDeleteHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -573,7 +591,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void delete(String url, DateTime snapshot, Integer timeout, String leaseId, DeleteSnapshotsOptionType deleteSnapshots, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        deleteAsync(url, snapshot, timeout, leaseId, deleteSnapshots, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        deleteAsync(url, snapshot, timeout, leaseId, deleteSnapshots, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -647,9 +665,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsDeleteHeaders, Void> object
      */
-    public Single<Void> deleteAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DeleteSnapshotsOptionType deleteSnapshots, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable deleteAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DeleteSnapshotsOptionType deleteSnapshots, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return deleteWithRestResponseAsync(url, snapshot, timeout, leaseId, deleteSnapshots, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlobsDeleteHeaders, Void>, Void>() { public Void call(RestResponse<BlobsDeleteHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -664,7 +682,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void put(String url, BlobType blobType) {
-        putAsync(url, blobType).toBlocking().value();
+        putAsync(url, blobType).blockingAwait();
     }
 
     /**
@@ -735,9 +753,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsPutHeaders, Void> object
      */
-    public Single<Void> putAsync(String url, BlobType blobType) {
+    public Completable putAsync(String url, BlobType blobType) {
         return putWithRestResponseAsync(url, blobType)
-            .map(new Func1<RestResponse<BlobsPutHeaders, Void>, Void>() { public Void call(RestResponse<BlobsPutHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -769,7 +787,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void put(String url, BlobType blobType, byte[] optionalbody, Integer timeout, String cacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String blobCacheControl, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, Long blobContentLength, Long blobSequenceNumber, String requestId) {
-        putAsync(url, blobType, optionalbody, timeout, cacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, blobCacheControl, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentLength, blobSequenceNumber, requestId).toBlocking().value();
+        putAsync(url, blobType, optionalbody, timeout, cacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, blobCacheControl, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentLength, blobSequenceNumber, requestId).blockingAwait();
     }
 
     /**
@@ -876,9 +894,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsPutHeaders, Void> object
      */
-    public Single<Void> putAsync(String url, BlobType blobType, byte[] optionalbody, Integer timeout, String cacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String blobCacheControl, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, Long blobContentLength, Long blobSequenceNumber, String requestId) {
+    public Completable putAsync(String url, BlobType blobType, byte[] optionalbody, Integer timeout, String cacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String blobCacheControl, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, Long blobContentLength, Long blobSequenceNumber, String requestId) {
         return putWithRestResponseAsync(url, blobType, optionalbody, timeout, cacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, blobCacheControl, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentLength, blobSequenceNumber, requestId)
-            .map(new Func1<RestResponse<BlobsPutHeaders, Void>, Void>() { public Void call(RestResponse<BlobsPutHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -892,7 +910,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void setProperties(String url) {
-        setPropertiesAsync(url).toBlocking().value();
+        setPropertiesAsync(url).blockingAwait();
     }
 
     /**
@@ -956,9 +974,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetPropertiesHeaders, Void> object
      */
-    public Single<Void> setPropertiesAsync(String url) {
+    public Completable setPropertiesAsync(String url) {
         return setPropertiesWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsSetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<BlobsSetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -987,7 +1005,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void setProperties(String url, Integer timeout, String blobCacheControl, String blobContentType, String blobContentMD5, String blobContentEncoding, String blobContentLanguage, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String blobContentDisposition, Long blobContentLength, SequenceNumberActionType sequenceNumberAction, Long blobSequenceNumber, String requestId) {
-        setPropertiesAsync(url, timeout, blobCacheControl, blobContentType, blobContentMD5, blobContentEncoding, blobContentLanguage, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentDisposition, blobContentLength, sequenceNumberAction, blobSequenceNumber, requestId).toBlocking().value();
+        setPropertiesAsync(url, timeout, blobCacheControl, blobContentType, blobContentMD5, blobContentEncoding, blobContentLanguage, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentDisposition, blobContentLength, sequenceNumberAction, blobSequenceNumber, requestId).blockingAwait();
     }
 
     /**
@@ -1083,9 +1101,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetPropertiesHeaders, Void> object
      */
-    public Single<Void> setPropertiesAsync(String url, Integer timeout, String blobCacheControl, String blobContentType, String blobContentMD5, String blobContentEncoding, String blobContentLanguage, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String blobContentDisposition, Long blobContentLength, SequenceNumberActionType sequenceNumberAction, Long blobSequenceNumber, String requestId) {
+    public Completable setPropertiesAsync(String url, Integer timeout, String blobCacheControl, String blobContentType, String blobContentMD5, String blobContentEncoding, String blobContentLanguage, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String blobContentDisposition, Long blobContentLength, SequenceNumberActionType sequenceNumberAction, Long blobSequenceNumber, String requestId) {
         return setPropertiesWithRestResponseAsync(url, timeout, blobCacheControl, blobContentType, blobContentMD5, blobContentEncoding, blobContentLanguage, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentDisposition, blobContentLength, sequenceNumberAction, blobSequenceNumber, requestId)
-            .map(new Func1<RestResponse<BlobsSetPropertiesHeaders, Void>, Void>() { public Void call(RestResponse<BlobsSetPropertiesHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1099,7 +1117,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void getMetadata(String url) {
-        getMetadataAsync(url).toBlocking().value();
+        getMetadataAsync(url).blockingAwait();
     }
 
     /**
@@ -1155,9 +1173,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetMetadataHeaders, Void> object
      */
-    public Single<Void> getMetadataAsync(String url) {
+    public Completable getMetadataAsync(String url) {
         return getMetadataWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsGetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<BlobsGetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1178,7 +1196,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void getMetadata(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        getMetadataAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        getMetadataAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -1250,9 +1268,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetMetadataHeaders, Void> object
      */
-    public Single<Void> getMetadataAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable getMetadataAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return getMetadataWithRestResponseAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlobsGetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<BlobsGetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1266,7 +1284,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void setMetadata(String url) {
-        setMetadataAsync(url).toBlocking().value();
+        setMetadataAsync(url).blockingAwait();
     }
 
     /**
@@ -1322,9 +1340,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetMetadataHeaders, Void> object
      */
-    public Single<Void> setMetadataAsync(String url) {
+    public Completable setMetadataAsync(String url) {
         return setMetadataWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsSetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<BlobsSetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1345,7 +1363,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void setMetadata(String url, Integer timeout, String metadata, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        setMetadataAsync(url, timeout, metadata, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        setMetadataAsync(url, timeout, metadata, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -1417,9 +1435,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetMetadataHeaders, Void> object
      */
-    public Single<Void> setMetadataAsync(String url, Integer timeout, String metadata, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable setMetadataAsync(String url, Integer timeout, String metadata, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return setMetadataWithRestResponseAsync(url, timeout, metadata, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlobsSetMetadataHeaders, Void>, Void>() { public Void call(RestResponse<BlobsSetMetadataHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1434,7 +1452,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void lease(String url, LeaseActionType action) {
-        leaseAsync(url, action).toBlocking().value();
+        leaseAsync(url, action).blockingAwait();
     }
 
     /**
@@ -1498,9 +1516,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsLeaseHeaders, Void> object
      */
-    public Single<Void> leaseAsync(String url, LeaseActionType action) {
+    public Completable leaseAsync(String url, LeaseActionType action) {
         return leaseWithRestResponseAsync(url, action)
-            .map(new Func1<RestResponse<BlobsLeaseHeaders, Void>, Void>() { public Void call(RestResponse<BlobsLeaseHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1524,7 +1542,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void lease(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
-        leaseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).toBlocking().value();
+        leaseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId).blockingAwait();
     }
 
     /**
@@ -1608,9 +1626,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsLeaseHeaders, Void> object
      */
-    public Single<Void> leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
+    public Completable leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return leaseWithRestResponseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
-            .map(new Func1<RestResponse<BlobsLeaseHeaders, Void>, Void>() { public Void call(RestResponse<BlobsLeaseHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1624,7 +1642,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void takeSnapshot(String url) {
-        takeSnapshotAsync(url).toBlocking().value();
+        takeSnapshotAsync(url).blockingAwait();
     }
 
     /**
@@ -1680,9 +1698,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsTakeSnapshotHeaders, Void> object
      */
-    public Single<Void> takeSnapshotAsync(String url) {
+    public Completable takeSnapshotAsync(String url) {
         return takeSnapshotWithRestResponseAsync(url)
-            .map(new Func1<RestResponse<BlobsTakeSnapshotHeaders, Void>, Void>() { public Void call(RestResponse<BlobsTakeSnapshotHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1703,7 +1721,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void takeSnapshot(String url, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String requestId) {
-        takeSnapshotAsync(url, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, requestId).toBlocking().value();
+        takeSnapshotAsync(url, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, requestId).blockingAwait();
     }
 
     /**
@@ -1775,9 +1793,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsTakeSnapshotHeaders, Void> object
      */
-    public Single<Void> takeSnapshotAsync(String url, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String requestId) {
+    public Completable takeSnapshotAsync(String url, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String requestId) {
         return takeSnapshotWithRestResponseAsync(url, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, requestId)
-            .map(new Func1<RestResponse<BlobsTakeSnapshotHeaders, Void>, Void>() { public Void call(RestResponse<BlobsTakeSnapshotHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -1792,7 +1810,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void copy(String url, String copySource) {
-        copyAsync(url, copySource).toBlocking().value();
+        copyAsync(url, copySource).blockingAwait();
     }
 
     /**
@@ -1866,9 +1884,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsCopyHeaders, Void> object
      */
-    public Single<Void> copyAsync(String url, String copySource) {
+    public Completable copyAsync(String url, String copySource) {
         return copyWithRestResponseAsync(url, copySource)
-            .map(new Func1<RestResponse<BlobsCopyHeaders, Void>, Void>() { public Void call(RestResponse<BlobsCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -1895,7 +1913,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void copy(String url, String copySource, Integer timeout, String metadata, DateTime sourceIfModifiedSince, DateTime sourceIfUnmodifiedSince, String sourceIfMatches, String sourceIfNoneMatch, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String sourceLeaseId, String requestId) {
-        copyAsync(url, copySource, timeout, metadata, sourceIfModifiedSince, sourceIfUnmodifiedSince, sourceIfMatches, sourceIfNoneMatch, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, sourceLeaseId, requestId).toBlocking().value();
+        copyAsync(url, copySource, timeout, metadata, sourceIfModifiedSince, sourceIfUnmodifiedSince, sourceIfMatches, sourceIfNoneMatch, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, sourceLeaseId, requestId).blockingAwait();
     }
 
     /**
@@ -1995,9 +2013,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsCopyHeaders, Void> object
      */
-    public Single<Void> copyAsync(String url, String copySource, Integer timeout, String metadata, DateTime sourceIfModifiedSince, DateTime sourceIfUnmodifiedSince, String sourceIfMatches, String sourceIfNoneMatch, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String sourceLeaseId, String requestId) {
+    public Completable copyAsync(String url, String copySource, Integer timeout, String metadata, DateTime sourceIfModifiedSince, DateTime sourceIfUnmodifiedSince, String sourceIfMatches, String sourceIfNoneMatch, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String sourceLeaseId, String requestId) {
         return copyWithRestResponseAsync(url, copySource, timeout, metadata, sourceIfModifiedSince, sourceIfUnmodifiedSince, sourceIfMatches, sourceIfNoneMatch, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, sourceLeaseId, requestId)
-            .map(new Func1<RestResponse<BlobsCopyHeaders, Void>, Void>() { public Void call(RestResponse<BlobsCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 
@@ -2012,7 +2030,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void abortCopy(String url, String copyId) {
-        abortCopyAsync(url, copyId).toBlocking().value();
+        abortCopyAsync(url, copyId).blockingAwait();
     }
 
     /**
@@ -2062,9 +2080,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsAbortCopyHeaders, Void> object
      */
-    public Single<Void> abortCopyAsync(String url, String copyId) {
+    public Completable abortCopyAsync(String url, String copyId) {
         return abortCopyWithRestResponseAsync(url, copyId)
-            .map(new Func1<RestResponse<BlobsAbortCopyHeaders, Void>, Void>() { public Void call(RestResponse<BlobsAbortCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
     /**
@@ -2081,7 +2099,7 @@ public class BlobsImpl implements Blobs {
      * @return the void object if successful.
      */
     public void abortCopy(String url, String copyId, Integer timeout, String leaseId, String requestId) {
-        abortCopyAsync(url, copyId, timeout, leaseId, requestId).toBlocking().value();
+        abortCopyAsync(url, copyId, timeout, leaseId, requestId).blockingAwait();
     }
 
     /**
@@ -2137,9 +2155,9 @@ public class BlobsImpl implements Blobs {
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsAbortCopyHeaders, Void> object
      */
-    public Single<Void> abortCopyAsync(String url, String copyId, Integer timeout, String leaseId, String requestId) {
+    public Completable abortCopyAsync(String url, String copyId, Integer timeout, String leaseId, String requestId) {
         return abortCopyWithRestResponseAsync(url, copyId, timeout, leaseId, requestId)
-            .map(new Func1<RestResponse<BlobsAbortCopyHeaders, Void>, Void>() { public Void call(RestResponse<BlobsAbortCopyHeaders, Void> restResponse) { return restResponse.body(); } });
+            .toCompletable();
         }
 
 

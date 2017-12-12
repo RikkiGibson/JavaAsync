@@ -14,21 +14,22 @@
  */
 package com.microsoft.azure.storage.blob;
 
+import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.azure.storage.models.ListContainersResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
-import rx.Single;
+import io.reactivex.Single;
 
 /**
  * Represents a URL to an Azure Storage Blob Service
  */
-public final class ServiceURL extends StorageUrl {
+public final class ServiceURL extends StorageURL {
 
     public ServiceURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
     }
 
     public ContainerURL createContainerURL(String containerName) {
-        return new ContainerURL(this.url + "/" + containerName, this.storageClient.httpPipeline());
+        return new ContainerURL(super.url + "/" + containerName, this.storageClient.httpPipeline());
     }
 
     /**
@@ -62,6 +63,6 @@ public final class ServiceURL extends StorageUrl {
      *      A {@link ServiceURL} object with the given pipeline.
      */
     public ServiceURL withPipeline(HttpPipeline pipeline) {
-        return new ServiceURL(this.url, pipeline);
+        return new ServiceURL(super.url, pipeline);
     }
 }
