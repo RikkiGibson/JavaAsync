@@ -15,12 +15,10 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
-import com.microsoft.azure.storage.models.ContainerCreateHeaders;
-import com.microsoft.azure.storage.models.ContainerDeleteHeaders;
-import com.microsoft.azure.storage.models.ContainerGetPropertiesHeaders;
-import com.microsoft.azure.storage.models.PublicAccessType;
+import com.microsoft.azure.storage.models.*;
 import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.joda.time.DateTime;
 import io.reactivex.Single;
 
@@ -31,6 +29,56 @@ public final class ContainerURL extends StorageURL {
 
     public ContainerURL( String url, HttpPipeline pipeline) {
         super(url, pipeline);
+    }
+
+    /**
+     * Creates a new {@link ContainerURL} with the given pipeline.
+     * @param pipeline
+     *      A {@link HttpPipeline} object to set.
+     * @return
+     *      A {@link ContainerURL} object with the given pipeline.
+     */
+    public ContainerURL withPipeline(HttpPipeline pipeline) {
+        return new ContainerURL(this.url, pipeline);
+    }
+
+    /**
+     * Creates a new {@link BlockBlobURL} object by concatenating the blobName to the end of
+     * ContainerURL's URL. The new BlockBlobUrl uses the same request policy pipeline as the ContainerURL.
+     * To change the pipeline, create the BlockBlobUrl and then call its WithPipeline method passing in the
+     * desired pipeline object. Or, call this package's NewBlockBlobUrl instead of calling this object's
+     * NewBlockBlobUrl method.
+     * @param blobName
+     * @return
+     */
+    public BlockBlobURL createBlockBlobURL(String blobName) {
+        return new BlockBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
+    }
+
+    /**
+     * NewPageBlobURL creates a new PageBlobURL object by concatenating blobName to the end of
+     * ContainerURL's URL. The new PageBlobURL uses the same request policy pipeline as the ContainerURL.
+     * To change the pipeline, create the PageBlobURL and then call its WithPipeline method passing in the
+     * desired pipeline object. Or, call this package's NewPageBlobURL instead of calling this object's
+     * NewPageBlobURL method.
+     * @param blobName
+     * @return
+     */
+    public PageBlobURL createPageBlobURL(String blobName) {
+        return new PageBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
+    }
+
+    /**
+     * NewAppendBlobURL creates a new AppendBlobURL object by concatenating blobName to the end of
+     * ContainerURL's URL. The new AppendBlobURL uses the same request policy pipeline as the ContainerURL.
+     * To change the pipeline, create the AppendBlobURL and then call its WithPipeline method passing in the
+     * desired pipeline object. Or, call this package's NewAppendBlobURL instead of calling this object's
+     * NewAppendBlobURL method.
+     * @param blobName
+     * @return
+     */
+    public AppendBlobURL createAppendBlobURL(String blobName) {
+        return new AppendBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
     }
 
     /**
@@ -70,32 +118,19 @@ public final class ContainerURL extends StorageURL {
         return this.storageClient.containers().getPropertiesWithRestResponseAsync(super.url, timeout, leaseAccessConditions.toString(), null);
     }
 
-    public void setMetadataAsync() {
-        //return this.storageClient.containers().setMetadataWithRestResponseAsync();
-        return;
+    
+    public Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadataAsync(String metadata, Integer timeout, LeaseAccessConditions leaseAccessConditions,
+                                                                                    HttpAccessConditions httpAccessConditions) {
+        if (httpAccessConditions.getIfMatch() != null || httpAccessConditions.getIfNoneMatch() != null ||
+                httpAccessConditions.getIfUnmodifiedSince() != null) {
+            throw new IllegalArgumentException("If-Modified-Since is the only HTTP access condition supported for this API");
+        }
+
+        return this.storageClient.containers().setMetadataWithRestResponseAsync(url, timeout,
+                leaseAccessConditions.toString(), metadata, httpAccessConditions.getIfModifiedSince(),null);
     }
 
-    /**
-     * Creates a new {@link BlockBlobURL} object by concatenating the blobName to the end of
-     * ContainerURL's URL. The new BlockBlobUrl uses the same request policy pipeline as the ContainerURL.
-     * To change the pipeline, create the BlockBlobUrl and then call its WithPipeline method passing in the
-     * desired pipeline object. Or, call this package's NewBlockBlobUrl instead of calling this object's
-     * NewBlockBlobUrl method.
-     * @param blobName
-     * @return
-     */
-    public BlockBlobURL createBlockBlobURL(String blobName) {
-        return new BlockBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
-    }
+    public void getPermissionsAsync() {
 
-    /**
-     * Creates a new {@link ContainerURL} with the given pipeline.
-     * @param pipeline
-     *      A {@link HttpPipeline} object to set.
-     * @return
-     *      A {@link ContainerURL} object with the given pipeline.
-     */
-    public ContainerURL withPipeline(HttpPipeline pipeline) {
-        return new ContainerURL(this.url, pipeline);
     }
 }

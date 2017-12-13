@@ -94,7 +94,8 @@ public class BlobStorageAPITests {
         HttpPipeline pipeline = StorageURL.CreatePipeline(creds, pop);
         ContainerURL containerURL = new ContainerURL("http://xclientdev.blob.core.windows.net/newautogencontainerr", pipeline);
         //containerURL.deleteAsync("\"http://xclientdev.blob.core.windows.net/newautogencontainer").toBlocking().value();
-        //containerURL.createAsync().blockingGet();
+        containerURL.createAsync(null, null, null).blockingGet();
+        containerURL.getPropertiesAndMetadataAsync(null, null).blockingGet().headers();
         //containerURL.deleteAsync().blockingGet();
     }
 
