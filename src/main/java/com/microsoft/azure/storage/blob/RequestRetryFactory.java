@@ -16,6 +16,8 @@ package com.microsoft.azure.storage.blob;
 
 import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
@@ -24,7 +26,7 @@ import java.io.IOException;
 /**
  * Factory for retrying requests
  */
-public final class RequestRetryFactory implements RequestPolicy.Factory {
+public final class RequestRetryFactory implements RequestPolicyFactory {
 
     private final RequestRetryOptions requestRetryOptions;
 
@@ -38,7 +40,7 @@ public final class RequestRetryFactory implements RequestPolicy.Factory {
 
         final private RequestRetryOptions requestRetryOptions;
 
-        final private RequestPolicy.Options options;
+        final private RequestPolicyOptions options;
 
         private int tryCount;
 
@@ -46,7 +48,7 @@ public final class RequestRetryFactory implements RequestPolicy.Factory {
 
         private HttpRequest httpRequest;
 
-        RequestRetryPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, RequestRetryOptions requestRetryOptions) {
+        RequestRetryPolicy(RequestPolicy requestPolicy, RequestPolicyOptions options, RequestRetryOptions requestRetryOptions) {
             this.requestPolicy = requestPolicy;
             this.options = options;
             this.requestRetryOptions = requestRetryOptions;
@@ -81,7 +83,7 @@ public final class RequestRetryFactory implements RequestPolicy.Factory {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+    public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
         return new RequestRetryPolicy(next, options, this.requestRetryOptions);
     }
 }

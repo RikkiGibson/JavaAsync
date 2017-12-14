@@ -2,11 +2,10 @@ package com.microsoft.azure.storage;
 
 import com.microsoft.azure.storage.blob.*;
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
-import com.microsoft.rest.v2.http.HttpClient;
-import com.microsoft.rest.v2.http.HttpPipeline;
-import com.microsoft.rest.v2.http.HttpRequest;
-import com.microsoft.rest.v2.http.HttpResponse;
+import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -22,10 +21,10 @@ import java.util.logging.Logger;
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
 public class BlobStorageAPITests {
-    static class AddDatePolicy implements RequestPolicy.Factory {
+    static class AddDatePolicy implements RequestPolicyFactory {
 
         @Override
-        public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+        public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
             return new AddDate(next);
         }
 
@@ -51,21 +50,21 @@ public class BlobStorageAPITests {
     @Test
     public void testBasic() throws Exception {
 
-        HttpPipeline.Logger logger = new HttpPipeline.Logger() {
+        HttpPipelineLogger logger = new HttpPipelineLogger() {
             @Override
-            public HttpPipeline.LogLevel minimumLogLevel() {
-                return HttpPipeline.LogLevel.INFO;
+            public HttpPipelineLogLevel minimumLogLevel() {
+                return HttpPipelineLogLevel.INFO;
             }
 
             @Override
-            public void log(HttpPipeline.LogLevel logLevel, String s, Object... objects) {
-                if (logLevel == HttpPipeline.LogLevel.INFO) {
+            public void log(HttpPipelineLogLevel logLevel, String s, Object... objects) {
+                if (logLevel == HttpPipelineLogLevel.INFO) {
                     Logger.getGlobal().info(String.format(s, objects));
                 }
-                else if (logLevel == HttpPipeline.LogLevel.WARNING) {
+                else if (logLevel == HttpPipelineLogLevel.WARNING) {
                     Logger.getGlobal().warning(String.format(s, objects));
                 }
-                else if (logLevel == HttpPipeline.LogLevel.ERROR) {
+                else if (logLevel == HttpPipelineLogLevel.ERROR) {
                     Logger.getGlobal().severe(String.format(s, objects));
                 }
             }

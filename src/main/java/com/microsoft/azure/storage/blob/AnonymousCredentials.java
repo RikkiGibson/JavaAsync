@@ -17,6 +17,7 @@ package com.microsoft.azure.storage.blob;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import io.reactivex.Single;
 
 /**
@@ -52,7 +53,7 @@ public final class AnonymousCredentials implements ICredentials {
      * @return
      */
     @Override
-    public RequestPolicy create(RequestPolicy nextRequestPolicy, RequestPolicy.Options options) {
+    public RequestPolicy create(RequestPolicy nextRequestPolicy, RequestPolicyOptions options) {
         return new AnonymousCredentialsPolicy(nextRequestPolicy);
     }
 }

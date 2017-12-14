@@ -19,13 +19,14 @@ import com.microsoft.rest.v2.http.HttpPipeline;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
+import io.reactivex.Single;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import io.reactivex.Single;
 
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
 
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
@@ -54,10 +55,8 @@ public abstract class StorageURL {
         //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
         TelemetryFactory telemetryFactory = new TelemetryFactory(pipelineOptions.telemetryOptions);
         AddDatePolicy addDate = new AddDatePolicy();
-        return new HttpPipeline.Builder().withHttpClient(pipelineOptions.client)
-                .withLogger(pipelineOptions.logger)
-                .withRequestPolicies(requestIDFactory, telemetryFactory, addDate, credentials, loggingFactory)
-                .build();
+        return HttpPipeline.build(
+                pipelineOptions.client, requestIDFactory, telemetryFactory, addDate, credentials, loggingFactory);
     }
 
     @Override
@@ -78,10 +77,10 @@ public abstract class StorageURL {
 
         return url + name;
     }
-    static class AddDatePolicy implements RequestPolicy.Factory {
+    static class AddDatePolicy implements RequestPolicyFactory {
 
         @Override
-        public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+        public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
             return new AddDate(next);
         }
 

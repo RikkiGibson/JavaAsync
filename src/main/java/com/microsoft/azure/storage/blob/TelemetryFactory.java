@@ -17,9 +17,11 @@ package com.microsoft.azure.storage.blob;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import io.reactivex.Single;
 
-public final class TelemetryFactory implements RequestPolicy.Factory {
+public final class TelemetryFactory implements RequestPolicyFactory {
 
     final private String userAgent;
 
@@ -36,7 +38,7 @@ public final class TelemetryFactory implements RequestPolicy.Factory {
     private final class TelemetryPolicy implements RequestPolicy {
         final RequestPolicy requestPolicy;
 
-        TelemetryPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options) {
+        TelemetryPolicy(RequestPolicy requestPolicy, RequestPolicyOptions options) {
             this.requestPolicy = requestPolicy;
         }
 
@@ -47,7 +49,7 @@ public final class TelemetryFactory implements RequestPolicy.Factory {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+    public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
         return new TelemetryPolicy(next, options);
     }
 }
