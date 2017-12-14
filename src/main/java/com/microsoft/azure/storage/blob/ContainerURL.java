@@ -88,8 +88,9 @@ public final class ContainerURL extends StorageURL {
      * @return
      */
     public Single<RestResponse<ContainerCreateHeaders, Void>> createAsync(
-            Integer timeout, String metadata, PublicAccessType access) {
-        return this.storageClient.containers().createWithRestResponseAsync(super.url, timeout, metadata, null, null);
+            Integer timeout, Metadata metadata, PublicAccessType access) {
+        return this.storageClient.containers().createWithRestResponseAsync(
+                super.url, timeout, null, access, null);
     }
 
     /**
@@ -115,7 +116,8 @@ public final class ContainerURL extends StorageURL {
      */
     public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesAndMetadataAsync(
             Integer timeout, LeaseAccessConditions leaseAccessConditions) {
-        return this.storageClient.containers().getPropertiesWithRestResponseAsync(super.url, timeout, leaseAccessConditions.toString(), null);
+        return this.storageClient.containers().getPropertiesWithRestResponseAsync(super.url, timeout,
+                leaseAccessConditions.toString(), null);
     }
 
     
@@ -131,7 +133,8 @@ public final class ContainerURL extends StorageURL {
                 leaseAccessConditions.toString(), metadata, httpAccessConditions.getIfModifiedSince(),null);
     }
 
-    public Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getPermissionsAsync(Integer timeout, LeaseAccessConditions leaseAccessConditions) {
+    public Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getPermissionsAsync(Integer timeout,
+                                                                        LeaseAccessConditions leaseAccessConditions) {
         return this.storageClient.containers().getAclWithRestResponseAsync(
                 super.url, timeout, leaseAccessConditions.toString(), null);
     }

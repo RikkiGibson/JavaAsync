@@ -38,7 +38,7 @@ public final class ServiceSAS extends BaseSAS {
 
     private final String contentType;
 
-    public ServiceSAS(String version, SASProtocol protocol, Date startTime, Date expiryTime, EnumSet permissions,
+    public ServiceSAS(String version, SASProtocol protocol, Date startTime, Date expiryTime, EnumSet<ContainerSASPermission> permissions,
                       IPRange ipRange, String containerName, String blobName, String identifier, String cacheControl,
                       String contentDisposition, String contentEncoding, String contentLanguage, String contentType) {
         //permissions.getClass();

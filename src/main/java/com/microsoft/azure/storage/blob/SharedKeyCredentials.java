@@ -229,7 +229,6 @@ public final class SharedKeyCredentials implements ICredentials {
         // check for no query params and return
         Map<String, List<String>> queryParams = urlDecoder.parameters();
         if (queryParams.size() == 0) {
-            canonicalizedResource.append('\n');
             return canonicalizedResource.toString();
         }
 
