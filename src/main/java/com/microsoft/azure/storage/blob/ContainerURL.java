@@ -19,6 +19,8 @@ import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
 import io.reactivex.Single;
 
+import java.util.List;
+
 /**
  * Represents a URL to the Azure Storage container allowing you to manipulate its blobs.
  */
@@ -129,7 +131,8 @@ public final class ContainerURL extends StorageURL {
                 leaseAccessConditions.toString(), metadata, httpAccessConditions.getIfModifiedSince(),null);
     }
 
-    public void getPermissionsAsync() {
-
+    public Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getPermissionsAsync(Integer timeout, LeaseAccessConditions leaseAccessConditions) {
+        return this.storageClient.containers().getAclWithRestResponseAsync(
+                super.url, timeout, leaseAccessConditions.toString(), null);
     }
 }
