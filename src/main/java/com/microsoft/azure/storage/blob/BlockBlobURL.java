@@ -74,11 +74,14 @@ public final class BlockBlobURL extends BlobURL {
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/put-blob.
      * @param data
      *            A <code>byte</code> array which represents the data to write to the blob.
+     * @param headers
+     *            A {@Link BlobHttpHeaders} object that specifies which properties to set on the blob.
+     * @param metadata
+     *            A {@Link Metadata} object that specifies key value pairs to set on the blob.
      * @param blobAccessConditions
      *            A {@Link BlobAccessConditions} object that specifies under which conditions the operation should
      *            complete.
-     * @return
-     *
+     * @return the {@link Single&lt;RestResponse&lt;BlobsPutHeaders, Void&gt;&gt;} object if successful.
      */
     public Single<RestResponse<BlobsPutHeaders, Void>> putBlobAsync(
             byte[] data, BlobHttpHeaders headers, Metadata metadata, BlobAccessConditions blobAccessConditions) {
@@ -93,6 +96,17 @@ public final class BlockBlobURL extends BlobURL {
                 null, null, null);
     }
 
+    /**
+     * PutBlock uploads the specified block to the block blob's "staging area" to be later commited by a call to PutBlockList.
+     * For more information, see https://docs.microsoft.com/rest/api/storageservices/put-block.
+     * @param base64BlockID
+     *           A Base64 encoded {@code String} that specifies the ID for this block.
+     * @param data
+     *           A <code>byte</code> array which represents the data to write to the block.
+     * @param leaseAccessConditions
+     *           A {@Link LeaseAccessConditions} object that specifies the lease on the blob if there is one.
+     * @return the {@link Single&lt;RestResponse&lt;BlockBlobsPutBlockHeaders, Void&gt;&gt;} object if successful.
+     */
     public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockAsync(
             String base64BlockID, byte[] data, LeaseAccessConditions leaseAccessConditions) {
         return this.storageClient.blockBlobs().putBlockWithRestResponseAsync(this.url, base64BlockID, data,
@@ -103,8 +117,10 @@ public final class BlockBlobURL extends BlobURL {
      * GetBlockList returns the list of blocks that have been uploaded as part of a block blob using the specified block list filter.
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/get-block-list.
      * @param listType
+     *           A {@Link BlockListType} value specifies which type of blocks to return.
      * @param leaseAccessConditions
-     * @return
+     *           A {@Link LeaseAccessConditions} object that specifies the lease on the blob if there is one.
+     * @return the {@link Single&lt;RestResponse&lt;BlockBlobsGetBlockListHeaders, BlockList&gt;&gt;} object if successful.
      */
     public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> GetBlockListAsync(
             BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
@@ -112,6 +128,24 @@ public final class BlockBlobURL extends BlobURL {
                 null, null, leaseAccessConditions.toString(), null);
     }
 
+    /**
+     * PutBlockList writes a blob by specifying the list of block IDs that make up the blob.
+     * In order to be written as part of a blob, a block must have been successfully written
+     * to the server in a prior PutBlock operation. You can call PutBlockList to update a blob
+     * by uploading only those blocks that have changed, then committing the new and existing
+     * blocks together. Any blocks not specified in the block list and permanently deleted.
+     * For more information, see https://docs.microsoft.com/rest/api/storageservices/put-block-list.
+     * @param base64BlockIDs
+     *           A <code>java.util.List</code> of base64 {@code String} that specifies the block IDs to be committed.
+     * @param metadata
+     *           A {@Link Metadata} object that specifies key value pairs to set on the blob.
+     * @param httpHeaders
+     *           A {@Link BlobHttpHeaders} object that specifies which properties to set on the blob.
+     * @param blobAccessConditions
+     *           A {@Link BlobAccessConditions} object that specifies under which conditions the operation should
+     *            complete.
+     * @return the {@link Single&lt;RestResponse&lt;BlockBlobsPutBlockListHeaders, Void&gt;&gt;} object if successful.
+     */
     public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> PutBlockListAsync(
             List<String> base64BlockIDs, Metadata metadata, BlobHttpHeaders httpHeaders,
             BlobAccessConditions blobAccessConditions) {
