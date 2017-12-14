@@ -14,12 +14,9 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.azure.storage.models.*;
 import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
-import com.sun.javaws.exceptions.InvalidArgumentException;
-import org.joda.time.DateTime;
 import io.reactivex.Single;
 
 /**
@@ -52,7 +49,7 @@ public final class ContainerURL extends StorageURL {
      * @return
      */
     public BlockBlobURL createBlockBlobURL(String blobName) {
-        return new BlockBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
+        return new BlockBlobURL(super.appendToURLPath(this.url, blobName), this.storageClient.httpPipeline());
     }
 
     /**
@@ -65,7 +62,7 @@ public final class ContainerURL extends StorageURL {
      * @return
      */
     public PageBlobURL createPageBlobURL(String blobName) {
-        return new PageBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
+        return new PageBlobURL(super.appendToURLPath(this.url, blobName), this.storageClient.httpPipeline());
     }
 
     /**
@@ -78,7 +75,7 @@ public final class ContainerURL extends StorageURL {
      * @return
      */
     public AppendBlobURL createAppendBlobURL(String blobName) {
-        return new AppendBlobURL(this.url + '/' + blobName, this.storageClient.httpPipeline());
+        return new AppendBlobURL(super.appendToURLPath(this.url, blobName), this.storageClient.httpPipeline());
     }
 
     /**
@@ -114,13 +111,15 @@ public final class ContainerURL extends StorageURL {
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/get-container-metadata.
      * @return
      */
-    public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesAndMetadataAsync(Integer timeout, LeaseAccessConditions leaseAccessConditions) {
+    public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesAndMetadataAsync(
+            Integer timeout, LeaseAccessConditions leaseAccessConditions) {
         return this.storageClient.containers().getPropertiesWithRestResponseAsync(super.url, timeout, leaseAccessConditions.toString(), null);
     }
 
     
-    public Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadataAsync(String metadata, Integer timeout, LeaseAccessConditions leaseAccessConditions,
-                                                                                    HttpAccessConditions httpAccessConditions) {
+    public Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadataAsync(
+            String metadata, Integer timeout, LeaseAccessConditions leaseAccessConditions,
+            HttpAccessConditions httpAccessConditions) {
         if (httpAccessConditions.getIfMatch() != null || httpAccessConditions.getIfNoneMatch() != null ||
                 httpAccessConditions.getIfUnmodifiedSince() != null) {
             throw new IllegalArgumentException("If-Modified-Since is the only HTTP access condition supported for this API");

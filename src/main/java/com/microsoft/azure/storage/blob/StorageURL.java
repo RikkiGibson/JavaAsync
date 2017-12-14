@@ -65,7 +65,19 @@ public abstract class StorageURL {
         return this.url;
     }
 
+    /**
+     * appends a string to the end of a URL's path (prefixing the string with a '/' if required)
+     * @param url
+     * @param name
+     * @return
+     */
+    protected String appendToURLPath(String url, String name) {
+        if (url.length() == 0 || url.charAt(url.length() - 1) != '/') {
+            url += '/';
+        }
 
+        return url + name;
+    }
     static class AddDatePolicy implements RequestPolicy.Factory {
 
         @Override
