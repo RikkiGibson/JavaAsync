@@ -15,15 +15,16 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
-import com.microsoft.azure.storage.models.BlobType;
-import com.microsoft.azure.storage.models.BlockList;
-import com.microsoft.azure.storage.models.BlockListType;
+import com.microsoft.azure.storage.models.*;
 import com.microsoft.rest.v2.http.HttpPipeline;
+import com.microsoft.rest.v2.RestResponse;
 import io.reactivex.Single;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.rmi.dgc.Lease;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a URL to a block blob.
@@ -35,7 +36,7 @@ public final class BlockBlobURL extends BlobURL {
      * @param url
      *      A {@code String} representing a URL to a block blob.
      * @param pipeline
-     *      A {@link Pipeline} object representing the pipeline for requests.
+     *      A {@link HttpPipeline} object representing the pipeline for requests.
      */
     public BlockBlobURL(String url, HttpPipeline pipeline) {
         super(url, pipeline);
@@ -72,11 +73,30 @@ public final class BlockBlobURL extends BlobURL {
      * perform a partial update of a block blob's, use PutBlock and PutBlockList.
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/put-blob.
      * @param data
+     *            A <code>byte</code> array which represents the data to write to the blob.
+     * @param blobAccessConditions
+     *            A {@Link BlobAccessConditions} object that specifies under which conditions the operation should
+     *            complete.
      * @return
+     *
      */
-    public Single<Void> putBlobAsync(byte[] data) {
-        //return this.storageClient.blobs().putAsync(BlobType.BLOCK_BLOB, data, null, null, null, null, null, null, null, null, null, null, null, null , null);//super.url, BlobType.BLOCK_BLOB, data);
-        return null;
+    public Single<RestResponse<BlobsPutHeaders, Void>> putBlobAsync(
+            byte[] data, BlobHttpHeaders headers, Metadata metadata, BlobAccessConditions blobAccessConditions) {
+        return this.storageClient.blobs().putWithRestResponseAsync(this.url, BlobType.BLOCK_BLOB, data,
+                null, headers.getCacheControl(), headers.getContentType(), headers.getContentEncoding(),
+                headers.getContentLanguage(), headers.getContentMD5(), headers.getCacheControl(), metadata.toString(),
+                blobAccessConditions.getLeaseAccessConditions().toString(),
+                headers.getContentDisposition(), blobAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
+                blobAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
+                blobAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
+                blobAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
+                null, null, null);
+    }
+
+    public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockAsync(
+            String base64BlockID, byte[] data, LeaseAccessConditions leaseAccessConditions) {
+        return this.storageClient.blockBlobs().putBlockWithRestResponseAsync(this.url, base64BlockID, data,
+                null, leaseAccessConditions.toString(), null);
     }
 
     /**
@@ -86,9 +106,23 @@ public final class BlockBlobURL extends BlobURL {
      * @param leaseAccessConditions
      * @return
      */
-    public Single<BlockList> GetBlockListAsync(BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
-        //this.storageClient.blockBlobs().getBlockList()
-        //return this.storageClient.blockBlobs().getBlockListAsync(listType);
-        return null;
+    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> GetBlockListAsync(
+            BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
+        return this.storageClient.blockBlobs().getBlockListWithRestResponseAsync(this.url, listType,
+                null, null, leaseAccessConditions.toString(), null);
+    }
+
+    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> PutBlockListAsync(
+            List<String> base64BlockIDs, Metadata metadata, BlobHttpHeaders httpHeaders,
+            BlobAccessConditions blobAccessConditions) {
+        return this.storageClient.blockBlobs().putBlockListWithRestResponseAsync(this.url,
+                new BlockLookupList().withLatest(base64BlockIDs), null,
+                httpHeaders.getCacheControl(), httpHeaders.getContentType(),httpHeaders.getContentEncoding(),
+                httpHeaders.getContentLanguage(), httpHeaders.getContentMD5(), metadata.toString(),
+                blobAccessConditions.getLeaseAccessConditions().toString(), httpHeaders.getContentDisposition(),
+                blobAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
+                blobAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
+                blobAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
+                blobAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(), null);
     }
 }
