@@ -47,7 +47,7 @@ public final class LeaseAccessConditions {
 
     public static LeaseAccessConditions getDefault() {
         if (defaultLeaseAccessConditions == null) {
-            defaultLeaseAccessConditions = new LeaseAccessConditions("");
+            defaultLeaseAccessConditions = new LeaseAccessConditions(null);
         }
 
         return defaultLeaseAccessConditions;

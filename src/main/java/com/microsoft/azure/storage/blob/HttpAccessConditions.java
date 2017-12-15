@@ -41,8 +41,9 @@ public final class HttpAccessConditions {
      *      A {@link ETag} if none match condition
      */
     public HttpAccessConditions(Date ifModifiedSince, Date ifUnmodifiedSince, ETag ifMatch, ETag ifNoneMatch) {
-        this.ifModifiedSince = new DateTime(ifModifiedSince);
-        this.ifUnmodifiedSince = new DateTime(ifUnmodifiedSince);
+        this.ifModifiedSince = (ifModifiedSince != null) ? new DateTime(ifModifiedSince) : null;
+        this.ifUnmodifiedSince = (ifUnmodifiedSince != null) ? new DateTime(ifUnmodifiedSince) : null;
+
         this.ifMatch = ifMatch;
         this.ifNoneMatch = ifNoneMatch;
     }

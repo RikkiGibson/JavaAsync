@@ -19,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,8 +97,8 @@ public class BlobStorageAPITests {
         pop.loggingOptions = loggingOptions;
         pop.telemetryOptions = telemetryOptions;
         HttpPipeline pipeline = StorageURL.CreatePipeline(creds, pop);
-        final ContainerURL containerURL = new ContainerURL("http://xclientfileencryption.blob.core.windows.net/newautogencontainerr", pipeline);
-        //containerURL.deleteAsync("\"http://xclientdev.blob.core.windows.net/newautogencontainer").toBlocking().value();
+        final ContainerURL containerURL = new ContainerURL("http://xclientfileencryption.blob.core.windows.net/" + generateRandomContainerName(), pipeline);
+        //containerURL.deleteAsync(null, null).blockingGet();
         //containerURL.createAsync(null, null, null).blockingGet();
         //containerURL.getPropertiesAndMetadataAsync(null, null).blockingGet().headers();
 
@@ -134,4 +135,8 @@ public class BlobStorageAPITests {
         latch.await();
     }
 
+    public static String generateRandomContainerName() {
+        String containerName = "container" + UUID.randomUUID().toString();
+        return containerName.replace("-", "");
+    }
 }

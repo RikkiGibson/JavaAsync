@@ -56,6 +56,6 @@ public final class ETag {
     }
 
     public static ETag getDefault() {
-        return new ETag(Constants.EMPTY_STRING);
+        return new ETag(null);
     }
 }
