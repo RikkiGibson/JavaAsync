@@ -84,7 +84,6 @@ public final class ContainerURL extends StorageURL {
      * Create creates a new container within a storage account.
      * If a container with the same name already exists, the operation fails.
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/create-container.
-     * @param containerAccessConditions
      * @return
      */
     public Single<RestResponse<ContainerCreateHeaders, Void>> createAsync(
@@ -100,6 +99,10 @@ public final class ContainerURL extends StorageURL {
      */
     public Single<RestResponse<ContainerDeleteHeaders, Void>> deleteAsync(
             Integer timeout, ContainerAccessConditions containerAccessConditions) {
+        if (containerAccessConditions == null) {
+            containerAccessConditions = ContainerAccessConditions.getDefault();
+        }
+
         return this.storageClient.containers().deleteWithRestResponseAsync(super.url, timeout,
                 containerAccessConditions.getLeaseID().toString(),
                 containerAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
@@ -116,6 +119,10 @@ public final class ContainerURL extends StorageURL {
      */
     public Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getPropertiesAndMetadataAsync(
             Integer timeout, LeaseAccessConditions leaseAccessConditions) {
+        if (leaseAccessConditions == null) {
+            leaseAccessConditions = LeaseAccessConditions.getDefault();
+        }
+
         return this.storageClient.containers().getPropertiesWithRestResponseAsync(super.url, timeout,
                 leaseAccessConditions.toString(), null);
     }
@@ -124,9 +131,16 @@ public final class ContainerURL extends StorageURL {
     public Single<RestResponse<ContainerSetMetadataHeaders, Void>> setMetadataAsync(
             String metadata, Integer timeout, LeaseAccessConditions leaseAccessConditions,
             HttpAccessConditions httpAccessConditions) {
-        if (httpAccessConditions.getIfMatch() != null || httpAccessConditions.getIfNoneMatch() != null ||
+        if (httpAccessConditions == null) {
+            httpAccessConditions = HttpAccessConditions.getDefault();
+        }
+        else if (httpAccessConditions.getIfMatch() != ETag.getDefault() || httpAccessConditions.getIfNoneMatch() != ETag.getDefault() ||
                 httpAccessConditions.getIfUnmodifiedSince() != null) {
             throw new IllegalArgumentException("If-Modified-Since is the only HTTP access condition supported for this API");
+        }
+
+        if (leaseAccessConditions == null) {
+            leaseAccessConditions = LeaseAccessConditions.getDefault();
         }
 
         return this.storageClient.containers().setMetadataWithRestResponseAsync(url, timeout,
@@ -135,6 +149,10 @@ public final class ContainerURL extends StorageURL {
 
     public Single<RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>>> getPermissionsAsync(Integer timeout,
                                                                         LeaseAccessConditions leaseAccessConditions) {
+        if (leaseAccessConditions == null) {
+            leaseAccessConditions = LeaseAccessConditions.getDefault();
+        }
+
         return this.storageClient.containers().getAclWithRestResponseAsync(
                 super.url, timeout, leaseAccessConditions.toString(), null);
     }

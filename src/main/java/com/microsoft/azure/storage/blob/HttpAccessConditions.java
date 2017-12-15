@@ -23,6 +23,7 @@ import java.util.Date;
  */
 public final class HttpAccessConditions {
 
+    private static HttpAccessConditions defaultHttpAccessConditions;
     private final DateTime ifModifiedSince;
     private final DateTime ifUnmodifiedSince;
     private final ETag ifMatch;
@@ -60,5 +61,14 @@ public final class HttpAccessConditions {
 
     public ETag getIfNoneMatch() {
         return ifNoneMatch;
+    }
+
+    public static HttpAccessConditions getDefault() {
+        if (defaultHttpAccessConditions == null) {
+            defaultHttpAccessConditions = new HttpAccessConditions(null, null, ETag.getDefault(),
+                    ETag.getDefault());
+        }
+
+        return defaultHttpAccessConditions;
     }
 }

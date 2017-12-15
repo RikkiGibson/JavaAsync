@@ -19,6 +19,8 @@ package com.microsoft.azure.storage.blob;
  */
 public final class BlobAccessConditions {
 
+    private static BlobAccessConditions defaultBlobAccessConditions;
+
     // Optional standard HTTP access conditions which are optionally set
     private final HttpAccessConditions httpAccessConditions;
 
@@ -67,5 +69,16 @@ public final class BlobAccessConditions {
 
     public PageBlobAccessConditions getPageBlobAccessConditions() {
         return pageBlobAccessConditions;
+    }
+
+    public static BlobAccessConditions getDefault() {
+        if (defaultBlobAccessConditions == null) {
+            defaultBlobAccessConditions = new BlobAccessConditions(HttpAccessConditions.getDefault(),
+                    LeaseAccessConditions.getDefault(),
+                    AppendBlobAccessConditions.getDefault(),
+                    PageBlobAccessConditions.getDefault());
+        }
+
+        return defaultBlobAccessConditions;
     }
 }

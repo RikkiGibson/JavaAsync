@@ -2,10 +2,14 @@ package com.microsoft.azure.storage;
 
 import com.microsoft.azure.storage.blob.*;
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
+import com.microsoft.azure.storage.models.ContainerCreateHeaders;
+import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import com.microsoft.rest.v2.policy.RequestPolicyFactory;
 import com.microsoft.rest.v2.policy.RequestPolicyOptions;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -15,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,7 +78,7 @@ public class BlobStorageAPITests {
         HttpClient.Configuration configuration = new HttpClient.Configuration(
                 new Proxy(Proxy.Type.HTTP, new InetSocketAddress("localhost", 8888)));
         LoggingOptions loggingOptions = new LoggingOptions(Level.INFO);
-        SharedKeyCredentials creds = new SharedKeyCredentials("xclientdev", "key");
+        SharedKeyCredentials creds = new SharedKeyCredentials("xclientfileencryption", "key");
         //AnonymousCredentials creds = new AnonymousCredentials();
         //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
         TelemetryOptions telemetryOptions = new TelemetryOptions();
@@ -91,11 +96,42 @@ public class BlobStorageAPITests {
         pop.loggingOptions = loggingOptions;
         pop.telemetryOptions = telemetryOptions;
         HttpPipeline pipeline = StorageURL.CreatePipeline(creds, pop);
-        ContainerURL containerURL = new ContainerURL("http://xclientdev.blob.core.windows.net/newautogencontainerr", pipeline);
+        final ContainerURL containerURL = new ContainerURL("http://xclientfileencryption.blob.core.windows.net/newautogencontainerr", pipeline);
         //containerURL.deleteAsync("\"http://xclientdev.blob.core.windows.net/newautogencontainer").toBlocking().value();
-        containerURL.createAsync(null, null, null).blockingGet();
-        containerURL.getPropertiesAndMetadataAsync(null, null).blockingGet().headers();
-        //containerURL.deleteAsync().blockingGet();
+        //containerURL.createAsync(null, null, null).blockingGet();
+        //containerURL.getPropertiesAndMetadataAsync(null, null).blockingGet().headers();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final boolean valid = true;
+        containerURL.createAsync(null, null, null)
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        // check if error is something other than container exists
+                        //if (throwable.getCause() != null)
+                            //valid = false;
+                    }
+                })
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        if (!valid) {
+                            latch.countDown();
+                            return;
+                        }
+
+                        containerURL.deleteAsync(null, null).doFinally(
+                                new Action() {
+                                    @Override
+                                    public void run() throws Exception {
+                                        latch.countDown();
+                                    }
+                                }
+                        );
+                    }
+                }).subscribe();
+
+        latch.await();
     }
 
 }
