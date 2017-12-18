@@ -18,6 +18,8 @@ package com.microsoft.azure.storage.blob;
  * Access conditions specific to leasing
  */
 public final class LeaseAccessConditions {
+
+    private static LeaseAccessConditions defaultLeaseAccessConditions;
     private final String leaseId;
 
     /**
@@ -41,5 +43,13 @@ public final class LeaseAccessConditions {
     @Override
     public String toString() {
         return this.leaseId;
+    }
+
+    public static LeaseAccessConditions getDefault() {
+        if (defaultLeaseAccessConditions == null) {
+            defaultLeaseAccessConditions = new LeaseAccessConditions(null);
+        }
+
+        return defaultLeaseAccessConditions;
     }
 }

@@ -23,9 +23,7 @@ import java.util.Date;
  */
 public final class HttpAccessConditions {
 
-    public static final HttpAccessConditions defaultHttpAccessConditions = new HttpAccessConditions(
-            null, null, null, null);
-
+    private static HttpAccessConditions defaultHttpAccessConditions;
     private final DateTime ifModifiedSince;
     private final DateTime ifUnmodifiedSince;
     private final ETag ifMatch;
@@ -43,8 +41,9 @@ public final class HttpAccessConditions {
      *      A {@link ETag} if none match condition
      */
     public HttpAccessConditions(Date ifModifiedSince, Date ifUnmodifiedSince, ETag ifMatch, ETag ifNoneMatch) {
-        this.ifModifiedSince = new DateTime(ifModifiedSince);
-        this.ifUnmodifiedSince = new DateTime(ifUnmodifiedSince);
+        this.ifModifiedSince = (ifModifiedSince != null) ? new DateTime(ifModifiedSince) : null;
+        this.ifUnmodifiedSince = (ifUnmodifiedSince != null) ? new DateTime(ifUnmodifiedSince) : null;
+
         this.ifMatch = ifMatch;
         this.ifNoneMatch = ifNoneMatch;
     }
@@ -65,38 +64,13 @@ public final class HttpAccessConditions {
         return ifNoneMatch;
     }
 
-    public static DateTime getIfModifiedSinceForRest(HttpAccessConditions accessConditions) {
-        if(accessConditions == null) {
-            return null;
-        }
-        return accessConditions.getIfModifiedSince();
-    }
 
-    public static DateTime getIfUnmodifiedSinceForRest(HttpAccessConditions accessConditions) {
-        if(accessConditions == null) {
-            return null;
+    public static HttpAccessConditions getDefault() {
+        if (defaultHttpAccessConditions == null) {
+            defaultHttpAccessConditions = new HttpAccessConditions(null, null, ETag.getDefault(),
+                    ETag.getDefault());
         }
-        return accessConditions.getIfUnmodifiedSince();
-    }
 
-    //TODO: Get rid of first if check. Change these to instance methods. Package private. Use this. Delete methods for modified.
-    public static String getIfMatchForRest(HttpAccessConditions accessConditions) {
-        if(accessConditions == null) {
-            return null;
-        }
-        if(accessConditions.getIfMatch() == null) {
-            return null;
-        }
-        return accessConditions.getIfMatch().toString();
-    }
-
-    public static String getIfNoneMatchForRest(HttpAccessConditions accessConditions) {
-        if(accessConditions == null) {
-            return null;
-        }
-        if(accessConditions.getIfNoneMatch() == null) {
-            return null;
-        }
-        return accessConditions.getIfNoneMatch().toString();
+        return defaultHttpAccessConditions;
     }
 }

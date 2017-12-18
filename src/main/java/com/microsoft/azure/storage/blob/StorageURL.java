@@ -22,13 +22,12 @@ import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import com.microsoft.rest.v2.policy.RequestPolicyFactory;
 import com.microsoft.rest.v2.policy.RequestPolicyOptions;
+import io.reactivex.Single;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import io.reactivex.Single;
 
 import java.util.Date;
 import java.util.Locale;
-import java.util.logging.Level;
 
 import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
 
@@ -57,10 +56,8 @@ public abstract class StorageURL {
         //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
         TelemetryFactory telemetryFactory = new TelemetryFactory(pipelineOptions.telemetryOptions);
         AddDatePolicy addDate = new AddDatePolicy();
-        return new HttpPipelineBuilder().withHttpClient(pipelineOptions.client)
-                .withLogger(pipelineOptions.logger)
-                .withRequestPolicies(requestIDFactory, telemetryFactory, addDate, credentials, loggingFactory)
-                .build();
+        return HttpPipeline.build(
+                pipelineOptions.client, requestIDFactory, telemetryFactory, addDate, credentials, loggingFactory);
     }
 
     @Override
@@ -68,6 +65,18 @@ public abstract class StorageURL {
         return this.url;
     }
 
+    /**
+     * appends a string to the end of a URL's path (prefixing the string with a '/' if required)
+     * @param url
+     * @param name
+     * @return
+     */
+    protected String appendToURLPath(String url, String name) {
+        if (url.length() == 0 || url.charAt(url.length() - 1) != '/') {
+            url += '/';
+        }
+        return url + name;
+    }
 
     static class AddDatePolicy implements RequestPolicyFactory {
 

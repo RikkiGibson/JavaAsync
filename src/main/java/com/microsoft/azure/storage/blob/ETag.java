@@ -19,6 +19,7 @@ package com.microsoft.azure.storage.blob;
  */
 public final class ETag {
 
+    private static ETag defaultEtag;
     private final String eTagString;
 
     /**
@@ -52,5 +53,9 @@ public final class ETag {
     @Override
     public String toString() {
         return this.eTagString;
+    }
+
+    public static ETag getDefault() {
+        return new ETag(null);
     }
 }

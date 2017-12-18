@@ -21,6 +21,8 @@ import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import io.reactivex.Single;
 import io.reactivex.functions.Consumer;
 
+import java.io.IOException;
+
 /**
  * Factory for retrying requests
  */
@@ -54,8 +56,12 @@ public final class RequestRetryFactory implements RequestPolicyFactory {
 
         @Override
         public Single<HttpResponse> sendAsync(HttpRequest httpRequest) {
-            // TODO: Clone httpRequest
-            //httpRequest.clone()
+            try {
+                this.httpRequest = httpRequest.buffer();
+            } catch (IOException e) {
+                return Single.error(e);
+            }
+
             this.httpRequest = new HttpRequest(httpRequest.callerMethod(), httpRequest.httpMethod(), httpRequest.url(),
                     httpRequest.headers(), httpRequest.body());
             return this.requestPolicy.sendAsync(httpRequest)

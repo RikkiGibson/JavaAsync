@@ -6,6 +6,8 @@ import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
 import com.microsoft.rest.v2.policy.RequestPolicyFactory;
 import com.microsoft.rest.v2.policy.RequestPolicyOptions;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -17,6 +19,8 @@ import java.net.Proxy;
 import java.security.InvalidKeyException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,14 +98,14 @@ public class BlobStorageAPITests {
         pop.telemetryOptions = telemetryOptions;
         HttpPipeline pipeline = StorageURL.CreatePipeline(creds, pop);
         ContainerURL containerURL = new ContainerURL("http://xclientdev.blob.core.windows.net/newautogencontainerr", pipeline);
-        containerURL.createAsync(30, "", PublicAccessType.BLOB).blockingGet();
+        containerURL.createAsync(30, new Metadata(), PublicAccessType.BLOB).blockingGet();
         //containerURL.deleteAsync("\"http://xclientdev.blob.core.windows.net/newautogencontainer").toBlocking().value();
         //containerURL.createAsync().blockingGet();
         //containerURL.deleteAsync().blockingGet();
     }
 
     @Test
-    public void TestPutBlobBasic() throws UnsupportedEncodingException, InvalidKeyException {
+    public void TestPutBlobBasic() throws UnsupportedEncodingException, InvalidKeyException, InterruptedException {
         HttpPipelineLogger logger = new HttpPipelineLogger() {
             @Override
             public HttpPipelineLogLevel minimumLogLevel() {
@@ -146,5 +150,46 @@ public class BlobStorageAPITests {
                 new Metadata(),
                 new BlobAccessConditions(new HttpAccessConditions(null, null, new ETag(""), new ETag("")),
                 new LeaseAccessConditions(""), null, null)).blockingGet();
+        final ContainerURL containerURL = new ContainerURL("http://xclientfileencryption.blob.core.windows.net/" + generateRandomContainerName(), pipeline);
+        //containerURL.deleteAsync(null, null).blockingGet();
+        //containerURL.createAsync(null, null, null).blockingGet();
+        //containerURL.getPropertiesAndMetadataAsync(null, null).blockingGet().headers();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final boolean valid = true;
+        containerURL.createAsync(null, null, null)
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        // check if error is something other than container exists
+                        //if (throwable.getCause() != null)
+                            //valid = false;
+                    }
+                })
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        if (!valid) {
+                            latch.countDown();
+                            return;
+                        }
+
+                        containerURL.deleteAsync(null, null).doFinally(
+                                new Action() {
+                                    @Override
+                                    public void run() throws Exception {
+                                        latch.countDown();
+                                    }
+                                }
+                        );
+                    }
+                }).subscribe();
+
+        latch.await();
+    }
+
+    public static String generateRandomContainerName() {
+        String containerName = "container" + UUID.randomUUID().toString();
+        return containerName.replace("-", "");
     }
 }

@@ -14,7 +14,8 @@
  */
 package com.microsoft.azure.storage.blob;
 
-import com.microsoft.rest.v2.policy.RequestPolicyFactory;;
+import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
 
 /**
  * Credentials represent any credential type
