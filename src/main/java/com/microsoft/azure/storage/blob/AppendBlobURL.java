@@ -15,7 +15,11 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
+import com.microsoft.azure.storage.models.BlobType;
+import com.microsoft.azure.storage.models.BlobsPutHeaders;
+import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
+import io.reactivex.Single;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -40,7 +44,7 @@ public final class AppendBlobURL extends BlobURL {
     /**
      * Creates a new {@link AppendBlobURL} with the given pipeline.
      * @param pipeline
-     *      A {@link Pipeline} object to set.
+     *      A {@link HttpPipeline} object to set.
      * @return
      *      A {@link AppendBlobURL} object with the given pipeline.
      */
@@ -59,5 +63,30 @@ public final class AppendBlobURL extends BlobURL {
         BlobURLParts blobURLParts = URLParser.ParseURL(super.url);
         blobURLParts.setSnapshot(snapshot);
         return new AppendBlobURL(blobURLParts.toURL(), super.storageClient.httpPipeline());
+    }
+
+    /**
+     * Create creates a 0-length append blob. Call AppendBlock to append data to an append blob.
+     * For more information, see https://docs.microsoft.com/rest/api/storageservices/put-blob.
+     * @param headers
+     *            A {@Link BlobHttpHeaders} object that specifies which properties to set on the blob.
+     * @param metadata
+     *            A {@Link Metadata} object that specifies key value pairs to set on the blob.
+     * @param accessConditions
+     *            A {@Link BlobAccessConditions} object that specifies under which conditions the operation should
+     *            complete.
+     * @return the {@link Single&lt;RestResponse&lt;BlobsPutHeaders, Void&gt;&gt;} object if successful.
+     */
+    public Single<RestResponse<BlobsPutHeaders, Void>> createBlobAsync(
+            Metadata metadata, BlobHttpHeaders headers, BlobAccessConditions accessConditions) {
+        return this.storageClient.blobs().putWithRestResponseAsync(this.url, BlobType.APPEND_BLOB, null,
+                null, headers.getCacheControl(), headers.getContentType(), headers.getContentEncoding(),
+                headers.getContentLanguage(), headers.getContentMD5(), headers.getCacheControl(), metadata.toString(),
+                accessConditions.getLeaseAccessConditions().toString(),
+                headers.getContentDisposition(), accessConditions.getHttpAccessConditions().getIfModifiedSince(),
+                accessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
+                accessConditions.getHttpAccessConditions().getIfMatch().toString(),
+                accessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
+                null, null, null);
     }
 }

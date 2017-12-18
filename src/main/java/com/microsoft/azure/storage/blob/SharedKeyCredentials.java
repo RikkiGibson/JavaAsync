@@ -16,6 +16,7 @@ package com.microsoft.azure.storage.blob;
 
 import com.microsoft.rest.v2.http.*;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import com.microsoft.rest.v2.policy.RetryPolicy;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.QueryStringDecoder;
@@ -76,11 +77,11 @@ public final class SharedKeyCredentials implements ICredentials {
 
         private final RequestPolicy requestPolicy;
 
-        private final RequestPolicy.Options options;
+        private final RequestPolicyOptions options;
 
         private final SharedKeyCredentials factory;
 
-        SharedKeyCredentialsPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, SharedKeyCredentials factory) {
+        SharedKeyCredentialsPolicy(RequestPolicy requestPolicy, RequestPolicyOptions options, SharedKeyCredentials factory) {
             this.requestPolicy = requestPolicy;
             this.options = options;
             this.factory = factory;
@@ -113,8 +114,8 @@ public final class SharedKeyCredentials implements ICredentials {
                 @Override
                 public void accept(HttpResponse response) {
                     if (response.statusCode() == HttpResponseStatus.FORBIDDEN.code()) {
-                        if (options.shouldLog(HttpPipeline.LogLevel.ERROR)) {
-                            options.log(HttpPipeline.LogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", stringToSign.get());
+                        if (options.shouldLog(HttpPipelineLogLevel.ERROR)) {
+                            options.log(HttpPipelineLogLevel.ERROR, "===== HTTP Forbidden status, String-to-Sign:%n'%s'%n===============================%n", stringToSign.get());
                         }
                     }
                 }
@@ -123,7 +124,7 @@ public final class SharedKeyCredentials implements ICredentials {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicy nextRequestPolicy, RequestPolicy.Options options) {
+    public RequestPolicy create(RequestPolicy nextRequestPolicy, RequestPolicyOptions options) {
         return new SharedKeyCredentialsPolicy(nextRequestPolicy, options, this);
     }
 
@@ -228,7 +229,7 @@ public final class SharedKeyCredentials implements ICredentials {
         // check for no query params and return
         Map<String, List<String>> queryParams = urlDecoder.parameters();
         if (queryParams.size() == 0) {
-            canonicalizedResource.append('\n');
+            //canonicalizedResource.append('\n');
             return canonicalizedResource.toString();
         }
 

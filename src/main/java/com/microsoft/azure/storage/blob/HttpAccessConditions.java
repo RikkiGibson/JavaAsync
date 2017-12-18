@@ -23,6 +23,9 @@ import java.util.Date;
  */
 public final class HttpAccessConditions {
 
+    public static final HttpAccessConditions defaultHttpAccessConditions = new HttpAccessConditions(
+            null, null, null, null);
+
     private final DateTime ifModifiedSince;
     private final DateTime ifUnmodifiedSince;
     private final ETag ifMatch;
@@ -60,5 +63,40 @@ public final class HttpAccessConditions {
 
     public ETag getIfNoneMatch() {
         return ifNoneMatch;
+    }
+
+    public static DateTime getIfModifiedSinceForRest(HttpAccessConditions accessConditions) {
+        if(accessConditions == null) {
+            return null;
+        }
+        return accessConditions.getIfModifiedSince();
+    }
+
+    public static DateTime getIfUnmodifiedSinceForRest(HttpAccessConditions accessConditions) {
+        if(accessConditions == null) {
+            return null;
+        }
+        return accessConditions.getIfUnmodifiedSince();
+    }
+
+    //TODO: Get rid of first if check. Change these to instance methods. Package private. Use this. Delete methods for modified.
+    public static String getIfMatchForRest(HttpAccessConditions accessConditions) {
+        if(accessConditions == null) {
+            return null;
+        }
+        if(accessConditions.getIfMatch() == null) {
+            return null;
+        }
+        return accessConditions.getIfMatch().toString();
+    }
+
+    public static String getIfNoneMatchForRest(HttpAccessConditions accessConditions) {
+        if(accessConditions == null) {
+            return null;
+        }
+        if(accessConditions.getIfNoneMatch() == null) {
+            return null;
+        }
+        return accessConditions.getIfNoneMatch().toString();
     }
 }

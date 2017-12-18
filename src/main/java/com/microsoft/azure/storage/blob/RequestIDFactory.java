@@ -17,6 +17,8 @@ package com.microsoft.azure.storage.blob;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import io.reactivex.Single;
 
 import java.util.UUID;
@@ -24,14 +26,14 @@ import java.util.UUID;
 /**
  * Factory to create a unique request ID and set the x-ms-client-request-id header.
  */
-public final class RequestIDFactory implements RequestPolicy.Factory {
+public final class RequestIDFactory implements RequestPolicyFactory {
 
     private final class RequestIDPolicy implements RequestPolicy {
         final RequestPolicy requestPolicy;
 
-        final RequestPolicy.Options options;
+        final RequestPolicyOptions options;
 
-        public RequestIDPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options) {
+        public RequestIDPolicy(RequestPolicy requestPolicy, RequestPolicyOptions options) {
             this.requestPolicy = requestPolicy;
             this.options = options;
         }
@@ -50,7 +52,7 @@ public final class RequestIDFactory implements RequestPolicy.Factory {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+    public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
         return new RequestIDPolicy(next, options);
     }
 }

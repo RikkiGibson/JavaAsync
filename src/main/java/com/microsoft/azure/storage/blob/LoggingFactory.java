@@ -15,9 +15,12 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.rest.v2.http.HttpPipeline;
+import com.microsoft.rest.v2.http.HttpPipelineLogLevel;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import io.netty.handler.codec.http.HttpResponseStatus;
 //import org.apache.log4j.Level;
 import io.netty.handler.codec.http.HttpStatusClass;
@@ -32,7 +35,7 @@ import java.util.logging.Level;
 /**
  * Factory for logging requests and responses
  */
-public final class LoggingFactory implements RequestPolicy.Factory {
+public final class LoggingFactory implements RequestPolicyFactory {
 
     private final LoggingOptions loggingOptions;
 
@@ -46,7 +49,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
 
         private long operationStartTime;
 
-        private RequestPolicy.Options options;
+        private RequestPolicyOptions options;
 
         private final RequestPolicy requestPolicy;
 
@@ -54,7 +57,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
 
         private Long requestStartTime;
 
-        LoggingPolicy(RequestPolicy requestPolicy, RequestPolicy.Options options, LoggingFactory factory) {
+        LoggingPolicy(RequestPolicy requestPolicy, RequestPolicyOptions options, LoggingFactory factory) {
             this.requestPolicy = requestPolicy;
             this.options = options;
             this.factory = factory;
@@ -75,8 +78,8 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                 this.operationStartTime = requestStartTime;
             }
 
-            if (this.options.shouldLog(HttpPipeline.LogLevel.INFO)) {
-                this.options.log(HttpPipeline.LogLevel.INFO,
+            if (this.options.shouldLog(HttpPipelineLogLevel.INFO)) {
+                this.options.log(HttpPipelineLogLevel.INFO,
                         "'%s'==> OUTGOING REQUEST (Try number='%d')%n", request.url(), this.tryCount);
             }
 
@@ -85,8 +88,8 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                     .doOnError(new Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable throwable) {
-                            if (options.shouldLog(HttpPipeline.LogLevel.ERROR)) {
-                                options.log(HttpPipeline.LogLevel.ERROR,
+                            if (options.shouldLog(HttpPipelineLogLevel.ERROR)) {
+                                options.log(HttpPipelineLogLevel.ERROR,
                                         "Unexpected failure attempting to make request.%nError message:'%s'%n",
                                         throwable.getMessage());
                             }
@@ -98,7 +101,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                             long requestEndTime = System.currentTimeMillis();
                             long requestCompletionTime = requestEndTime - requestStartTime;
                             long operationDuration = requestEndTime - operationStartTime;
-                            HttpPipeline.LogLevel currentLevel = HttpPipeline.LogLevel.INFO;
+                            HttpPipelineLogLevel currentLevel = HttpPipelineLogLevel.INFO;
                             // check if error should be logged since there is nothing of higher priority
 //                            if (!options.logger().shouldLog(LogLevel.ERROR)) {
 //                                return;
@@ -116,7 +119,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                                     factory.loggingOptions.getMinDurationToLogSlowRequestsInMs()) {
                                 // log a warning if the try duration exceeded the specified threshold
                                 //if (options.logger().shouldLog(LogLevel.WARNING)) {
-                                    currentLevel = HttpPipeline.LogLevel.WARNING;
+                                    currentLevel = HttpPipelineLogLevel.WARNING;
                                     forceLog = true;
                                     logMessage = String.format("SLOW OPERATION. Duration > %d ms.%n", factory.loggingOptions.getMinDurationToLogSlowRequestsInMs());
                                 //}
@@ -127,14 +130,14 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                                      response.statusCode() != HttpURLConnection.HTTP_CONFLICT && response.statusCode() != HttpURLConnection.HTTP_PRECON_FAILED &&
                                      response.statusCode() != 416 /* 416 is missing from the Enum but it is Range Not Satisfiable */)) {
                                 String errorString = String.format("REQUEST ERROR%nHTTP request failed with status code:'%d'%n", response.statusCode());
-                                if (currentLevel == HttpPipeline.LogLevel.WARNING) {
+                                if (currentLevel == HttpPipelineLogLevel.WARNING) {
                                     logMessage += errorString;
                                 }
                                 else {
                                     logMessage = errorString;
                                 }
 
-                                currentLevel = HttpPipeline.LogLevel.ERROR;
+                                currentLevel = HttpPipelineLogLevel.ERROR;
                                 forceLog = true;
                                 // TODO: LOG THIS TO WINDOWS EVENT LOG/SYS LOG
                             }
@@ -143,7 +146,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
                                 String messageInfo = String.format(
                                         "Request try:'%d', request duration:'%d' ms, operation duration:'%d' ms%n",
                                         tryCount, requestCompletionTime, operationDuration);
-                                options.log(HttpPipeline.LogLevel.INFO, logMessage + messageInfo);
+                                options.log(HttpPipelineLogLevel.INFO, logMessage + messageInfo);
                             //}
                         }
                     });
@@ -151,7 +154,7 @@ public final class LoggingFactory implements RequestPolicy.Factory {
     }
 
     @Override
-    public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+    public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
         return new LoggingPolicy(next, options, this);
     }
 }

@@ -16,9 +16,12 @@ package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
 import com.microsoft.rest.v2.http.HttpPipeline;
+import com.microsoft.rest.v2.http.HttpPipelineBuilder;
 import com.microsoft.rest.v2.http.HttpRequest;
 import com.microsoft.rest.v2.http.HttpResponse;
 import com.microsoft.rest.v2.policy.RequestPolicy;
+import com.microsoft.rest.v2.policy.RequestPolicyFactory;
+import com.microsoft.rest.v2.policy.RequestPolicyOptions;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import io.reactivex.Single;
@@ -54,7 +57,7 @@ public abstract class StorageURL {
         //RequestRetryFactory requestRetryFactory = new RequestRetryFactory();
         TelemetryFactory telemetryFactory = new TelemetryFactory(pipelineOptions.telemetryOptions);
         AddDatePolicy addDate = new AddDatePolicy();
-        return new HttpPipeline.Builder().withHttpClient(pipelineOptions.client)
+        return new HttpPipelineBuilder().withHttpClient(pipelineOptions.client)
                 .withLogger(pipelineOptions.logger)
                 .withRequestPolicies(requestIDFactory, telemetryFactory, addDate, credentials, loggingFactory)
                 .build();
@@ -66,10 +69,10 @@ public abstract class StorageURL {
     }
 
 
-    static class AddDatePolicy implements RequestPolicy.Factory {
+    static class AddDatePolicy implements RequestPolicyFactory {
 
         @Override
-        public RequestPolicy create(RequestPolicy next, RequestPolicy.Options options) {
+        public RequestPolicy create(RequestPolicy next, RequestPolicyOptions options) {
             return new AddDate(next);
         }
 

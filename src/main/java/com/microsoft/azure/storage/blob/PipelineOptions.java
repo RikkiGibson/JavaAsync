@@ -1,14 +1,14 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.rest.v2.http.HttpClient;
-import com.microsoft.rest.v2.http.HttpPipeline;
+import com.microsoft.rest.v2.http.HttpPipelineLogger;
 
 public final class PipelineOptions {
 
     // Log configures the pipeline's logging infrastructure indicating what information is logged and where.
     public HttpClient client;
 
-    public HttpPipeline.Logger logger;
+    public HttpPipelineLogger logger;
 
     // Retry configures the built-in retry policy behavior.
     public RequestRetryOptions requestRetryOptions;

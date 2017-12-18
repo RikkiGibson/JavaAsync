@@ -53,19 +53,19 @@ public final class BlobAccessConditions {
         this.pageBlobAccessConditions = pageBlobAccessConditions;
     }
 
-    public HttpAccessConditions getHttpAccessConditions() {
+    HttpAccessConditions getHttpAccessConditions() {
         return httpAccessConditions;
     }
 
-    public LeaseAccessConditions getLeaseAccessConditions() {
+    LeaseAccessConditions getLeaseAccessConditions() {
         return leaseAccessConditions;
     }
 
-    public AppendBlobAccessConditions getAppendBlobAccessConditions() {
+    AppendBlobAccessConditions getAppendBlobAccessConditions() {
         return appendBlobAccessConditions;
     }
 
-    public PageBlobAccessConditions getPageBlobAccessConditions() {
+    PageBlobAccessConditions getPageBlobAccessConditions() {
         return pageBlobAccessConditions;
     }
 }

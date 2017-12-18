@@ -84,12 +84,14 @@ public final class BlockBlobURL extends BlobURL {
      * @return the {@link Single&lt;RestResponse&lt;BlobsPutHeaders, Void&gt;&gt;} object if successful.
      */
     public Single<RestResponse<BlobsPutHeaders, Void>> putBlobAsync(
+            //TODO: Check if accessCOnditions are null and set to static default object. Same for headers. Same for blobAccessConditions
             byte[] data, BlobHttpHeaders headers, Metadata metadata, BlobAccessConditions blobAccessConditions) {
         return this.storageClient.blobs().putWithRestResponseAsync(this.url, BlobType.BLOCK_BLOB, data,
                 null, headers.getCacheControl(), headers.getContentType(), headers.getContentEncoding(),
                 headers.getContentLanguage(), headers.getContentMD5(), headers.getCacheControl(), metadata.toString(),
                 blobAccessConditions.getLeaseAccessConditions().toString(),
-                headers.getContentDisposition(), blobAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
+                headers.getContentDisposition(),
+                HttpAccessConditions.getIfModifiedSinceForRest(blobAccessConditions),
                 blobAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
                 blobAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
                 blobAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
