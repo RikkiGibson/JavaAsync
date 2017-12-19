@@ -21,8 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-// TODO: REMOVE public
-public final class Utility {
+final class Utility {
 
     /**
      * Thread local for storing GMT date format.
@@ -38,9 +37,27 @@ public final class Utility {
     };
 
     /**
+     * Thread local for storing GMT date format for snapshots.
+     */
+    private static ThreadLocal<DateFormat>
+            RFC3339_GMT_DATE_TIME_FORMATTER = new ThreadLocal<DateFormat>() {
+        @Override
+        protected DateFormat initialValue() {
+            final DateFormat formatter = new SimpleDateFormat(RFC3339_PATTERN, LOCALE_US);
+            formatter.setTimeZone(GMT_ZONE);
+            return formatter;
+        }
+    };
+
+    /**
      * Stores a reference to the RFC1123 date/time pattern.
      */
     private static final String RFC1123_PATTERN = "EEE, dd MMM yyyy HH:mm:ss z";
+
+    /**
+     * Stores a reference to the RFC3339 date/time pattern.
+     */
+    private static final String RFC3339_PATTERN = "yyyy-MM-dd'T'h:m:ssZZZZZ";
 
     /**
      * Stores a reference to the GMT time zone.
@@ -76,61 +93,17 @@ public final class Utility {
     }
 
     /**
-     * Parses a query string into a one to many hashmap.
+     * Returns the GTM date/time String for the specified value using the RFC3339 pattern.
      *
-     * @param parseString
-     *            the string to parse
-     * @return a HashMap<String, String[]> of the key values.
-     * @throws UnsupportedEncodingException
+     * @param date
+     *            A <code>Date</code> object that represents the date to convert to GMT date/time in the RFC3339
+     *            pattern.
+     *
+     * @return A {@code String} that represents the GMT date/time for the specified value using the RFC3339
+     *         pattern.
      */
-    public static TreeMap<String, String[]> parseQueryString(String parseString, boolean lowerCaseKey) throws UnsupportedEncodingException {
-        //Comparator<String> c = new Comparator.<String>naturalOrder();
-        final TreeMap<String, String[]> retVals = new TreeMap<String, String[]>( new Comparator<String>() {
-            @Override
-            public int compare(String s1, String s2) {
-                return s1.compareTo(s2);
-            }
-        });
-
-        if (Utility.isNullOrEmpty(parseString)) {
-            return retVals;
-        }
-
-        // split name value pairs by splitting on the 'c&' character
-        final String[] valuePairs = parseString.split("&");
-
-        // for each field value pair parse into appropriate map entries
-        for (int m = 0; m < valuePairs.length; m++) {
-            // Getting key and value for a single query parameter
-            final int equalDex = valuePairs[m].indexOf("=");
-            String key = Utility.safeDecode(valuePairs[m].substring(0, equalDex));
-            if (lowerCaseKey) {
-                key = key.toLowerCase(Utility.LOCALE_US);
-            }
-
-            String value = Utility.safeDecode(valuePairs[m].substring(equalDex + 1));
-
-            // add to map
-            String[] keyValues = retVals.get(key);
-
-            // check if map already contains key
-            if (keyValues == null) {
-                // map does not contain this key
-                keyValues = new String[] { value };
-                retVals.put(key, keyValues);
-            }
-            else {
-                // map contains this key already so append
-                final String[] newValues = new String[keyValues.length + 1];
-                for (int j = 0; j < keyValues.length; j++) {
-                    newValues[j] = keyValues[j];
-                }
-
-                newValues[newValues.length - 1] = value;
-            }
-        }
-
-        return retVals;
+    public static String getGMTTimeSnapshot(final Date date) {
+        return RFC3339_GMT_DATE_TIME_FORMATTER.get().format(date);
     }
 
     /**

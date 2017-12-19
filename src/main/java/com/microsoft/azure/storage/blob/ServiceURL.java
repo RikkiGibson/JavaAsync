@@ -15,7 +15,10 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
+import com.microsoft.azure.storage.models.ListContainersIncludeType;
 import com.microsoft.azure.storage.models.ListContainersResponse;
+import com.microsoft.azure.storage.models.ServiceListContainersHeaders;
+import com.microsoft.rest.v2.RestResponse;
 import com.microsoft.rest.v2.http.HttpPipeline;
 import io.reactivex.Single;
 
@@ -50,15 +53,16 @@ public final class ServiceURL extends StorageURL {
      * @param timeout
      * @return
      */
-    public Single<ListContainersResponse> listConatinersAsync(String prefix, String marker, Integer maxresults, String include, Integer timeout) {
-        //return this.storageClient.services().listContainersAsync();//prefix, marker, maxresults, include, timeout);
-        return null;
+    public Single<RestResponse<ServiceListContainersHeaders, ListContainersResponse>> listConatinersAsync(
+            String prefix, String marker, Integer maxresults, ListContainersIncludeType include, Integer timeout) {
+        return this.storageClient.services().listContainersWithRestResponseAsync(this.url, prefix, marker,
+                maxresults, include, null, null);
     }
 
     /**
      * Creates a new {@link ServiceURL} with the given pipeline.
      * @param pipeline
-     *      A {@link Pipeline} object to set.
+     *      A {@link HttpPipeline} object to set.
      * @return
      *      A {@link ServiceURL} object with the given pipeline.
      */

@@ -84,14 +84,22 @@ public final class BlockBlobURL extends BlobURL {
      * @return the {@link Single&lt;RestResponse&lt;BlobsPutHeaders, Void&gt;&gt;} object if successful.
      */
     public Single<RestResponse<BlobsPutHeaders, Void>> putBlobAsync(
-            //TODO: Check if accessCOnditions are null and set to static default object. Same for headers. Same for blobAccessConditions
             byte[] data, BlobHttpHeaders headers, Metadata metadata, BlobAccessConditions blobAccessConditions) {
+        if(blobAccessConditions == null) {
+            blobAccessConditions = BlobAccessConditions.getDefault();
+        }
+        if(headers == null) {
+            headers = BlobHttpHeaders.getDefault();
+        }
+        if(metadata == null) {
+            metadata = Metadata.getDefault();
+        }
         return this.storageClient.blobs().putWithRestResponseAsync(this.url, BlobType.BLOCK_BLOB, data,
-                null, headers.getCacheControl(), headers.getContentType(), headers.getContentEncoding(),
+                null, null, headers.getContentType(), headers.getContentEncoding(),
                 headers.getContentLanguage(), headers.getContentMD5(), headers.getCacheControl(), metadata.toString(),
                 blobAccessConditions.getLeaseAccessConditions().toString(),
                 headers.getContentDisposition(),
-                HttpAccessConditions.getIfModifiedSinceForRest(blobAccessConditions),
+                blobAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
                 blobAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
                 blobAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
                 blobAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
@@ -111,6 +119,9 @@ public final class BlockBlobURL extends BlobURL {
      */
     public Single<RestResponse<BlockBlobsPutBlockHeaders, Void>> putBlockAsync(
             String base64BlockID, byte[] data, LeaseAccessConditions leaseAccessConditions) {
+        if(leaseAccessConditions == null) {
+            leaseAccessConditions = LeaseAccessConditions.getDefault();
+        }
         return this.storageClient.blockBlobs().putBlockWithRestResponseAsync(this.url, base64BlockID, data,
                 null, leaseAccessConditions.toString(), null);
     }
@@ -124,8 +135,11 @@ public final class BlockBlobURL extends BlobURL {
      *           A {@Link LeaseAccessConditions} object that specifies the lease on the blob if there is one.
      * @return the {@link Single&lt;RestResponse&lt;BlockBlobsGetBlockListHeaders, BlockList&gt;&gt;} object if successful.
      */
-    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> GetBlockListAsync(
+    public Single<RestResponse<BlockBlobsGetBlockListHeaders, BlockList>> getBlockListAsync(
             BlockListType listType, LeaseAccessConditions leaseAccessConditions) {
+        if(leaseAccessConditions == null) {
+            leaseAccessConditions = LeaseAccessConditions.getDefault();
+        }
         return this.storageClient.blockBlobs().getBlockListWithRestResponseAsync(this.url, listType,
                 null, null, leaseAccessConditions.toString(), null);
     }
@@ -148,9 +162,18 @@ public final class BlockBlobURL extends BlobURL {
      *            complete.
      * @return the {@link Single&lt;RestResponse&lt;BlockBlobsPutBlockListHeaders, Void&gt;&gt;} object if successful.
      */
-    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> PutBlockListAsync(
+    public Single<RestResponse<BlockBlobsPutBlockListHeaders, Void>> putBlockListAsync(
             List<String> base64BlockIDs, Metadata metadata, BlobHttpHeaders httpHeaders,
             BlobAccessConditions blobAccessConditions) {
+        if(metadata == null) {
+            metadata = Metadata.getDefault();
+        }
+        if(httpHeaders == null) {
+            httpHeaders = BlobHttpHeaders.getDefault();
+        }
+        if(blobAccessConditions == null) {
+            blobAccessConditions = BlobAccessConditions.getDefault();
+        }
         return this.storageClient.blockBlobs().putBlockListWithRestResponseAsync(this.url,
                 new BlockLookupList().withLatest(base64BlockIDs), null,
                 httpHeaders.getCacheControl(), httpHeaders.getContentType(),httpHeaders.getContentEncoding(),

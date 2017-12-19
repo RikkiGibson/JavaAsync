@@ -21,9 +21,17 @@ import java.util.Map;
  * Constains metadata key/value pairs
  */
 public final class Metadata extends HashMap<String, String> {
+    private static Metadata defaultMetadata;
 
     // TODO Add other constructors
     public Metadata() {
         super();
+    }
+
+    public static Metadata getDefault() {
+        if(defaultMetadata == null) {
+            defaultMetadata = new Metadata();
+        }
+        return defaultMetadata;
     }
 }

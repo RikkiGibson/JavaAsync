@@ -6,6 +6,11 @@ public class BlobRange {
 
     public Long count;
 
+    public BlobRange(Long offset, Long count) {
+        this.offset = offset;
+        this.count = count;
+    }
+
     @Override
     public String toString() {
         if (offset != null) {

@@ -28,6 +28,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -213,24 +214,25 @@ public final class SharedKeyCredentials implements ICredentials {
         final StringBuilder canonicalizedResource = new StringBuilder("/");
         canonicalizedResource.append(this.accountName);
 
+        URL urlDecoder = new URL(requestURL);
         // Note that AbsolutePath starts with a '/'.
-        QueryStringDecoder urlDecoder = new QueryStringDecoder(requestURL);
-        if (urlDecoder.path().length() > 0) {
-            String path = urlDecoder.path();
-
-            // There are two slashes after the protocol and include slash after the account portion of the path
-            path = path.substring(StringUtils.ordinalIndexOf(path, "/", 3));
-            canonicalizedResource.append(path);
+        //QueryStringDecoder urlDecoder = new QueryStringDecoder(requestURL);
+        //if (urlDecoder.path().length() > 0) {
+        if(urlDecoder.getPath().length() > 0) {
+            canonicalizedResource.append(urlDecoder.getPath());
         }
         else {
             canonicalizedResource.append('/');
         }
 
         // check for no query params and return
-        Map<String, List<String>> queryParams = urlDecoder.parameters();
-        if (queryParams.size() == 0) {
+        if(urlDecoder.getQuery() == null) {
             return canonicalizedResource.toString();
         }
+
+        // The URL object's query field doesn't include the '?'. The QueryStringDecoder expects it.
+        QueryStringDecoder queryDecoder = new QueryStringDecoder("?" + urlDecoder.getQuery());
+        Map<String, List<String>> queryParams = queryDecoder.parameters();
 
         ArrayList<String> queryParamNames = new ArrayList<String>(queryParams.keySet());
         Collections.sort(queryParamNames);

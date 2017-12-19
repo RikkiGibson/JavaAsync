@@ -44,8 +44,8 @@ public final class HttpAccessConditions {
         this.ifModifiedSince = (ifModifiedSince != null) ? new DateTime(ifModifiedSince) : null;
         this.ifUnmodifiedSince = (ifUnmodifiedSince != null) ? new DateTime(ifUnmodifiedSince) : null;
 
-        this.ifMatch = ifMatch;
-        this.ifNoneMatch = ifNoneMatch;
+        this.ifMatch = ifMatch == null ? ETag.getDefault() : ifMatch;
+        this.ifNoneMatch = ifNoneMatch == null ? ETag.getDefault() : ifNoneMatch;
     }
 
     public DateTime getIfModifiedSince() {

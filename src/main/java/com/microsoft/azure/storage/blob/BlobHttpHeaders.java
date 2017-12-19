@@ -19,6 +19,8 @@ package com.microsoft.azure.storage.blob;
  */
 public final class BlobHttpHeaders {
 
+    private static BlobHttpHeaders defaultBlobHttpHeaders;
+
     private final String cacheControl;
 
     private final String contentDisposition;
@@ -110,5 +112,13 @@ public final class BlobHttpHeaders {
      */
     public String getContentType() {
         return contentType;
+    }
+
+    public static BlobHttpHeaders getDefault() {
+        if(defaultBlobHttpHeaders == null) {
+            defaultBlobHttpHeaders = new BlobHttpHeaders(null, null, null,
+                    null, null, null);
+        }
+        return defaultBlobHttpHeaders;
     }
 }

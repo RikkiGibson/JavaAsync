@@ -16,8 +16,13 @@ package com.microsoft.azure.storage.blob;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
+
+import static com.microsoft.azure.storage.blob.Utility.getGMTTime;
+import static com.microsoft.azure.storage.blob.Utility.getGMTTimeSnapshot;
 
 /**
  * A BlobURLParts object represents the components that make up an Azure Storage Container/Blob URL. You parse an
@@ -69,7 +74,7 @@ public final class BlobURLParts {
 
     /**
      * @return
-     *      A {@code String} representing the scheme. Ex: "https://"
+     *      A {@code String} representing the scheme. Ex: "https"
      */
     public String getScheme() {
         return scheme;
@@ -129,9 +134,16 @@ public final class BlobURLParts {
      * @return
      *      A {@code String} representing a URL
      */
-    public String toURL() {
+    public String toURL() throws UnsupportedEncodingException {
         StringBuilder urlBuilder = new StringBuilder();
 
+        if(this.scheme != null) {
+            urlBuilder.append(scheme);
+            urlBuilder.append("://");
+        }
+        if(this.host != null) {
+            urlBuilder.append(host);
+        }
         if (this.containerName != null) {
             urlBuilder.append('/' + this.containerName);
             if (this.blobName != null) {
@@ -160,7 +172,7 @@ public final class BlobURLParts {
                 urlBuilder.append('&');
             }
 
-            urlBuilder.append("snapshot=" + Utility.getGMTTime(this.snapshot));
+            urlBuilder.append("snapshot=" + URLEncoder.encode(getGMTTimeSnapshot(this.snapshot), "UTF-8"));
         }
 
         String sasEncoding = this.sasQueryParameters.encode();

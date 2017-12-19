@@ -19,9 +19,9 @@ package com.microsoft.azure.storage.blob;
  */
 public final class AppendBlobAccessConditions {
     private static AppendBlobAccessConditions defaultAppendBlobAccessConditions;
-    private final Long ifAppendPositionEquals;
+    private final Integer ifAppendPositionEquals;
 
-    private final Long ifMaxSizeLessThanOrEqual;
+    private final Integer ifMaxSizeLessThanOrEqual;
 
     /**
      * Creates a {@link AppendBlobAccessConditions} object
@@ -31,26 +31,26 @@ public final class AppendBlobAccessConditions {
      *      ensures that the AppendBlock operation succeeds only if the append blob's size is less than or
      *      equal to a value.
      */
-    public AppendBlobAccessConditions(Long ifAppendPositionEquals, Long ifMaxSizeLessThanOrEqual) {
+    public AppendBlobAccessConditions(Integer ifAppendPositionEquals, Integer ifMaxSizeLessThanOrEqual) {
         this.ifAppendPositionEquals = ifAppendPositionEquals;
         this.ifMaxSizeLessThanOrEqual = ifMaxSizeLessThanOrEqual;
     }
 
     /**
      * @return
-     *      A <code>Long</code> for ensuring that the AppendBlock operation succeeds only if the append position
+     *      An <code>Integer</code> for ensuring that the AppendBlock operation succeeds only if the append position
      *      is equal to a value.
      */
-    public Long getIfAppendPositionEquals() {
+    public Integer getIfAppendPositionEquals() {
         return ifAppendPositionEquals;
     }
 
     /**
      * @return
-     *      A <code>Long</code> for ensuring that the AppendBlock operation succeeds only if the append blob's size
+     *      An <code>Integer</code> for ensuring that the AppendBlock operation succeeds only if the append blob's size
      *      is less than or equal to a value.
      */
-    public Long getIfMaxSizeLessThanOrEqual() {
+    public Integer getIfMaxSizeLessThanOrEqual() {
         return ifMaxSizeLessThanOrEqual;
     }
 

@@ -34,7 +34,8 @@ public final class BlobAccessConditions {
     private final PageBlobAccessConditions pageBlobAccessConditions;
 
     /**
-     * Access conditions which are specific to blobs.
+     * Access conditions which are specific to blobs. Passing in null for one of the parameters will set it to a
+     * default value.
      * @param httpAccessConditions
      *      Optional standard HTTP access conditions which are optionally set
      * @param leaseAccessConditions
@@ -49,10 +50,10 @@ public final class BlobAccessConditions {
             LeaseAccessConditions leaseAccessConditions,
             AppendBlobAccessConditions appendBlobAccessConditions,
             PageBlobAccessConditions pageBlobAccessConditions) {
-        this.httpAccessConditions = httpAccessConditions;
-        this.leaseAccessConditions = leaseAccessConditions;
-        this.appendBlobAccessConditions = appendBlobAccessConditions;
-        this.pageBlobAccessConditions = pageBlobAccessConditions;
+        this.httpAccessConditions = httpAccessConditions == null ? HttpAccessConditions.getDefault() : httpAccessConditions;
+        this.leaseAccessConditions = leaseAccessConditions == null ? LeaseAccessConditions.getDefault() : leaseAccessConditions;
+        this.appendBlobAccessConditions = appendBlobAccessConditions == null ? AppendBlobAccessConditions.getDefault() : appendBlobAccessConditions;
+        this.pageBlobAccessConditions = pageBlobAccessConditions == null ? PageBlobAccessConditions.getDefault() : pageBlobAccessConditions;
     }
 
     HttpAccessConditions getHttpAccessConditions() {

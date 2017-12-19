@@ -19,8 +19,10 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
+import java.util.TreeMap;
 
 public final class URLParser {
 
@@ -57,8 +59,7 @@ public final class URLParser {
                 blobName = path.substring(containerEndIndex + 1);
             }
         }
-
-        Map<String, String[]> queryParamsMap = Utility.parseQueryString(urlString, true);
+        Map<String, String[]> queryParamsMap = parseQueryString(url.getQuery(), true);
 
         Date snapshot = null;
         String[] snapshotArray = queryParamsMap.get("snapshot");
@@ -70,5 +71,62 @@ public final class URLParser {
         SASQueryParameters sasQueryParameters = new SASQueryParameters(queryParamsMap, true);
 
         return new BlobURLParts(scheme, host, containerName, blobName, snapshot, sasQueryParameters, queryParamsMap);
+    }
+
+    /**
+     * Parses a query string into a one to many hashmap.
+     *
+     * @param queryParams
+     *            the string to parse
+     * @return a HashMap<String, String[]> of the key values.
+     * @throws UnsupportedEncodingException
+     */
+    private static TreeMap<String, String[]> parseQueryString(String queryParams, boolean lowerCaseKey) throws UnsupportedEncodingException {
+        //Comparator<String> c = new Comparator.<String>naturalOrder();
+        final TreeMap<String, String[]> retVals = new TreeMap<String, String[]>(new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                return s1.compareTo(s2);
+            }
+        });
+
+        if (Utility.isNullOrEmpty(queryParams)) {
+            return retVals;
+        }
+
+        // split name value pairs by splitting on the 'c&' character
+        final String[] valuePairs = queryParams.split("&");
+
+        // for each field value pair parse into appropriate map entries
+        for (int m = 0; m < valuePairs.length; m++) {
+            // Getting key and value for a single query parameter
+            final int equalDex = valuePairs[m].indexOf("=");
+            String key = Utility.safeDecode(valuePairs[m].substring(0, equalDex));
+            if (lowerCaseKey) {
+                key = key.toLowerCase(Utility.LOCALE_US);
+            }
+
+            String value = Utility.safeDecode(valuePairs[m].substring(equalDex + 1));
+
+            // add to map
+            String[] keyValues = retVals.get(key);
+
+            // check if map already contains key
+            if (keyValues == null) {
+                // map does not contain this key
+                keyValues = new String[]{value};
+                retVals.put(key, keyValues);
+            } else {
+                // map contains this key already so append
+                final String[] newValues = new String[keyValues.length + 1];
+                for (int j = 0; j < keyValues.length; j++) {
+                    newValues[j] = keyValues[j];
+                }
+
+                newValues[newValues.length - 1] = value;
+            }
+        }
+
+        return retVals;
     }
 }

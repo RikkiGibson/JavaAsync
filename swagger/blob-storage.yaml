@@ -6,10 +6,10 @@ info:
     header: MICROSOFT_MIT
     strictSpecAdherence: false
 x-ms-parameterized-host:
-  hostTemplate: '{accountName}.blob.core.windows.net'
+  hostTemplate: '{url}'
   positionInOperation: first
   parameters:
-  - "$ref": "#/parameters/AccountName"
+  - "$ref": "#/parameters/Url"
 securityDefinitions:
   blob_shared_key:
     type: apiKey
@@ -2514,9 +2514,9 @@ definitions:
         description: Geo-Replication information for the Secondary Storage Service
         $ref: '#/definitions/GeoReplication'
 parameters:
-  AccountName:
-    name: accountName
-    description: The Azure storage account to use.
+  Url:
+    name: url
+    description: The url of the resource.
     required: true
     type: string
     in: path

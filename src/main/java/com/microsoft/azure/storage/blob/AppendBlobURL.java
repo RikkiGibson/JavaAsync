@@ -15,6 +15,7 @@
 package com.microsoft.azure.storage.blob;
 
 import com.microsoft.azure.storage.implementation.StorageClientImpl;
+import com.microsoft.azure.storage.models.AppendBlobsAppendBlockHeaders;
 import com.microsoft.azure.storage.models.BlobType;
 import com.microsoft.azure.storage.models.BlobsPutHeaders;
 import com.microsoft.rest.v2.RestResponse;
@@ -79,6 +80,15 @@ public final class AppendBlobURL extends BlobURL {
      */
     public Single<RestResponse<BlobsPutHeaders, Void>> createBlobAsync(
             Metadata metadata, BlobHttpHeaders headers, BlobAccessConditions accessConditions) {
+        if(metadata == null) {
+            metadata = Metadata.getDefault();
+        }
+        if(headers == null) {
+            headers = BlobHttpHeaders.getDefault();
+        }
+        if(accessConditions == null) {
+            accessConditions = BlobAccessConditions.getDefault();
+        }
         return this.storageClient.blobs().putWithRestResponseAsync(this.url, BlobType.APPEND_BLOB, null,
                 null, headers.getCacheControl(), headers.getContentType(), headers.getContentEncoding(),
                 headers.getContentLanguage(), headers.getContentMD5(), headers.getCacheControl(), metadata.toString(),
@@ -88,5 +98,31 @@ public final class AppendBlobURL extends BlobURL {
                 accessConditions.getHttpAccessConditions().getIfMatch().toString(),
                 accessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
                 null, null, null);
+    }
+
+    /**
+     * AppendBlock commits a new block of data to the end of the existing append blob.
+     * For more information, see https://docs.microsoft.com/rest/api/storageservices/append-block.
+     * @param data
+     *            A <code>byte</code> array which represents the data to write to the blob.
+     * @param blobAccessConditions
+     *            A {@Link BlobAccessConditions} object that specifies under which conditions the operation should
+     *            complete.
+     * @return the {@link Single&lt;RestResponse&lt;AppendBlobsAppendBlockHeaders, Void&gt;&gt;} object if successful.
+     */
+    public Single<RestResponse<AppendBlobsAppendBlockHeaders, Void>> appendBlockAsync(
+            byte[] data, BlobAccessConditions blobAccessConditions) {
+        if(blobAccessConditions == null) {
+            blobAccessConditions = BlobAccessConditions.getDefault();
+        }
+        return this.storageClient.appendBlobs().appendBlockWithRestResponseAsync(this.url, data, null,
+                blobAccessConditions.getLeaseAccessConditions().toString(),
+                blobAccessConditions.getAppendBlobAccessConditions().getIfMaxSizeLessThanOrEqual(),
+                blobAccessConditions.getAppendBlobAccessConditions().getIfAppendPositionEquals(),
+                blobAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
+                blobAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
+                blobAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
+                blobAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
+                null);
     }
 }

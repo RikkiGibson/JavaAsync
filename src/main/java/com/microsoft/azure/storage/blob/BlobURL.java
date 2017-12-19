@@ -158,8 +158,6 @@ public class BlobURL extends StorageURL {
     /**
      * GetBlob reads a range of bytes from a blob. The response also includes the blob's properties and metadata.
      * For more information, see https://docs.microsoft.com/rest/api/storageservices/get-blob.
-     * @param offset
-     *      A {@code Long} which represents the offset to use as the starting point for the source.
      * @param range
      *      A {@code Long} which represents the number of bytes to read or <code>null</code>.
      * @param blobAccessConditions
@@ -167,7 +165,7 @@ public class BlobURL extends StorageURL {
      * @return
      *       {@link Single<InputStream>} object representing the stream the blob is downloaded to.
      */
-    public Single<RestResponse<BlobsGetHeaders, InputStream>> getBlobAsync(Long offset, BlobRange range, BlobAccessConditions blobAccessConditions,
+    public Single<RestResponse<BlobsGetHeaders, InputStream>> getBlobAsync(BlobRange range, BlobAccessConditions blobAccessConditions,
                                             boolean rangeGetContentMD5, Integer timeout) {
         if (blobAccessConditions == null) {
             blobAccessConditions = BlobAccessConditions.getDefault();
@@ -253,7 +251,7 @@ public class BlobURL extends StorageURL {
                 blobAccessConditions.getHttpAccessConditions().getIfMatch().toString(),
                 blobAccessConditions.getHttpAccessConditions().getIfNoneMatch().toString(),
                 blobHttpHeaders.getContentDisposition(),
-                null, SequenceNumberActionType.MAX, null, null);
+                null, null, null, null);
     }
 
     /**
@@ -270,7 +268,7 @@ public class BlobURL extends StorageURL {
             blobAccessConditions = BlobAccessConditions.getDefault();
         }
 
-        return this.storageClient.blobs().setMetadataWithRestResponseAsync(super.url, timeout, null,
+        return this.storageClient.blobs().setMetadataWithRestResponseAsync(super.url, timeout, metadata.toString(),
                 blobAccessConditions.getLeaseAccessConditions().toString(),
                 blobAccessConditions.getHttpAccessConditions().getIfModifiedSince(),
                 blobAccessConditions.getHttpAccessConditions().getIfUnmodifiedSince(),
