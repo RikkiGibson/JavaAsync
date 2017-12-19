@@ -11,6 +11,7 @@
 package com.microsoft.azure.storage.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class ListContainersResponse {
     /**
      * The containers property.
      */
-    @JsonProperty(value = "Containers")
+    @JacksonXmlElementWrapper(localName = "Containers")
     private List<Container> containers;
 
     /**

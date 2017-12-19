@@ -11,6 +11,7 @@
 package com.microsoft.azure.storage.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.List;
 
 /**
@@ -20,13 +21,13 @@ public class BlockList {
     /**
      * The committedBlocks property.
      */
-    @JsonProperty(value = "CommittedBlocks")
+    @JacksonXmlElementWrapper(localName = "CommittedBlocks")
     private List<Block> committedBlocks;
 
     /**
      * The uncommittedBlocks property.
      */
-    @JsonProperty(value = "UncommittedBlocks")
+    @JacksonXmlElementWrapper(localName = "UncommittedBlocks")
     private List<Block> uncommittedBlocks;
 
     /**

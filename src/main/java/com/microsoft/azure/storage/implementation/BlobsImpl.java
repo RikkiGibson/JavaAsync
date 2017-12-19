@@ -148,7 +148,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -161,7 +161,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -173,7 +173,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetHeaders, InputStream> object
      */
@@ -208,7 +208,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetHeaders, InputStream> object
      */
@@ -223,12 +223,12 @@ public class BlobsImpl implements Blobs {
                     }
                 }
             });
-        }
+    }
 
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param range Return only the bytes of the blob in the specified range.
@@ -251,7 +251,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param range Return only the bytes of the blob in the specified range.
@@ -273,7 +273,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param range Return only the bytes of the blob in the specified range.
@@ -308,7 +308,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob operation reads or downloads a blob from the system, including its metadata and properties. You can also call Get Blob to read a snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param range Return only the bytes of the blob in the specified range.
@@ -333,13 +333,13 @@ public class BlobsImpl implements Blobs {
                     }
                 }
             });
-        }
+    }
 
 
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -352,7 +352,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -364,7 +364,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetPropertiesHeaders, Void> object
      */
@@ -397,19 +397,19 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetPropertiesHeaders, Void> object
      */
     public Completable getPropertiesAsync(String url) {
         return getPropertiesWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -430,7 +430,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -450,7 +450,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -483,7 +483,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Properties operation returns all user-defined metadata, standard HTTP properties, and system properties for the blob. It does not return the content of the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -498,13 +498,13 @@ public class BlobsImpl implements Blobs {
     public Completable getPropertiesAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return getPropertiesWithRestResponseAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -517,7 +517,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -529,7 +529,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsDeleteHeaders, Void> object
      */
@@ -563,19 +563,19 @@ public class BlobsImpl implements Blobs {
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsDeleteHeaders, Void> object
      */
     public Completable deleteAsync(String url) {
         return deleteWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -597,7 +597,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -618,7 +618,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -652,7 +652,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Delete Blob operation marks the specified blob or snapshot for deletion. The blob is later deleted during garbage collection. Note that in order to delete a blob, you must delete all of its snapshots. You can delete both at the same time with the Delete Blob operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -668,13 +668,13 @@ public class BlobsImpl implements Blobs {
     public Completable deleteAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DeleteSnapshotsOptionType deleteSnapshots, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return deleteWithRestResponseAsync(url, snapshot, timeout, leaseId, deleteSnapshots, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -688,7 +688,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -701,7 +701,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsPutHeaders, Void> object
@@ -748,7 +748,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsPutHeaders, Void> object
@@ -756,12 +756,12 @@ public class BlobsImpl implements Blobs {
     public Completable putAsync(String url, BlobType blobType) {
         return putWithRestResponseAsync(url, blobType)
             .toCompletable();
-        }
+    }
 
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @param optionalbody Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -793,7 +793,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @param optionalbody Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -824,7 +824,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @param optionalbody Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -871,7 +871,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Put Blob operation creates a new block, page, or append blob, or updates the content of an existing block blob. Updating an existing block blob overwrites any existing metadata on the blob. Partial updates are not supported with Put Blob; the content of the existing blob is overwritten with the content of the new blob. To perform a partial update of the content of a block blob, use the Put Block List operation.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param blobType Specifies the type of blob to create: block blob, page blob, or append blob. Possible values include: 'BlockBlob', 'PageBlob', 'AppendBlob'
      * @param optionalbody Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
@@ -897,13 +897,13 @@ public class BlobsImpl implements Blobs {
     public Completable putAsync(String url, BlobType blobType, byte[] optionalbody, Integer timeout, String cacheControl, String blobContentType, String blobContentEncoding, String blobContentLanguage, String blobContentMD5, String blobCacheControl, String metadata, String leaseId, String blobContentDisposition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, Long blobContentLength, Long blobSequenceNumber, String requestId) {
         return putWithRestResponseAsync(url, blobType, optionalbody, timeout, cacheControl, blobContentType, blobContentEncoding, blobContentLanguage, blobContentMD5, blobCacheControl, metadata, leaseId, blobContentDisposition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentLength, blobSequenceNumber, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -916,7 +916,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -928,7 +928,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetPropertiesHeaders, Void> object
      */
@@ -970,19 +970,19 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetPropertiesHeaders, Void> object
      */
     public Completable setPropertiesAsync(String url) {
         return setPropertiesWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
      * @param blobContentType Optional. Sets the blob's content type. If specified, this property is stored with the blob and returned with a read request.
@@ -1011,7 +1011,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
      * @param blobContentType Optional. Sets the blob's content type. If specified, this property is stored with the blob and returned with a read request.
@@ -1039,7 +1039,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
      * @param blobContentType Optional. Sets the blob's content type. If specified, this property is stored with the blob and returned with a read request.
@@ -1081,7 +1081,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Properties operation sets system properties on the blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param blobCacheControl Optional. Sets the blob's cache control. If specified, this property is stored with the blob and returned with a read request.
      * @param blobContentType Optional. Sets the blob's content type. If specified, this property is stored with the blob and returned with a read request.
@@ -1104,13 +1104,13 @@ public class BlobsImpl implements Blobs {
     public Completable setPropertiesAsync(String url, Integer timeout, String blobCacheControl, String blobContentType, String blobContentMD5, String blobContentEncoding, String blobContentLanguage, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String blobContentDisposition, Long blobContentLength, SequenceNumberActionType sequenceNumberAction, Long blobSequenceNumber, String requestId) {
         return setPropertiesWithRestResponseAsync(url, timeout, blobCacheControl, blobContentType, blobContentMD5, blobContentEncoding, blobContentLanguage, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, blobContentDisposition, blobContentLength, sequenceNumberAction, blobSequenceNumber, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -1123,7 +1123,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -1135,7 +1135,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetMetadataHeaders, Void> object
      */
@@ -1169,19 +1169,19 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsGetMetadataHeaders, Void> object
      */
     public Completable getMetadataAsync(String url) {
         return getMetadataWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1202,7 +1202,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1222,7 +1222,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1256,7 +1256,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Get Blob Metadata operation returns all user-defined metadata for the specified blob or snapshot.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param snapshot The snapshot parameter is an opaque DateTime value that, when present, specifies the blob snapshot to retrieve. For more information on working with blob snapshots, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/creating-a-snapshot-of-a-blob"&gt;Creating a Snapshot of a Blob.&lt;/a&gt;
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1271,13 +1271,13 @@ public class BlobsImpl implements Blobs {
     public Completable getMetadataAsync(String url, DateTime snapshot, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return getMetadataWithRestResponseAsync(url, snapshot, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -1290,7 +1290,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -1302,7 +1302,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetMetadataHeaders, Void> object
      */
@@ -1336,19 +1336,19 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsSetMetadataHeaders, Void> object
      */
     public Completable setMetadataAsync(String url) {
         return setMetadataWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1369,7 +1369,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1389,7 +1389,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1423,7 +1423,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Set Blob Metadata operation sets user-defined metadata for the specified blob as one or more name-value pairs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1438,13 +1438,13 @@ public class BlobsImpl implements Blobs {
     public Completable setMetadataAsync(String url, Integer timeout, String metadata, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return setMetadataWithRestResponseAsync(url, timeout, metadata, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -1458,7 +1458,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -1471,7 +1471,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsLeaseHeaders, Void> object
@@ -1511,7 +1511,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsLeaseHeaders, Void> object
@@ -1519,12 +1519,12 @@ public class BlobsImpl implements Blobs {
     public Completable leaseAsync(String url, LeaseActionType action) {
         return leaseWithRestResponseAsync(url, action)
             .toCompletable();
-        }
+    }
 
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1548,7 +1548,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1571,7 +1571,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1611,7 +1611,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Lease Blob operation establishes and manages a lock on a blob for write and delete operations.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1629,13 +1629,13 @@ public class BlobsImpl implements Blobs {
     public Completable leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return leaseWithRestResponseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -1648,7 +1648,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -1660,7 +1660,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsTakeSnapshotHeaders, Void> object
      */
@@ -1694,19 +1694,19 @@ public class BlobsImpl implements Blobs {
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsTakeSnapshotHeaders, Void> object
      */
     public Completable takeSnapshotAsync(String url) {
         return takeSnapshotWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -1727,7 +1727,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -1747,7 +1747,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -1781,7 +1781,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Snapshot Blob operation creates a read-only snapshot of a blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -1796,13 +1796,13 @@ public class BlobsImpl implements Blobs {
     public Completable takeSnapshotAsync(String url, Integer timeout, String metadata, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String requestId) {
         return takeSnapshotWithRestResponseAsync(url, timeout, metadata, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -1816,7 +1816,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -1829,7 +1829,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsCopyHeaders, Void> object
@@ -1879,7 +1879,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsCopyHeaders, Void> object
@@ -1887,12 +1887,12 @@ public class BlobsImpl implements Blobs {
     public Completable copyAsync(String url, String copySource) {
         return copyWithRestResponseAsync(url, copySource)
             .toCompletable();
-        }
+    }
 
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -1919,7 +1919,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -1945,7 +1945,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -1995,7 +1995,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Copy Blob operation copies a blob or an internet resource to a new blob.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copySource Specifies the name of the source page blob snapshot. This value is a URL of up to 2 KB in length that specifies a page blob snapshot. The value should be URL-encoded as it would appear in a request URI. The source blob must either be public or must be authenticated via a shared access signature.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -2016,13 +2016,13 @@ public class BlobsImpl implements Blobs {
     public Completable copyAsync(String url, String copySource, Integer timeout, String metadata, DateTime sourceIfModifiedSince, DateTime sourceIfUnmodifiedSince, String sourceIfMatches, String sourceIfNoneMatch, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String leaseId, String sourceLeaseId, String requestId) {
         return copyWithRestResponseAsync(url, copySource, timeout, metadata, sourceIfModifiedSince, sourceIfUnmodifiedSince, sourceIfMatches, sourceIfNoneMatch, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, leaseId, sourceLeaseId, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -2036,7 +2036,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -2049,7 +2049,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsAbortCopyHeaders, Void> object
@@ -2075,7 +2075,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<BlobsAbortCopyHeaders, Void> object
@@ -2083,12 +2083,12 @@ public class BlobsImpl implements Blobs {
     public Completable abortCopyAsync(String url, String copyId) {
         return abortCopyWithRestResponseAsync(url, copyId)
             .toCompletable();
-        }
+    }
 
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -2105,7 +2105,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -2121,7 +2121,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -2147,7 +2147,7 @@ public class BlobsImpl implements Blobs {
     /**
      * The Abort Copy Blob operation aborts a pending Copy Blob operation, and leaves a destination blob with zero length and full metadata.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param copyId The copy identifier provided in the x-ms-copy-id header of the original Copy Blob operation.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -2158,7 +2158,7 @@ public class BlobsImpl implements Blobs {
     public Completable abortCopyAsync(String url, String copyId, Integer timeout, String leaseId, String requestId) {
         return abortCopyWithRestResponseAsync(url, copyId, timeout, leaseId, requestId)
             .toCompletable();
-        }
+    }
 
 
 }

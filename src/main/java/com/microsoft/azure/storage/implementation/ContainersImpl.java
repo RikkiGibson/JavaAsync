@@ -87,17 +87,17 @@ public class ContainersImpl implements Containers {
     @Host("{url}")
     interface ContainersService {
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers create" })
-        @PUT("")
+        @PUT("{containerName}")
         @ExpectedResponses({201})
         Single<RestResponse<ContainerCreateHeaders, Void>> create(@HostParam("url") String url, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-meta") String metadata, @HeaderParam("x-ms-blob-public-access") PublicAccessType access, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers getProperties" })
-        @GET("")
+        @GET("{containerName}")
         @ExpectedResponses({200})
         Single<RestResponse<ContainerGetPropertiesHeaders, Void>> getProperties(@HostParam("url") String url, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
         @Headers({ "x-ms-logging-context: com.microsoft.azure.storage.Containers delete" })
-        @DELETE("")
+        @DELETE("{containerName}")
         @ExpectedResponses({202})
         Single<RestResponse<ContainerDeleteHeaders, Void>> delete(@HostParam("url") String url, @QueryParam("timeout") Integer timeout, @HeaderParam("x-ms-lease-id") String leaseId, @HeaderParam("If-Modified-Since") DateTimeRfc1123 ifModifiedSince, @HeaderParam("If-Unmodified-Since") DateTimeRfc1123 ifUnmodifiedSince, @HeaderParam("If-Match") String ifMatches, @HeaderParam("If-None-Match") String ifNoneMatch, @HeaderParam("x-ms-version") String version, @HeaderParam("x-ms-client-request-id") String requestId, @QueryParam("restype") String restype);
 
@@ -136,7 +136,7 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -149,7 +149,7 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -161,7 +161,7 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
@@ -183,19 +183,19 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerCreateHeaders, Void> object
      */
     public Completable createAsync(String url) {
         return createWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -212,7 +212,7 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -228,7 +228,7 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -250,7 +250,7 @@ public class ContainersImpl implements Containers {
     /**
      * creates a new container under the specified account. If the container with the same name already exists, the operation fails.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
      * @param access Specifies whether data in the container may be accessed publicly and the level of access. Possible values include: 'container', 'blob'
@@ -261,13 +261,13 @@ public class ContainersImpl implements Containers {
     public Completable createAsync(String url, Integer timeout, String metadata, PublicAccessType access, String requestId) {
         return createWithRestResponseAsync(url, timeout, metadata, access, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -280,7 +280,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -292,7 +292,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
      */
@@ -313,19 +313,19 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetPropertiesHeaders, Void> object
      */
     public Completable getPropertiesAsync(String url) {
         return getPropertiesWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -341,7 +341,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -356,7 +356,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -377,7 +377,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata and system properties for the specified container. The data returned does not include the container's list of blobs.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -387,13 +387,13 @@ public class ContainersImpl implements Containers {
     public Completable getPropertiesAsync(String url, Integer timeout, String leaseId, String requestId) {
         return getPropertiesWithRestResponseAsync(url, timeout, leaseId, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -406,7 +406,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -418,7 +418,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
      */
@@ -451,19 +451,19 @@ public class ContainersImpl implements Containers {
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerDeleteHeaders, Void> object
      */
     public Completable deleteAsync(String url) {
         return deleteWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -483,7 +483,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -502,7 +502,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -535,7 +535,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation marks the specified container for deletion. The container and any blobs contained within it are later deleted during garbage collection.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param ifModifiedSince Specify this header value to operate only on a blob if it has been modified since the specified date/time.
@@ -549,13 +549,13 @@ public class ContainersImpl implements Containers {
     public Completable deleteAsync(String url, Integer timeout, String leaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return deleteWithRestResponseAsync(url, timeout, leaseId, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -568,7 +568,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -580,7 +580,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
      */
@@ -602,19 +602,19 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetMetadataHeaders, Void> object
      */
     public Completable getMetadataAsync(String url) {
         return getMetadataWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -630,7 +630,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -645,7 +645,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -667,7 +667,7 @@ public class ContainersImpl implements Containers {
     /**
      * returns all user-defined metadata for the container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -677,13 +677,13 @@ public class ContainersImpl implements Containers {
     public Completable getMetadataAsync(String url, Integer timeout, String leaseId, String requestId) {
         return getMetadataWithRestResponseAsync(url, timeout, leaseId, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -696,7 +696,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -708,7 +708,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
      */
@@ -736,19 +736,19 @@ public class ContainersImpl implements Containers {
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetMetadataHeaders, Void> object
      */
     public Completable setMetadataAsync(String url) {
         return setMetadataWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -766,7 +766,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -783,7 +783,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -811,7 +811,7 @@ public class ContainersImpl implements Containers {
     /**
      * operation sets one or more user-defined name-value pairs for the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param metadata Optional. Specifies a user-defined name-value pair associated with the blob. If no name-value pairs are specified, the operation will copy the metadata from the source blob or file to the destination blob. If one or more name-value pairs are specified, the destination blob is created with the specified metadata, and metadata is not copied from the source blob or file. Note that beginning with version 2009-09-19, metadata names must adhere to the naming rules for C# identifiers. See Naming and Referencing Containers, Blobs, and Metadata for more information.
@@ -823,12 +823,11 @@ public class ContainersImpl implements Containers {
     public Completable setMetadataAsync(String url, Integer timeout, String leaseId, String metadata, DateTime ifModifiedSince, String requestId) {
         return setMetadataWithRestResponseAsync(url, timeout, leaseId, metadata, ifModifiedSince, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -839,8 +838,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -850,8 +848,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
      */
@@ -871,8 +868,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerGetAclHeaders, List<SignedIdentifier>> object
      */
@@ -887,11 +883,10 @@ public class ContainersImpl implements Containers {
                     }
                 }
             });
-        }
+    }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -905,8 +900,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -919,8 +913,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -940,8 +933,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -959,12 +951,11 @@ public class ContainersImpl implements Containers {
                     }
                 }
             });
-        }
+    }
 
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -975,8 +966,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -986,8 +976,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
      */
@@ -1022,19 +1011,17 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerSetAclHeaders, Void> object
      */
     public Completable setAclAsync(String url) {
         return setAclWithRestResponseAsync(url)
             .toCompletable();
-        }
+    }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param containerAcl the acls for the container
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1054,8 +1041,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param containerAcl the acls for the container
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1074,8 +1060,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param containerAcl the acls for the container
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1110,8 +1095,7 @@ public class ContainersImpl implements Containers {
     }
 
     /**
-     *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param containerAcl the acls for the container
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1127,13 +1111,13 @@ public class ContainersImpl implements Containers {
     public Completable setAclAsync(String url, List<SignedIdentifier> containerAcl, Integer timeout, String leaseId, PublicAccessType access, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return setAclWithRestResponseAsync(url, containerAcl, timeout, leaseId, access, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -1147,7 +1131,7 @@ public class ContainersImpl implements Containers {
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -1160,7 +1144,7 @@ public class ContainersImpl implements Containers {
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
@@ -1199,7 +1183,7 @@ public class ContainersImpl implements Containers {
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerLeaseHeaders, Void> object
@@ -1207,12 +1191,12 @@ public class ContainersImpl implements Containers {
     public Completable leaseAsync(String url, LeaseActionType action) {
         return leaseWithRestResponseAsync(url, action)
             .toCompletable();
-        }
+    }
 
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1234,7 +1218,7 @@ public class ContainersImpl implements Containers {
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1255,7 +1239,7 @@ public class ContainersImpl implements Containers {
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1294,7 +1278,7 @@ public class ContainersImpl implements Containers {
     /**
      * establishes and manages a lock on a container for delete operations. The lock duration can be 15 to 60 seconds, or can be infinite.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param action Describes what lease action to take. Possible values include: 'acquire', 'renew', 'change', 'release', 'break'
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -1310,13 +1294,13 @@ public class ContainersImpl implements Containers {
     public Completable leaseAsync(String url, LeaseActionType action, Integer timeout, String leaseId, Integer breakPeriod, Integer duration, String proposedLeaseId, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String requestId) {
         return leaseWithRestResponseAsync(url, action, timeout, leaseId, breakPeriod, duration, proposedLeaseId, ifModifiedSince, ifUnmodifiedSince, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -1329,7 +1313,7 @@ public class ContainersImpl implements Containers {
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -1341,7 +1325,7 @@ public class ContainersImpl implements Containers {
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
      */
@@ -1367,7 +1351,7 @@ public class ContainersImpl implements Containers {
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ContainerListBlobsHeaders, ListBlobsResponse> object
      */
@@ -1382,12 +1366,12 @@ public class ContainersImpl implements Containers {
                     }
                 }
             });
-        }
+    }
 
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix element in the response body that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
@@ -1407,7 +1391,7 @@ public class ContainersImpl implements Containers {
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix element in the response body that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
@@ -1426,7 +1410,7 @@ public class ContainersImpl implements Containers {
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix element in the response body that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
@@ -1452,7 +1436,7 @@ public class ContainersImpl implements Containers {
     /**
      * The List Blobs operation returns a list of the blobs under the specified container.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix element in the response body that acts as a placeholder for all blobs whose names begin with the same substring up to the appearance of the delimiter character. The delimiter may be a single character or a string.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
@@ -1474,7 +1458,7 @@ public class ContainersImpl implements Containers {
                     }
                 }
             });
-        }
+    }
 
 
 }

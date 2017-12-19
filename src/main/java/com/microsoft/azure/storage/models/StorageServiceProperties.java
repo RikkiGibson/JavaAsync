@@ -11,6 +11,7 @@
 package com.microsoft.azure.storage.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class StorageServiceProperties {
     /**
      * The set of CORS rules.
      */
-    @JsonProperty(value = "Cors")
+    @JacksonXmlElementWrapper(localName = "Cors")
     private List<CorsRule> cors;
 
     /**

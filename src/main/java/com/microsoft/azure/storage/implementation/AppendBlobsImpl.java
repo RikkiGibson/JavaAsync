@@ -78,7 +78,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -92,7 +92,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -105,7 +105,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
@@ -144,7 +144,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<AppendBlobsAppendBlockHeaders, Void> object
@@ -152,12 +152,12 @@ public class AppendBlobsImpl implements AppendBlobs {
     public Completable appendBlockAsync(String url, byte[] body) {
         return appendBlockWithRestResponseAsync(url, body)
             .toCompletable();
-        }
+    }
 
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -180,7 +180,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -202,7 +202,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -241,7 +241,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     /**
      * The Append Block operation commits a new block of data to the end of an existing append blob. The Append Block operation is permitted only if the blob was created with x-ms-blob-type set to AppendBlob. Append Block is supported only on version 2015-02-21 version or later.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param body Initial data
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param leaseId If specified, the operation only succeeds if the container's lease is active and matches this ID.
@@ -258,7 +258,7 @@ public class AppendBlobsImpl implements AppendBlobs {
     public Completable appendBlockAsync(String url, byte[] body, Integer timeout, String leaseId, Integer maxSize, Integer appendPosition, DateTime ifModifiedSince, DateTime ifUnmodifiedSince, String ifMatches, String ifNoneMatch, String requestId) {
         return appendBlockWithRestResponseAsync(url, body, timeout, leaseId, maxSize, appendPosition, ifModifiedSince, ifUnmodifiedSince, ifMatches, ifNoneMatch, requestId)
             .toCompletable();
-        }
+    }
 
 
 }

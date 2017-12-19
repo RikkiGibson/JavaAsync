@@ -16,21 +16,6 @@ package com.microsoft.azure.storage;
 public interface StorageClient {
 
     /**
-     * Gets The Azure storage account to use.
-     *
-     * @return the accountUrl value.
-     */
-    String accountUrl();
-
-    /**
-     * Sets The Azure storage account to use.
-     *
-     * @param accountUrl the accountUrl value.
-     * @return the service client itself
-     */
-    StorageClient withAccountUrl(String accountUrl);
-
-    /**
      * Gets Specifies the version of the operation to use for this request.
      *
      * @return the version value.

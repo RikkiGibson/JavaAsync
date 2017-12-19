@@ -20,13 +20,13 @@ public class Block {
     /**
      * The base64 encoded block ID.
      */
-    @JsonProperty(value = "name", required = true)
+    @JsonProperty(value = "Name", required = true)
     private String name;
 
     /**
      * The block size in bytes.
      */
-    @JsonProperty(value = "size", required = true)
+    @JsonProperty(value = "Size", required = true)
     private int size;
 
     /**

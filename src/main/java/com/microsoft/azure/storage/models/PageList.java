@@ -11,6 +11,7 @@
 package com.microsoft.azure.storage.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.List;
 
 /**
@@ -20,13 +21,13 @@ public class PageList {
     /**
      * The pageRange property.
      */
-    @JsonProperty(value = "PageRange")
+    @JacksonXmlElementWrapper(localName = "PageRange")
     private List<PageRange> pageRange;
 
     /**
      * The clearRange property.
      */
-    @JsonProperty(value = "ClearRange")
+    @JacksonXmlElementWrapper(localName = "ClearRange")
     private List<ClearRange> clearRange;
 
     /**

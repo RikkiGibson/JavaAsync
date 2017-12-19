@@ -27,31 +27,6 @@ import com.microsoft.rest.v2.http.HttpPipeline;
 public class StorageClientImpl extends ServiceClient implements StorageClient {
 
     /**
-     * The Azure storage account to use.
-     */
-    private String accountUrl;
-
-    /**
-     * Gets The Azure storage account to use.
-     *
-     * @return the accountUrl value.
-     */
-    public String accountUrl() {
-        return this.accountUrl;
-    }
-
-    /**
-     * Sets The Azure storage account to use.
-     *
-     * @param accountUrl the accountUrl value.
-     * @return the service client itself
-     */
-    public StorageClientImpl withAccountUrl(String accountUrl) {
-        this.accountUrl = accountUrl;
-        return this;
-    }
-
-    /**
      * Specifies the version of the operation to use for this request.
      */
     private String version;

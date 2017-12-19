@@ -101,7 +101,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
@@ -115,7 +115,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -128,7 +128,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
@@ -154,7 +154,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceSetPropertiesHeaders, Void> object
@@ -162,12 +162,12 @@ public class ServicesImpl implements Services {
     public Completable setPropertiesAsync(String url, StorageServiceProperties storageServiceProperties) {
         return setPropertiesWithRestResponseAsync(url, storageServiceProperties)
             .toCompletable();
-        }
+    }
 
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -183,7 +183,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -198,7 +198,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -224,7 +224,7 @@ public class ServicesImpl implements Services {
     /**
      * Sets properties for a storage account's Blob service endpoint, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param storageServiceProperties The StorageService properties.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
@@ -234,13 +234,13 @@ public class ServicesImpl implements Services {
     public Completable setPropertiesAsync(String url, StorageServiceProperties storageServiceProperties, Integer timeout, String requestId) {
         return setPropertiesWithRestResponseAsync(url, storageServiceProperties, timeout, requestId)
             .toCompletable();
-        }
+    }
 
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -253,7 +253,7 @@ public class ServicesImpl implements Services {
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -265,7 +265,7 @@ public class ServicesImpl implements Services {
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
      */
@@ -286,7 +286,7 @@ public class ServicesImpl implements Services {
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetPropertiesHeaders, StorageServiceProperties> object
      */
@@ -301,12 +301,12 @@ public class ServicesImpl implements Services {
                     }
                 }
             });
-        }
+    }
 
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -321,7 +321,7 @@ public class ServicesImpl implements Services {
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
@@ -335,7 +335,7 @@ public class ServicesImpl implements Services {
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -356,7 +356,7 @@ public class ServicesImpl implements Services {
     /**
      * gets the properties of a storage account's Blob service, including properties for Storage Analytics and CORS (Cross-Origin Resource Sharing) rules.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -373,13 +373,13 @@ public class ServicesImpl implements Services {
                     }
                 }
             });
-        }
+    }
 
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -392,7 +392,7 @@ public class ServicesImpl implements Services {
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -404,7 +404,7 @@ public class ServicesImpl implements Services {
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
      */
@@ -425,7 +425,7 @@ public class ServicesImpl implements Services {
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceGetStatsHeaders, StorageServiceStats> object
      */
@@ -440,12 +440,12 @@ public class ServicesImpl implements Services {
                     }
                 }
             });
-        }
+    }
 
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -460,7 +460,7 @@ public class ServicesImpl implements Services {
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
@@ -474,7 +474,7 @@ public class ServicesImpl implements Services {
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -495,7 +495,7 @@ public class ServicesImpl implements Services {
     /**
      * Retrieves statistics related to replication for the Blob service. It is only available on the secondary location endpoint when read-access geo-redundant replication is enabled for the storage account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param timeout The timeout parameter is expressed in seconds. For more information, see &lt;a href="https://docs.microsoft.com/en-us/rest/api/storageservices/fileservices/setting-timeouts-for-blob-service-operations"&gt;Setting Timeouts for Blob Service Operations.&lt;/a&gt;
      * @param requestId Provides a client-generated, opaque value with a 1 KB character limit that is recorded in the analytics logs when storage analytics logging is enabled.
      * @throws IllegalArgumentException thrown if parameters fail the validation
@@ -512,13 +512,13 @@ public class ServicesImpl implements Services {
                     }
                 }
             });
-        }
+    }
 
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @throws RestException thrown if the request is rejected by server
      * @throws RuntimeException all other wrapped checked exceptions if the request fails to be sent
@@ -531,7 +531,7 @@ public class ServicesImpl implements Services {
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return the {@link ServiceFuture} object
@@ -543,7 +543,7 @@ public class ServicesImpl implements Services {
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ListContainersResponse> object
      */
@@ -567,7 +567,7 @@ public class ServicesImpl implements Services {
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @throws IllegalArgumentException thrown if parameters fail the validation
      * @return a {@link Single} emitting the RestResponse<ServiceListContainersHeaders, ListContainersResponse> object
      */
@@ -582,12 +582,12 @@ public class ServicesImpl implements Services {
                     }
                 }
             });
-        }
+    }
 
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
@@ -606,7 +606,7 @@ public class ServicesImpl implements Services {
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
@@ -624,7 +624,7 @@ public class ServicesImpl implements Services {
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
@@ -648,7 +648,7 @@ public class ServicesImpl implements Services {
     /**
      * The List Containers operation returns a list of the containers under the specified account.
      *
-     * @param url The full URL to the resource
+     * @param url The url to the resource.
      * @param prefix Filters the results to return only containers whose name begins with the specified prefix.
      * @param marker A string value that identifies the portion of the list of containers to be returned with the next listing operation. The operation returns the NextMarker value within the response body if the listing operation did not return all containers remaining to be listed with the current page. The NextMarker value can be used as the value for the marker parameter in a subsequent call to request the next page of list items. The marker value is opaque to the client.
      * @param maxresults Specifies the maximum number of containers to return. If the request does not specify maxresults, or specifies a value greater than 5000, the server will return up to 5000 items. Note that if the listing operation crosses a partition boundary, then the service will return a continuation token for retrieving the remainder of the results. For this reason, it is possible that the service will return fewer results than specified by maxresults, or than the default of 5000.
@@ -669,7 +669,7 @@ public class ServicesImpl implements Services {
                     }
                 }
             });
-        }
+    }
 
 
 }

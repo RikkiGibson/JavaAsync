@@ -155,6 +155,7 @@ public final class BlobURLParts {
 
         for(Map.Entry<String, String[]> entry : this.unparsedParameters.entrySet()) {
             if (isFirst) {
+                urlBuilder.append('?');
                 isFirst = false;
             }
             else {
@@ -166,6 +167,7 @@ public final class BlobURLParts {
 
         if (this.snapshot != null) {
             if (isFirst) {
+                urlBuilder.append('?');
                 isFirst = false;
             }
             else {
@@ -178,6 +180,7 @@ public final class BlobURLParts {
         String sasEncoding = this.sasQueryParameters.encode();
         if (!Utility.isNullOrEmpty(sasEncoding)) {
             if (isFirst) {
+                urlBuilder.append('?');
                 isFirst = false;
             }
             else {

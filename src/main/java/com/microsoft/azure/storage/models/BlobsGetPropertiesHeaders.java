@@ -107,6 +107,14 @@ public class BlobsGetPropertiesHeaders {
     private Boolean isIncrementalCopy;
 
     /**
+     * Included if the blob is incremental copy blob or incremental copy
+     * snapshot, if x-ms-copy-status is success. Snapshot time of the last
+     * successful incremental copy snapshot for this blob.
+     */
+    @JsonProperty(value = "x-ms-destination-snapshot")
+    private DateTimeRfc1123 destinationSnapshot;
+
+    /**
      * When a blob is leased, specifies whether the lease is of infinite or
      * fixed duration. Possible values include: 'infinite', 'fixed'.
      */
@@ -450,6 +458,33 @@ public class BlobsGetPropertiesHeaders {
      */
     public BlobsGetPropertiesHeaders withIsIncrementalCopy(Boolean isIncrementalCopy) {
         this.isIncrementalCopy = isIncrementalCopy;
+        return this;
+    }
+
+    /**
+     * Get the destinationSnapshot value.
+     *
+     * @return the destinationSnapshot value
+     */
+    public DateTime destinationSnapshot() {
+        if (this.destinationSnapshot == null) {
+            return null;
+        }
+        return this.destinationSnapshot.dateTime();
+    }
+
+    /**
+     * Set the destinationSnapshot value.
+     *
+     * @param destinationSnapshot the destinationSnapshot value to set
+     * @return the BlobsGetPropertiesHeaders object itself.
+     */
+    public BlobsGetPropertiesHeaders withDestinationSnapshot(DateTime destinationSnapshot) {
+        if (destinationSnapshot == null) {
+            this.destinationSnapshot = null;
+        } else {
+            this.destinationSnapshot = new DateTimeRfc1123(destinationSnapshot);
+        }
         return this;
     }
 

@@ -95,6 +95,13 @@ public class BlobsGetHeaders {
     private String contentDisposition;
 
     /**
+     * This header returns the value that was specified for the
+     * Content-Language request header.
+     */
+    @JsonProperty(value = "Content-Language")
+    private String contentLanguage;
+
+    /**
      * The current sequence number for a page blob. This header is not returned
      * for block blobs or append blobs.
      */
@@ -447,6 +454,26 @@ public class BlobsGetHeaders {
      */
     public BlobsGetHeaders withContentDisposition(String contentDisposition) {
         this.contentDisposition = contentDisposition;
+        return this;
+    }
+
+    /**
+     * Get the contentLanguage value.
+     *
+     * @return the contentLanguage value
+     */
+    public String contentLanguage() {
+        return this.contentLanguage;
+    }
+
+    /**
+     * Set the contentLanguage value.
+     *
+     * @param contentLanguage the contentLanguage value to set
+     * @return the BlobsGetHeaders object itself.
+     */
+    public BlobsGetHeaders withContentLanguage(String contentLanguage) {
+        this.contentLanguage = contentLanguage;
         return this;
     }
 
