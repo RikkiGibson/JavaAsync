@@ -2703,6 +2703,18 @@ definitions:
         type: boolean
       IncrementalCopy:
         type: boolean
+  ListBlobsIncludeItem:
+    name: includeItem
+    type: string
+    enum:
+    - snapshots
+    - metadata
+    - uncommittedblobs
+    - copy
+    x-ms-enum:
+      name: ListBlobsIncludeItem
+      modelAsString: false
+    description: Options for additional data to include when listing blobs.
   ListBlobsResponse:
     xml:
       name: EnumerationResults
@@ -3491,18 +3503,12 @@ parameters:
     name: include
     in: query
     required: false
-    type: string
-    enum:
-    - snapshots
-    - metadata
-    - uncommittedblobs
-    - copy
-    x-ms-enum:
-      name: ListBlobsIncludeType
-      modelAsString: false
+    type: array
+    items:
+      "$ref": "#/definitions/ListBlobsIncludeItem"
     x-ms-parameter-location: method
-    description: Include this parameter to specify one or more datasets to include
-      in the response.
+    description:  Include this parameter to specify one or more datasets to include
+      in the response. 
   ListContainersInclude:
     name: include
     in: query
